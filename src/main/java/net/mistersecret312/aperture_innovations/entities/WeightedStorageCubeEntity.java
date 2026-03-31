@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -29,6 +30,7 @@ import net.mistersecret312.aperture_innovations.block_entities.LargeButtonBlockE
 import net.mistersecret312.aperture_innovations.blocks.LargeButtonBlock;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.ColorfulGelItem;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -38,8 +40,7 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 {
 	private static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> ACTIVE_COLOR = SynchedEntityData.defineId(
-			WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> ACTIVE_COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
 
 	private SimpleContainer container = new SimpleContainer(9);
 
@@ -92,6 +93,21 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 
 		this.setDeltaMovement(this.getDeltaMovement().multiply(friction, 1f, friction));
 		this.move(MoverType.SELF, this.getDeltaMovement());
+	}
+
+	protected EntityDataAccessor<Boolean> getActiveDataAccessor()
+	{
+		return ACTIVE;
+	}
+
+	protected EntityDataAccessor<Integer> getColorDataAccessor()
+	{
+		return COLOR;
+	}
+
+	protected EntityDataAccessor<Integer> getActiveColorDataAccessor()
+	{
+		return ACTIVE_COLOR;
 	}
 
 	@Override
@@ -153,14 +169,14 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		{
 			player.openMenu(new SimpleMenuProvider(
 					(id, playerInv, playerEntity) ->  new ChestMenu(MenuType.GENERIC_9x1, id, playerInv, container, 1),
-					Component.translatable("container.aperture_innovations.weighted_storage_cube")));
+					getChestMenuTitle()));
 			return InteractionResult.SUCCESS;
 		}
 		if(stack.isEmpty() && player.isCrouching())
 		{
 			this.kill();
 			ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
-					ItemInit.WEIGHTED_STORAGE_CUBE.get().getDefaultInstance());
+					getItemDrop());
 			level.addFreshEntity(item);
 			return InteractionResult.SUCCESS;
 		}
@@ -173,6 +189,14 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		}
 
 		return InteractionResult.CONSUME;
+	}
+
+	protected @NotNull ItemStack getItemDrop() {
+		return ItemInit.WEIGHTED_STORAGE_CUBE.get().getDefaultInstance();
+	}
+
+	protected @NotNull MutableComponent getChestMenuTitle() {
+		return Component.translatable("container.aperture_innovations.weighted_storage_cube");
 	}
 
 	private void tickLerp() {
@@ -245,32 +269,32 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 
 	public int getColor()
 	{
-		return this.entityData.get(COLOR);
+		return this.entityData.get(getColorDataAccessor());
 	}
 
 	public int getActiveColor()
 	{
-		return this.entityData.get(ACTIVE_COLOR);
+		return this.entityData.get(getActiveColorDataAccessor());
 	}
 
 	public boolean isActive()
 	{
-		return this.entityData.get(ACTIVE);
+		return this.entityData.get(getActiveDataAccessor());
 	}
 
 	public void setActive(boolean active)
 	{
-		this.entityData.set(ACTIVE, active);
+		this.entityData.set(getActiveDataAccessor(), active);
 	}
 
 	public void setColor(int color)
 	{
-		this.entityData.set(COLOR, color);
+		this.entityData.set(getColorDataAccessor(), color);
 	}
 
 	public void setActiveColor(int color)
 	{
-		this.entityData.set(ACTIVE_COLOR, color);
+		this.entityData.set(getActiveColorDataAccessor(), color);
 	}
 
 	@Override
