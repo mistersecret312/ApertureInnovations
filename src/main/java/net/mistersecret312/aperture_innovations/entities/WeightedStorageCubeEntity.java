@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
@@ -172,12 +174,17 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 					getChestMenuTitle()));
 			return InteractionResult.SUCCESS;
 		}
-		if(stack.isEmpty() && player.isCrouching())
+		if(stack.isEmpty() && player.isCrouching()
+				&& player instanceof ServerPlayer serverPlayer && serverPlayer.gameMode.getGameModeForPlayer() != GameType.ADVENTURE)
 		{
 			this.kill();
-			ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
-					getItemDrop());
-			level.addFreshEntity(item);
+
+			if (!serverPlayer.gameMode.isCreative()) {
+				ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
+						getItemDrop());
+				level.addFreshEntity(item);
+			}
+
 			return InteractionResult.SUCCESS;
 		}
 		if(stack.getItem() instanceof ColorfulGelItem gelItem)
