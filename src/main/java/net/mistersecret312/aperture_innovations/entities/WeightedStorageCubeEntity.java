@@ -14,7 +14,6 @@ import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +22,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AnvilBlock;
-import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -44,7 +41,7 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 	private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> ACTIVE_COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
 
-	private SimpleContainer container = new SimpleContainer(9);
+	private final SimpleContainer container = new SimpleContainer(9);
 
 	private int lerpSteps;
 	private double lerpX;
@@ -113,7 +110,7 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 	}
 
 	@Override
-	public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source)
+	public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source)
 	{
 		Level level = this.level();
 
@@ -150,19 +147,19 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount)
+	public boolean hurt(@NotNull DamageSource source, float amount)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean skipAttackInteraction(Entity entity)
+	public boolean skipAttackInteraction(@NotNull Entity entity)
 	{
 		return true;
 	}
 
 	@Override
-	public InteractionResult interact(Player player, InteractionHand hand)
+	public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand)
 	{
 		Level level = player.level();
 		ItemStack stack = player.getItemInHand(hand);
@@ -244,8 +241,8 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		this.lerpX = x;
 		this.lerpY = y;
 		this.lerpZ = z;
-		this.lerpYRot = (double)yRot;
-		this.lerpXRot = (double)xRot;
+		this.lerpYRot = yRot;
+		this.lerpXRot = xRot;
 		this.lerpSteps = 10;
 	}
 
