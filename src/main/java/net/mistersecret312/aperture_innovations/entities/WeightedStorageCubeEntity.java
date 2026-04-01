@@ -27,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.block_entities.LargeButtonBlockEntity;
 import net.mistersecret312.aperture_innovations.blocks.LargeButtonBlock;
+import net.mistersecret312.aperture_innovations.config.WeightedCubeConfig;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.ColorfulGelItem;
 import org.jetbrains.annotations.NotNull;
@@ -164,7 +165,7 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		Level level = player.level();
 		ItemStack stack = player.getItemInHand(hand);
 
-		if(stack.isEmpty() && !player.isCrouching())
+		if(stack.isEmpty() && !player.isCrouching() && !WeightedCubeConfig.disable_cube_inventory.get())
 		{
 			player.openMenu(new SimpleMenuProvider(
 					(id, playerInv, playerEntity) ->  new ChestMenu(MenuType.GENERIC_9x1, id, playerInv, container, 1),
