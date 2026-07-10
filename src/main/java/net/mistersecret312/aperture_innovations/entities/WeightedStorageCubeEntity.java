@@ -4,31 +4,33 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AnvilBlock;
-import net.minecraft.world.level.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.block_entities.LargeButtonBlockEntity;
 import net.mistersecret312.aperture_innovations.blocks.LargeButtonBlock;
+import net.mistersecret312.aperture_innovations.config.WeightedCubeConfig;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.ColorfulGelItem;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -38,10 +40,9 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 {
 	private static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
-	private static final EntityDataAccessor<Integer> ACTIVE_COLOR = SynchedEntityData.defineId(
-			WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> ACTIVE_COLOR = SynchedEntityData.defineId(WeightedStorageCubeEntity.class, EntityDataSerializers.INT);
 
-	private SimpleContainer container = new SimpleContainer(9);
+	private final SimpleContainer container = new SimpleContainer(9);
 
 	private int lerpSteps;
 	private double lerpX;
@@ -94,8 +95,23 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		this.move(MoverType.SELF, this.getDeltaMovement());
 	}
 
+	protected EntityDataAccessor<Boolean> getActiveDataAccessor()
+	{
+		return ACTIVE;
+	}
+
+	protected EntityDataAccessor<Integer> getColorDataAccessor()
+	{
+		return COLOR;
+	}
+
+	protected EntityDataAccessor<Integer> getActiveColorDataAccessor()
+	{
+		return ACTIVE_COLOR;
+	}
+
 	@Override
-	public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source)
+	public boolean causeFallDamage(float fallDistance, float multiplier, @NotNull DamageSource source)
 	{
 		Level level = this.level();
 
@@ -132,36 +148,41 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount)
+	public boolean hurt(@NotNull DamageSource source, float amount)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean skipAttackInteraction(Entity entity)
+	public boolean skipAttackInteraction(@NotNull Entity entity)
 	{
 		return true;
 	}
 
 	@Override
-	public InteractionResult interact(Player player, InteractionHand hand)
+	public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand)
 	{
 		Level level = player.level();
 		ItemStack stack = player.getItemInHand(hand);
 
-		if(stack.isEmpty() && !player.isCrouching())
+		if(stack.isEmpty() && !player.isCrouching() && !WeightedCubeConfig.disable_cube_inventory.get())
 		{
 			player.openMenu(new SimpleMenuProvider(
 					(id, playerInv, playerEntity) ->  new ChestMenu(MenuType.GENERIC_9x1, id, playerInv, container, 1),
-					Component.translatable("container.aperture_innovations.weighted_storage_cube")));
+					getChestMenuTitle()));
 			return InteractionResult.SUCCESS;
 		}
-		if(stack.isEmpty() && player.isCrouching())
+		if(stack.isEmpty() && player.isCrouching()
+				&& player instanceof ServerPlayer serverPlayer && serverPlayer.gameMode.getGameModeForPlayer() != GameType.ADVENTURE)
 		{
 			this.kill();
-			ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
-					ItemInit.WEIGHTED_STORAGE_CUBE.get().getDefaultInstance());
-			level.addFreshEntity(item);
+
+			if (!serverPlayer.gameMode.isCreative()) {
+				ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
+						getItemDrop());
+				level.addFreshEntity(item);
+			}
+
 			return InteractionResult.SUCCESS;
 		}
 		if(stack.getItem() instanceof ColorfulGelItem gelItem)
@@ -173,6 +194,14 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		}
 
 		return InteractionResult.CONSUME;
+	}
+
+	protected @NotNull ItemStack getItemDrop() {
+		return ItemInit.WEIGHTED_STORAGE_CUBE.get().getDefaultInstance();
+	}
+
+	protected @NotNull MutableComponent getChestMenuTitle() {
+		return Component.translatable("container.aperture_innovations.weighted_storage_cube");
 	}
 
 	private void tickLerp() {
@@ -213,8 +242,8 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 		this.lerpX = x;
 		this.lerpY = y;
 		this.lerpZ = z;
-		this.lerpYRot = (double)yRot;
-		this.lerpXRot = (double)xRot;
+		this.lerpYRot = yRot;
+		this.lerpXRot = xRot;
 		this.lerpSteps = 10;
 	}
 
@@ -245,32 +274,32 @@ public class WeightedStorageCubeEntity extends Entity implements GeoEntity
 
 	public int getColor()
 	{
-		return this.entityData.get(COLOR);
+		return this.entityData.get(getColorDataAccessor());
 	}
 
 	public int getActiveColor()
 	{
-		return this.entityData.get(ACTIVE_COLOR);
+		return this.entityData.get(getActiveColorDataAccessor());
 	}
 
 	public boolean isActive()
 	{
-		return this.entityData.get(ACTIVE);
+		return this.entityData.get(getActiveDataAccessor());
 	}
 
 	public void setActive(boolean active)
 	{
-		this.entityData.set(ACTIVE, active);
+		this.entityData.set(getActiveDataAccessor(), active);
 	}
 
 	public void setColor(int color)
 	{
-		this.entityData.set(COLOR, color);
+		this.entityData.set(getColorDataAccessor(), color);
 	}
 
 	public void setActiveColor(int color)
 	{
-		this.entityData.set(ACTIVE_COLOR, color);
+		this.entityData.set(getActiveColorDataAccessor(), color);
 	}
 
 	@Override

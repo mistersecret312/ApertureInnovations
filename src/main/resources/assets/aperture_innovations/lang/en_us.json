@@ -122,8 +122,12 @@
   "aperture_innovations.configuration.long_fall_boots_max_energy_stored": "Maximum Energy Stored",
   "aperture_innovations.configuration.fall_energy_consumption": "Fall/Impact Energy Consumption",
 
+  "aperture_innovations.configuration.weighted_cube": "Weighted Cube",
+  "aperture_innovations.configuration.disable_cube_inventory": "Disable Cube Inventory",
+
   "aperture_innovations.configuration.portal_gun.button": "Portal Gun",
   "aperture_innovations.configuration.long_fall_boots.button": "Long Fall Boots",
+  "aperture_innovations.configuration.weighted_cube.button": "Weighted Cube",
 
   "aperture_innovations.configuration.portalable_tag.tooltip": "If true, portals can be placed only on blocks in the Portalable block tag",
   "aperture_innovations.configuration.portal_gun_passive_consumption.tooltip": "The amount of energy the Portal Gun uses when two portals are open",
