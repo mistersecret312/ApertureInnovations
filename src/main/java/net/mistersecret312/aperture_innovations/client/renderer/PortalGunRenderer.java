@@ -85,6 +85,10 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem> {
                 if (link != null)
                     variant = link.getVariant();
 
+                if (variant == null) {
+                    return true;
+                }
+
                 ColorUtil.RGBA color = isPrimary ? variant.primaryStripeColor() : variant.secondaryStripeColor();
 
                 if (color.red() == 1F && color.green() == 1F && color.blue() == 1F && color.alpha() == 1F)

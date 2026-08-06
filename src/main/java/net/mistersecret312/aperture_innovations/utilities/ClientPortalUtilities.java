@@ -23,6 +23,9 @@ public class ClientPortalUtilities
 	public static ColorUtil.RGBA getPortalColor(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return new ColorUtil.RGBA(1.0f, 0.0f, 0.0f, 1.0f);
+		}
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		ColorUtil.RGBA variantColor = isPrimary ? variant.primaryPortal().getColor() : variant.secondaryPortal().getColor();
 		if(gunColor == -1)
@@ -37,6 +40,9 @@ public class ClientPortalUtilities
 	public static ResourceLocation getCrosshairTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		if(gunColor == -1)
 			return variant.crosshairTexture();
@@ -55,6 +61,9 @@ public class ClientPortalUtilities
 	public static ResourceLocation getPortalHighlightTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		if(gunColor == -1)
 			return isPrimary ? variant.primaryPortal().getHighlightTexture() : variant.secondaryPortal().getHighlightTexture();
@@ -73,6 +82,9 @@ public class ClientPortalUtilities
 	public static ResourceLocation getPortalGunCoreTexture(ClientPortalLink link, int lastPortal)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 
 		ResourceLocation genericCore = variant.genericPortal().getCoreTexture();
 		ResourceLocation idleCore = variant.idleCoreTexture();
@@ -98,12 +110,18 @@ public class ClientPortalUtilities
 	public static ResourceLocation getPortalGunTexture(ClientPortalLink link)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 		return variant.texture();
 	}
 
 	public static ResourceLocation getPortalClosedTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		if(gunColor == -1)
 			return isPrimary ? variant.primaryPortal().getClosedTexture() : variant.secondaryPortal().getClosedTexture();
@@ -121,6 +139,9 @@ public class ClientPortalUtilities
 	public static ResourceLocation getPortalVortexTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			return ResourceLocation.withDefaultNamespace("textures/misc/unknown.png");
+		}
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		if(gunColor == -1)
 			return isPrimary ? variant.primaryPortal().getVortexTexture() : variant.secondaryPortal().getVortexTexture();

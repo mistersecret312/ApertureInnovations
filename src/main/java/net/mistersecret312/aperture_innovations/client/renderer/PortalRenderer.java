@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.client.PortalRenderTypes;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariant;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
@@ -122,6 +123,12 @@ public class PortalRenderer
 		poseStack.translate(0,0f,0.01f);
 		poseStack.scale(scale, scale, scale);
 
+		ClientPortalGunVariant variant = link.getVariant();
+		if (variant == null) {
+			poseStack.popPose();
+			return;
+		}
+
 		if(ApertureInnovations.isIrisLoaded())
 		{
 			VertexConsumer consumerB = buffer.getBuffer(PortalRenderTypes.portalEndMask());
@@ -131,9 +138,8 @@ public class PortalRenderer
 			consumerB.addVertex(poseStack.last().pose(), -0.5f, 0.5f, 0);
 		}
 
-		VertexConsumer consumerA = buffer.getBuffer(PortalRenderTypes.portal(isPrimary ?
-												 link.getVariant().primaryPortal().getMaskTexture() :
-												 link.getVariant().secondaryPortal().getMaskTexture()));
+		ResourceLocation maskTexture = isPrimary ? variant.primaryPortal().getMaskTexture() : variant.secondaryPortal().getMaskTexture();
+		VertexConsumer consumerA = buffer.getBuffer(PortalRenderTypes.portal(maskTexture));
 
 		consumerA.addVertex(poseStack.last().pose(), -0.5f, -0.5f, 0)
 				 .setUv(0, 1)
