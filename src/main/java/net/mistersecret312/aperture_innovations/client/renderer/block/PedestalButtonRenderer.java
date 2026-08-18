@@ -126,30 +126,26 @@ public class PedestalButtonRenderer extends DynamicGeoBlockRenderer<PedestalButt
 
 	public ResourceLocation getButtonTexture(GeoBone bone, PedestalButtonBlockEntity animatable)
 	{
-		if(!bone.getName().equals("Button"))
+		if(!bone.getName().contains("Button"))
 			return null;
 
 		int color = animatable.getButtonColor().packagedInt();
 		if(color != 0)
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/block/pedestal_button/pedestal_button_button_generic.png");
+			return animatable.getClientVariant().genericButtonTexture().orElse(null);
 
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/pedestal_button/pedestal_button_button.png");
+		return animatable.getClientVariant().buttonTexture().orElse(null);
 	}
 
 	public ResourceLocation getLinesTexture(GeoBone bone, PedestalButtonBlockEntity animatable)
 	{
-		if(!bone.getName().equals("ColoredLines"))
+		if(!bone.getName().contains("ColoredLines"))
 			return null;
 
 		int color = animatable.getLinesColor().packagedInt();
 		if(color != 0)
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/block/pedestal_button/pedestal_button_lines_generic.png");
+			return animatable.getClientVariant().genericLinesTexture().orElse(null);
 
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/pedestal_button/pedestal_button_lines.png");
+		return animatable.getClientVariant().linesTexture().orElse(null);
 	}
 
 	public int getHullColor(GeoBone bone, PedestalButtonBlockEntity animatable)

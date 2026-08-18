@@ -96,7 +96,7 @@ public class CubeRenderer extends DynamicGeoEntityRenderer<CubeEntity>
 		boolean active = animatable.isActive();
 		int color = active ? animatable.getActiveColor().packagedInt() : animatable.getColor().packagedInt();
 		ClientCubeVariant cubeVariant = animatable.getClientVariant();
-		if(!bone.getName().equals("ColoredCircle"))
+		if(!bone.getName().contains("ColoredCircle"))
 			return null;
 
 		ResourceLocation texture = animatable.getClientVariant().idleTexture().orElse(null);
@@ -111,7 +111,7 @@ public class CubeRenderer extends DynamicGeoEntityRenderer<CubeEntity>
 
 	public ResourceLocation getHullTexture(GeoBone bone, CubeEntity animatable)
 	{
-		if(bone.getName().equals("ColoredCircle"))
+		if(bone.getName().contains("ColoredCircle"))
 			return null;
 
 		return animatable.getClientVariant().hullTexture();

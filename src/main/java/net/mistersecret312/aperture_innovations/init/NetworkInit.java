@@ -50,6 +50,12 @@ public class NetworkInit
 				ServerboundMultiToolApplyItemStackPacket::handle
 		);
 
+		registrar.playToServer(
+				ServerboundLargeButtonLoadPacket.TYPE,
+				ServerboundLargeButtonLoadPacket.STREAM_CODEC,
+				ServerboundLargeButtonLoadPacket::handle
+		);
+
 		//Client
 
 		registrar.playToClient(

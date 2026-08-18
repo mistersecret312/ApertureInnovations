@@ -26,6 +26,7 @@ import net.mistersecret312.aperture_innovations.client.renderer.block.VitalAppar
 import net.mistersecret312.aperture_innovations.client.renderer.entity.CubeRenderer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ResourcePackReloadListener;
 import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
+import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
 import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.*;
@@ -50,7 +51,9 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.*;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -96,11 +99,14 @@ public class ApertureInnovations
 			{
 				event.dataPackRegistry(PortalGunVariant.REGISTRY_KEY, PortalGunVariant.CODEC, PortalGunVariant.CODEC);
 				event.dataPackRegistry(CubeVariant.REGISTRY_KEY, CubeVariant.CODEC, CubeVariant.CODEC);
+				event.dataPackRegistry(PedestalButtonVariant.REGISTRY_KEY, PedestalButtonVariant.CODEC, PedestalButtonVariant.CODEC);
 			});
 
 		modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG, "aperture_innovations-common.toml");
 		if(dist.isClient())
 			modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
+		NeoForge.EVENT_BUS.addListener(ApertureInnovations::registerCommands);
 	}
 
 	public static void registerRegistry(NewRegistryEvent event)
@@ -114,6 +120,11 @@ public class ApertureInnovations
 			{
 				DispenserBlock.registerBehavior(ItemInit.CUBE.get(), CubeItem.getDispenserBehaviour());
 			});
+	}
+
+	public static void registerCommands(RegisterCommandsEvent event)
+	{
+		CommandInit.register(event.getDispatcher());
 	}
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event)

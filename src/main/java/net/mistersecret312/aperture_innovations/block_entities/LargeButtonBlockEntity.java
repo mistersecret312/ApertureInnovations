@@ -25,6 +25,8 @@ import net.mistersecret312.aperture_innovations.multitool.Color;
 import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
 import net.mistersecret312.aperture_innovations.multitool.InteractionType;
+import net.mistersecret312.aperture_innovations.network.ServerboundLargeButtonLoadPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -44,6 +46,8 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 	public Color activeColor = new Color(0, 0, 0);
 	public Color buttonColor = new Color(0, 0, 0);
 	public Color hullColor = new Color(0, 0, 0);
+
+	public boolean updatePressed = false;
 
 	public LargeButtonBlockEntity(BlockPos pos, BlockState blockState)
 	{
@@ -95,6 +99,14 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 	}
 
 	@Override
+	public void onLoad()
+	{
+		super.onLoad();
+		if(level != null && level.isClientSide())
+			PacketDistributor.sendToServer(new ServerboundLargeButtonLoadPacket(this.getBlockPos()));
+	}
+
+	@Override
 	public void registerControllers(AnimatableManager.ControllerRegistrar controllers)
 	{
 		AnimationController<LargeButtonBlockEntity> controller =
@@ -141,7 +153,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		if(level.isClientSide())
 			return;
 
-		if(isPressed)
+		if(isPressed || button.updatePressed)
 		{
 			if(entities.isEmpty())
 			{
@@ -151,7 +163,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 			}
 		}
 
-		if(!isPressed)
+		if(!isPressed || button.updatePressed)
 		{
 			if(!entities.isEmpty())
 			{

@@ -77,10 +77,13 @@
 
   "multi_tool.aperture_innovations.weighted_storage_cube": "Weighted Storage Cube",
   "multi_tool.aperture_innovations.weighted_companion_cube": "Weighted Companion Cube",
+
   "multi_tool.aperture_innovations.chell": "Chell",
   "multi_tool.aperture_innovations.atlas": "Atlas",
   "multi_tool.aperture_innovations.pbody": "P-Body",
   "multi_tool.aperture_innovations.reloaded": "Reloaded",
+
+  "multi_tool.aperture_innovations.pedestal_button": "Pedestal Button",
 
   "sound.aperture_innovations.portal_ambient": "Portal Ambient",
   "sound.aperture_innovations.portal_enter": "Portal travel",

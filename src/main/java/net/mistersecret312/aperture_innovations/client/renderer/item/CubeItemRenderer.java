@@ -6,15 +6,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.PortalRenderTypes;
+import net.mistersecret312.aperture_innovations.client.model.CubeItemModel;
 import net.mistersecret312.aperture_innovations.client.renderer.ColoredGlowingLayer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariant;
 import net.mistersecret312.aperture_innovations.items.CubeItem;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.renderer.specialty.DynamicGeoItemRenderer;
 
 import java.awt.*;
@@ -24,14 +23,7 @@ public class CubeItemRenderer extends DynamicGeoItemRenderer<CubeItem>
 
     public CubeItemRenderer()
     {
-        super(new DefaultedItemGeoModel<>(ApertureInnovations.of( "weighted_cube"))
-        {
-            @Override
-            protected String subtype()
-            {
-                return "entity";
-            }
-        });
+        super(new CubeItemModel());
 
         this.addRenderLayer(new ColoredGlowingLayer<>(this,
                 (cubeItem, bone) -> this.getTexture(bone, cubeItem),
@@ -57,7 +49,7 @@ public class CubeItemRenderer extends DynamicGeoItemRenderer<CubeItem>
     {
         int color = animatable.getColor(getCurrentItemStack());
         ClientCubeVariant cubeVariant = animatable.getCubeVariant(getCurrentItemStack());
-        if(!bone.getName().equals("ColoredCircle"))
+        if(!bone.getName().contains("ColoredCircle"))
             return null;
 
         ResourceLocation texture = cubeVariant.idleTexture().orElse(null);

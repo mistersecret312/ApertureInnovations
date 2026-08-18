@@ -163,7 +163,10 @@ public abstract class InteractionType
 				@Override
 				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
 				{
-					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, 16777215);
+					int color = ((Color) screen.properties.get(name)).packagedInt();
+					if(color == 0)
+						color = 16777215;
+					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, color);
 				}
 			}, screen.categories.get(property.getCategory()));
 		}
@@ -299,7 +302,10 @@ public abstract class InteractionType
 				@Override
 				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
 				{
-					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, 16777215);
+					int color = ((Color) screen.properties.get(name)).packagedInt();
+					if(color == 0)
+						color = 16777215;
+					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, color);
 				}
 			}, screen.categories.get(property.getCategory()));
 		}

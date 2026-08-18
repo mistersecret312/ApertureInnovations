@@ -2,11 +2,22 @@ package net.mistersecret312.aperture_innovations.block_entities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.multiblock.MasterBlockEntity;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariants;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariants;
+import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
+import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
 import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
 import net.mistersecret312.aperture_innovations.init.MultiToolConfigTypeInit;
 import net.mistersecret312.aperture_innovations.multitool.Color;
@@ -20,6 +31,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoBlockEntity, IHaveConfiguration
 {
@@ -29,6 +41,10 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 	public Color linesColor = new Color(0, 0, 0);
 	public Color hullColor = new Color(0, 0, 0);
 	public Color buttonColor = new Color(0, 0, 0);
+
+	public ResourceLocation variant = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+			"pedestal_button");
+	public int pressTime = 25;
 
 	public PedestalButtonBlockEntity(BlockPos pos, BlockState blockState)
 	{
@@ -58,6 +74,9 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 		tag.putIntArray("lines_color", lineArray);
 		tag.putIntArray("button_color", buttonArray);
 
+		tag.putString("variant", variant.toString());
+		tag.putInt("press_time", pressTime);
+
 		super.saveAdditional(tag, registries);
 	}
 
@@ -73,6 +92,9 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 		this.hullColor = new Color(hullArray[0], hullArray[1], hullArray[2]);
 		this.linesColor = new Color(lineArray[0], lineArray[1], lineArray[2]);
 		this.buttonColor = new Color(buttonArray[0], buttonArray[1], buttonArray[2]);
+
+		this.variant = ResourceLocation.parse(tag.getString("variant"));
+		this.pressTime = tag.getInt("press_time");
 	}
 
 	@Override
@@ -93,6 +115,37 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 	public AnimatableInstanceCache getAnimatableInstanceCache()
 	{
 		return cache;
+	}
+
+	public ClientPedestalButtonVariant getClientVariant()
+	{
+		if(level == null)
+			return ClientPedestalButtonVariant.DEFAULT_VARIANT;
+		PedestalButtonVariant dataVariant = getVariant(level);
+		if(dataVariant == null)
+			return ClientPedestalButtonVariant.DEFAULT_VARIANT;
+
+		return ClientPedestalButtonVariants.getButtonVariant(dataVariant.getClientVariant());
+	}
+
+	public PedestalButtonVariant getVariant(Level level)
+	{
+		Registry<PedestalButtonVariant> registry =
+				level.registryAccess().registryOrThrow(PedestalButtonVariant.REGISTRY_KEY);
+		if(registry.get(getVariant()) == null)
+			return registry.get(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+					"pedestal_button"));
+		return registry.get(getVariant());
+	}
+
+	public ResourceLocation getVariant()
+	{
+		return variant;
+	}
+
+	public void setVariant(ResourceLocation variant)
+	{
+		this.variant = variant;
 	}
 
 	public Color getHullColor()
@@ -144,6 +197,20 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 				MultiToolConfigTypeInit.COLOR.get(),
 				new InteractionType.RGBColorPicker(),
 				this::setLinesColor, this::getLinesColor));
+		List<String> variants = new ArrayList<>();
+		for(Map.Entry<ResourceKey<PedestalButtonVariant>, PedestalButtonVariant> entry : registryAccess
+																			 .registryOrThrow(PedestalButtonVariant.REGISTRY_KEY)
+																			 .entrySet())
+		{
+			variants.add(entry.getKey().location().toString());
+		}
+
+		list.add(new ConfigurationProperty<>("variant", "variant",
+				"multi_tool.aperture_innovations.pedestal_button.variant",
+				MultiToolConfigTypeInit.RESOURCE_LOCATION.get(),
+				new InteractionType.ListChoice(variants, getVariant().toString()),
+				this::setVariant, this::getVariant));
+
 
 		for(ConfigurationProperty<?> property : list)
 		{
@@ -153,6 +220,8 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 				property.setUnsafe(buttonColor);
 			if(property.getName().equals("lines_color"))
 				property.setUnsafe(linesColor);
+			if(property.getName().equals("variant"))
+				property.setUnsafe(variant);
 		}
 
 		return list;

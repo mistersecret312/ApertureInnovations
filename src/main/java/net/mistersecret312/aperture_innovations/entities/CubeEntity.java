@@ -1,6 +1,5 @@
 package net.mistersecret312.aperture_innovations.entities;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.LargeButtonBlockEntity;
@@ -211,10 +209,10 @@ public class CubeEntity extends Entity implements IFizzle, GeoEntity, IHaveConfi
 				CubeItem cubeItem = ItemInit.CUBE.get();
 				ItemStack cubeStack = ItemInit.CUBE.get().getDefaultInstance();
 
-				cubeItem.setVariant(stack, getVariantKey());
-				cubeItem.setColor(stack, getColor().packagedInt());
-				cubeItem.setActiveColor(stack, getActiveColor().packagedInt());
-				cubeItem.setHullColor(stack, getHullColor().packagedInt());
+				cubeItem.setVariant(cubeStack, getVariantKey());
+				cubeItem.setColor(cubeStack, getColor().packagedInt());
+				cubeItem.setActiveColor(cubeStack, getActiveColor().packagedInt());
+				cubeItem.setHullColor(cubeStack, getHullColor().packagedInt());
 
 				ItemEntity item = new ItemEntity(player.level(), this.getX(), this.getY(), this.getZ(),
 						cubeStack);

@@ -46,12 +46,7 @@ public class EntityPreviewRenderer implements PreviewRenderer
 		Lighting.setupForEntityInInventory();
 		EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 		entityrenderdispatcher.setRenderShadow(false);
-		if(entity instanceof CubeEntity cube)
-		{
-			//TODO Fix entity not setting data
-			int idle = cube.getColor().packagedInt();
-			int active = cube.getActiveColor().packagedInt();
-		}
+
 		RenderSystem.runAsFancy(() -> entityrenderdispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, poseStack, graphics.bufferSource(), 15728880));
 		graphics.flush();
 		entityrenderdispatcher.setRenderShadow(true);

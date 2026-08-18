@@ -1,0 +1,9 @@
+{
+  "model": "aperture_innovations:geo/block/pedestal_button.geo.json",
+  "animations": "aperture_innovations:animations/block/pedestal_button.animation.json",
+  "hull_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button.png",
+  "button_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_button.png",
+  "lines_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_lines.png",
+  "button_coloring_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_button_generic.png",
+  "lines_coloring_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_lines_generic.png"
+}
