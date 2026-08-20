@@ -7,6 +7,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.items.CubeItem;
+import net.mistersecret312.aperture_innovations.items.MultiToolItem;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -27,7 +28,8 @@ public class ItemTabInit
 							  output.accept(PortalGunItem.createPortalGun(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "pbody")));
 							  output.accept(PortalGunItem.createPortalGun(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "reloaded")));
 
-							  output.accept(ItemInit.MULTI_TOOL.get());
+							  output.accept(MultiToolItem.createTool(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "multi_tool"),
+									  -1, -1));
 
 							  output.accept(ItemInit.LONG_FALL_BOOTS.get());
 

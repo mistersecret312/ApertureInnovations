@@ -36,12 +36,15 @@ import net.mistersecret312.aperture_innovations.blocks.multiblock.DummyBlock;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureCapability;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureEnergy;
 import net.mistersecret312.aperture_innovations.capabilities.HoldEntityCapability;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientMultiToolVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientMultiToolVariants;
 import net.mistersecret312.aperture_innovations.client.screen.MultiToolScreen;
 import net.mistersecret312.aperture_innovations.client.screen.renderers.EntityPreviewRenderer;
 import net.mistersecret312.aperture_innovations.client.screen.renderers.PreviewRenderer;
 import net.mistersecret312.aperture_innovations.config.LongFallBootsConfig;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.LongFallBootsItem;
+import net.mistersecret312.aperture_innovations.items.MultiToolItem;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
 import net.mistersecret312.aperture_innovations.neo_events.AntlineActivateEvent;
@@ -186,14 +189,20 @@ public class CommonEvents
 			ItemStack main = player.getMainHandItem();
 			ItemStack off = player.getOffhandItem();
 			boolean hasMultiTool = main.is(ItemInit.MULTI_TOOL.get()) || off.is(ItemInit.MULTI_TOOL.get());
-			if(!hasMultiTool)
-				return;
+			if(!hasMultiTool) return;
 
-			PreviewRenderer renderer = new EntityPreviewRenderer(level, entity);
-			MultiToolScreen screen = new MultiToolScreen(entity.getName(), entity instanceof IHaveConfiguration config ? config : null,
-					renderer);
+			ItemStack toolStack = main.is(ItemInit.MULTI_TOOL.get()) ? main : off;
+			if(toolStack.getItem() instanceof MultiToolItem item)
+			{
+				ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(item.getVariantKey(toolStack));
 
-			Minecraft.getInstance().setScreen(screen);
+				PreviewRenderer renderer = new EntityPreviewRenderer(level, entity);
+				MultiToolScreen screen = new MultiToolScreen(entity.getName(),
+						entity instanceof IHaveConfiguration config ? config : null, renderer,
+						variant, item.getHullColor(toolStack), item.getGlowColor(toolStack));
+
+				Minecraft.getInstance().setScreen(screen);
+			}
 		}
 	}
 

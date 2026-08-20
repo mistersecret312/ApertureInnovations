@@ -707,7 +707,7 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 		}
 
 		properties.add(new ConfigurationProperty<>("variant", "variant",
-				"multi_tool.aperture_innovations.cube.variant",
+				"multi_tool.aperture_innovations.variant",
 				MultiToolConfigTypeInit.RESOURCE_LOCATION.get(),
 				new InteractionType.ListChoice(variants, getVariant(stack).toString()),
 				variant -> setVariant(stack, variant),

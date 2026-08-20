@@ -62,6 +62,7 @@
 
   "category.aperture_innovations.color": "Color",
   "category.aperture_innovations.color.hull_color": "Hull",
+  "category.aperture_innovations.color.glow_color": "Glow",
   "category.aperture_innovations.color.active_color": "Active",
   "category.aperture_innovations.color.idle_color": "Idle",
   "category.aperture_innovations.color.button_color": "Button",
@@ -84,6 +85,8 @@
   "multi_tool.aperture_innovations.reloaded": "Reloaded",
 
   "multi_tool.aperture_innovations.pedestal_button": "Pedestal Button",
+
+  "multi_tool.aperture_innovations.multi_tool": "Multi Tool",
 
   "sound.aperture_innovations.portal_ambient": "Portal Ambient",
   "sound.aperture_innovations.portal_enter": "Portal travel",

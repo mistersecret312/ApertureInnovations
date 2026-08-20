@@ -26,6 +26,7 @@ import net.mistersecret312.aperture_innovations.client.renderer.block.VitalAppar
 import net.mistersecret312.aperture_innovations.client.renderer.entity.CubeRenderer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ResourcePackReloadListener;
 import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
+import net.mistersecret312.aperture_innovations.datapack.MultiToolVariant;
 import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
 import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
 import net.mistersecret312.aperture_innovations.init.*;
@@ -100,6 +101,8 @@ public class ApertureInnovations
 				event.dataPackRegistry(PortalGunVariant.REGISTRY_KEY, PortalGunVariant.CODEC, PortalGunVariant.CODEC);
 				event.dataPackRegistry(CubeVariant.REGISTRY_KEY, CubeVariant.CODEC, CubeVariant.CODEC);
 				event.dataPackRegistry(PedestalButtonVariant.REGISTRY_KEY, PedestalButtonVariant.CODEC, PedestalButtonVariant.CODEC);
+
+				event.dataPackRegistry(MultiToolVariant.REGISTRY_KEY, MultiToolVariant.CODEC, MultiToolVariant.CODEC);
 			});
 
 		modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG, "aperture_innovations-common.toml");
@@ -210,17 +213,17 @@ public class ApertureInnovations
 
 		@SubscribeEvent
 		public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
-			for (Map.Entry<ModelResourceLocation, BakedModel> entry : event.getModels().entrySet())
-			{
-				ResourceLocation keyLoc = ResourceLocation.fromNamespaceAndPath(entry.getKey().id().getNamespace(),
-						entry.getKey().id().getPath().split("#")[0]);
-				Block block = BuiltInRegistries.BLOCK.get(keyLoc);
-				if(!WorldColoringUtils.isBlockAlreadyTinted(block))
-				{
-					BakedModel newModel = new TintBakedModelWrapper(entry.getValue());
-					event.getModels().put(entry.getKey(), newModel);
-				}
-			}
+//			for (Map.Entry<ModelResourceLocation, BakedModel> entry : event.getModels().entrySet())
+//			{
+//				ResourceLocation keyLoc = ResourceLocation.fromNamespaceAndPath(entry.getKey().id().getNamespace(),
+//						entry.getKey().id().getPath().split("#")[0]);
+//				Block block = BuiltInRegistries.BLOCK.get(keyLoc);
+//				if(!WorldColoringUtils.isBlockAlreadyTinted(block))
+//				{
+//					BakedModel newModel = new TintBakedModelWrapper(entry.getValue());
+//					event.getModels().put(entry.getKey(), newModel);
+//				}
+//			}
 		}
 
 		@SubscribeEvent
@@ -233,13 +236,13 @@ public class ApertureInnovations
 		@SubscribeEvent
 		public static void registerBlockColors(RegisterColorHandlersEvent.Block event)
 		{
-			BuiltInRegistries.BLOCK.forEach(block ->
-				{
-					boolean contains = ((BlockColorAccessor) event.getBlockColors()).getBlockColors().containsKey(block);
-
-					if(!contains)
-						event.register((blockState, level, pos, tint) -> WorldColoringUtils.getColor(event.getBlockColors(), blockState, level, pos, tint), block);
-				});
+//			BuiltInRegistries.BLOCK.forEach(block ->
+//				{
+//					boolean contains = ((BlockColorAccessor) event.getBlockColors()).getBlockColors().containsKey(block);
+//
+//					if(!contains)
+//						event.register((blockState, level, pos, tint) -> WorldColoringUtils.getColor(event.getBlockColors(), blockState, level, pos, tint), block);
+//				});
 		}
 
 		@SubscribeEvent

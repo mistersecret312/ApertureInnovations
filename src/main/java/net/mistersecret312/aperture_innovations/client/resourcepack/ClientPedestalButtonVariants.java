@@ -14,23 +14,23 @@ public class ClientPedestalButtonVariants
         BUTTON_VARIANTS.clear();
     }
 
-    public static boolean hasButtoVariant(ResourceLocation location)
+    public static boolean hasButtonVariant(ResourceLocation location)
     {
         return BUTTON_VARIANTS.containsKey(location);
     }
 
     public static ClientPedestalButtonVariant getButtonVariant(ResourceLocation location)
     {
-        if (hasButtoVariant(location))
+        if (hasButtonVariant(location))
             return BUTTON_VARIANTS.get(location);
 
         return ClientPedestalButtonVariant.DEFAULT_VARIANT;
     }
 
-    public static void addButtonVariant(ResourceLocation location, ClientPedestalButtonVariant cubeVariant)
+    public static void addButtonVariant(ResourceLocation location, ClientPedestalButtonVariant buttonVariant)
     {
-        if (!hasButtoVariant(location))
-            BUTTON_VARIANTS.put(location, cubeVariant);
+        if (!hasButtonVariant(location))
+            BUTTON_VARIANTS.put(location, buttonVariant);
         else
             ApertureInnovations.LOGGER.error("Pedestal Button Variant " + location.toString() + " already exists");
     }

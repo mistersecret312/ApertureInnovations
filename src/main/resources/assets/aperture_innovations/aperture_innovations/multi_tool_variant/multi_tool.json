@@ -1,0 +1,9 @@
+{
+  "model": "aperture_innovations:geo/item/multi_tool.geo.json",
+  "hull_texture": "aperture_innovations:textures/item/multi_tool/tool.png",
+  "glow_texture": "aperture_innovations:textures/item/multi_tool/tool_glow.png",
+  "coloring_glow_texture": "aperture_innovations:textures/item/multi_tool/tool_glow_generic.png",
+  "menu_texture": "aperture_innovations:textures/gui/multi_tool/menu.png",
+  "inside_menu_texture": "aperture_innovations:textures/gui/multi_tool/menu_inside.png",
+  "coloring_inside_menu_texture": "aperture_innovations:textures/gui/multi_tool/menu_inside_generic.png"
+}
