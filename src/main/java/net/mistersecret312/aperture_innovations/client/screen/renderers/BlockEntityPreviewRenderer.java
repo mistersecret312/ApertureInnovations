@@ -12,6 +12,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.mistersecret312.aperture_innovations.block_entities.VitalApparatusVentBlockEntity;
 import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
@@ -48,23 +50,29 @@ public class BlockEntityPreviewRenderer implements PreviewRenderer
 		float rotation = Minecraft.getInstance().levelRenderer.getTicks();
 		poseStack.mulPose(Axis.XP.rotationDegrees(30));
 		poseStack.mulPose(Axis.YP.rotationDegrees(rotation % 360));
-		poseStack.translate(-0.5, 0, -0.5);
 
-		if(state.getRenderShape().equals(RenderShape.INVISIBLE))
+		AABB bounds = new AABB(0, 0, 0, 1, 1, 1);
+		if (Minecraft.getInstance().level != null)
 		{
-			poseStack.popPose();
-			return;
+			VoxelShape shape = state.getShape(Minecraft.getInstance().level, BlockPos.ZERO);
+			if (!shape.isEmpty())
+				bounds = shape.bounds();
 		}
-		else
+
+		double centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2.0;
+		double centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2.0;
+		double centerZ = bounds.minZ + (bounds.maxZ - bounds.minZ) / 2.0;
+
+		poseStack.translate(-centerX, -centerY, -centerZ);
+
+		if(!state.getRenderShape().equals(RenderShape.INVISIBLE))
 		{
 			Minecraft.getInstance().getBlockRenderer()
 					 .renderSingleBlock(state, poseStack, graphics.bufferSource(), LightTexture.FULL_BRIGHT,
 							 OverlayTexture.NO_OVERLAY, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
 
 			if(this.blockEntity != null)
-			{
 				Minecraft.getInstance().getBlockEntityRenderDispatcher().render(this.blockEntity, partialTick, poseStack, graphics.bufferSource());
-			}
 		}
 
 		graphics.bufferSource().endBatch();

@@ -80,7 +80,7 @@ public class MultiToolItem extends Item implements GeoItem, IItemConfiguration
 		else otherHand = InteractionHand.MAIN_HAND;
 
 		ItemStack otherStack = player.getItemInHand(otherHand);
-		if(otherStack.isEmpty() && player.isShiftKeyDown())
+		if(otherStack.isEmpty() && player.isShiftKeyDown() && usedHand == InteractionHand.OFF_HAND)
 		{
 			otherStack = player.getItemInHand(usedHand);
 			otherHand = usedHand;
@@ -94,6 +94,7 @@ public class MultiToolItem extends Item implements GeoItem, IItemConfiguration
 					renderer, variant, getHullColor(stack), getGlowColor(stack));
 
 			Minecraft.getInstance().setScreen(screen);
+			return InteractionResultHolder.success(stack);
 		}
 
 		return super.use(level, player, usedHand);
@@ -128,6 +129,7 @@ public class MultiToolItem extends Item implements GeoItem, IItemConfiguration
 					renderer, variant, getHullColor(stack), getGlowColor(stack));
 
 			Minecraft.getInstance().setScreen(screen);
+			return InteractionResult.SUCCESS;
 		}
 
 		return super.useOn(context);

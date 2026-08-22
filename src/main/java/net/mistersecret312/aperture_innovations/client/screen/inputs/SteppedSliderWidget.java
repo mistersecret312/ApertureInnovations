@@ -54,7 +54,7 @@ public class SteppedSliderWidget extends AbstractSliderButton
         double value = getActualValue();
 
         String formatted = (this.step % 1 == 0) ? String.format("%.0f", value) : String.format("%.2f", value);
-        graphics.drawString(Minecraft.getInstance().font, prefix+": "+formatted, this.getX()+2, this.getY()+height, 16777215);
+//        graphics.drawString(Minecraft.getInstance().font, prefix+": "+formatted, this.getX()+2, this.getY()+height, 16777215);
     }
 
     public void setOnValueChanged(@Nullable Consumer<Double> onValueChanged)

@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.data.PortalLinkData;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
@@ -60,13 +61,18 @@ public class CommandInit
 			{
 				UUID uuid = gunItem.getUUID(stack, false);
 				Component component = ComponentUtils.wrapInSquareBrackets(stack.getHoverName().copy()
-						.withStyle(style -> stack.getRarity().getStyleModifier().apply(style)
-													.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM,
-															new HoverEvent.ItemStackInfo(stack)))));
+						.withStyle(style -> stack.getRarity().getStyleModifier().apply(style)));
 
 				if(uuid != null)
 					uuids.put(uuid, component);
 			}
+		}
+
+		PortalLinkData linkData = PortalLinkData.get(player.level());
+		for(UUID uuid : linkData.portalLinks.keySet())
+		{
+			if(!uuids.containsKey(uuid))
+				uuids.put(uuid, Component.empty());
 		}
 
 		for(Map.Entry<UUID, Component> entry : uuids.entrySet())

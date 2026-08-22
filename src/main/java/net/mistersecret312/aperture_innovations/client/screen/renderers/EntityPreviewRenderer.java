@@ -37,11 +37,14 @@ public class EntityPreviewRenderer implements PreviewRenderer
 			return;
 
 		poseStack.pushPose();
-		poseStack.translate(0.0, 0.0, 50.0);
 		poseStack.scale(30, -30, 30);
 
 		float rotation = Minecraft.getInstance().levelRenderer.getTicks();
+		poseStack.mulPose(Axis.XP.rotationDegrees(15));
 		poseStack.mulPose(Axis.YP.rotationDegrees(rotation % 360));
+
+		float entityHeight = this.entity.getBbHeight();
+		poseStack.translate(0, entityHeight / 2.0f, 0);
 
 		Lighting.setupForEntityInInventory();
 		EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();

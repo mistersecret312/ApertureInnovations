@@ -24,10 +24,11 @@ public class ItemPreviewRenderer implements PreviewRenderer
 	public void render(GuiGraphics graphics, PoseStack poseStack, int mouseX, int mouseY, float partialTick)
 	{
 		poseStack.pushPose();
-		graphics.pose().scale(5, 5, 5);
-		graphics.pose().translate(-8, -11, 0);
-		graphics.renderItem(this.stack, 0, 0);
 
+		poseStack.scale(5, 5, 5);
+		poseStack.translate(-8, -14, 0);
+
+		graphics.renderItem(this.stack, 0, 0);
 		poseStack.popPose();
 	}
 

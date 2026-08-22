@@ -2,6 +2,7 @@ package net.mistersecret312.aperture_innovations.capabilities;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,12 +38,24 @@ public class HoldEntityCapability implements INBTSerializable<CompoundTag>
 		entity.setNoGravity(true);
 		entity.resetFallDistance();
 
-		Vec3 targetPos = player.getEyePosition().add(player.getViewVector(1F).multiply(3f, 3f, 3f));
-		Vec3 offset = entity.getBoundingBox().getCenter().vectorTo(targetPos);
+		Vec3 eyePos = player.getEyePosition();
+		Vec3 lookVec = player.getViewVector(1.0F);
+		Vec3 targetCenterPos = eyePos.add(lookVec.scale(3.0));
 
-		entity.setOldPosAndRot();
-		entity.setYRot(-player.getYRot());
-		entity.setDeltaMovement(offset);
+		Vec3 currentCenterPos = entity.getBoundingBox().getCenter();
+
+		Vec3 pullVector = targetCenterPos.subtract(currentCenterPos);
+		Vec3 desiredVel = pullVector.scale(0.4);
+
+		double maxSpeed = 1.5;
+		if (desiredVel.lengthSqr() > maxSpeed * maxSpeed)
+			desiredVel = desiredVel.normalize().scale(maxSpeed);
+
+		entity.setDeltaMovement(desiredVel);
+		entity.hasImpulse = true;
+
+		float targetYRot = -player.getYRot();
+		entity.setYRot(Mth.approachDegrees(entity.getYRot(), targetYRot, 25.0F));
 	}
 
 	public Player findHoldingPlayer(Level level, Entity entity)

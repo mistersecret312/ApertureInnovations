@@ -3,6 +3,7 @@ package net.mistersecret312.aperture_innovations.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -45,6 +46,10 @@ public class MultiToolScreen extends Screen
 	public boolean colorSliderMode = false;
 
 	private String openCategory = "";
+	public int categoryBoxX = 0;
+	public int categoryBoxY = 0;
+	public int categoryHeight = 0;
+	public int categoryWidth = 0;
 
 	public MultiToolScreen(Component title, IHaveConfiguration configuration, PreviewRenderer renderer,
 						   ClientMultiToolVariant variant, int mainColor, int glowColor)
@@ -102,6 +107,7 @@ public class MultiToolScreen extends Screen
 	{
 		super.init();
 		this.clearWidgets();
+		this.categoryWidgets.clear();
 
 		if(config == null)
 			return;
@@ -116,91 +122,93 @@ public class MultiToolScreen extends Screen
 			String type = "category.aperture_innovations."+entry.getKey();
 			MutableComponent component = Component.translatable(type);
 
-			int x = (int) (width/2f)-240;
-			int y = (int) (height/2f)-196/2 + categoryID*12;
+			int x = (int) (width/2f)-140;
+			int y = (int) (height/2f)-227/2 + categoryID*24;
 
-			this.addRenderableWidget(new PlainTextButton(2*x+10, y, Minecraft.getInstance().font.width(component), Minecraft.getInstance().font.lineHeight,
+			Font font = Minecraft.getInstance().font;
+
+			CategoryButton categoryButton = new CategoryButton(x-font.width(component)/2, y, font.width(component), font.lineHeight,
 					component, button ->
 				{
 					if(this.openCategory.equals(entry.getKey()))
+					{
 						this.openCategory = "";
+						this.categoryHeight = 0;
+						this.categoryWidth = 0;
+						this.categoryBoxX = 0;
+						this.categoryBoxY = 0;
+					}
 					else this.openCategory = entry.getKey();
 					init();
-				}, Minecraft.getInstance().font));
+				}, Minecraft.getInstance().font, this);
+			this.addRenderableWidget(categoryButton);
 
-			boolean hasColor = entry.getValue().entries.entrySet().stream().anyMatch(catEntry -> properties.get(catEntry.getKey()) instanceof Color);
-			if(hasColor)
-			{
-				String colorMode = "RGB";
-				if(hsbMode)
-					colorMode = "HSB";
+			if (this.openCategory.equals(entry.getKey())) {
+				boolean hasColor = entry.getValue().entries.entrySet().stream().anyMatch(catEntry -> properties.get(catEntry.getKey()) instanceof Color);
 
-				String sliderMode = "Text";
-				if(colorSliderMode)
-					sliderMode = "Slider";
+				int widgetX = x - 90;
+				int currentY = y + 26;
 
-				int position = 2*x-24;
-				this.addCategoryWidget(new PlainTextButton(position, y, Minecraft.getInstance().font.width(colorMode),
-						Minecraft.getInstance().font.lineHeight, Component.literal(colorMode),
-						button ->
-							{
-								this.hsbMode = !this.hsbMode;
-								this.init();
-							}, Minecraft.getInstance().font),
-						entry.getValue());
+				if (hasColor) {
+					String colorMode = hsbMode ? "HSB" : "RGB";
+					String sliderMode = colorSliderMode ? "Slider" : "Text";
+					int position = x - 32;
 
-				this.addCategoryWidget(new PlainTextButton(position-24, y, Minecraft.getInstance().font.width(sliderMode),
-						Minecraft.getInstance().font.lineHeight, Component.literal(sliderMode),
-						button ->
-							{
-								this.colorSliderMode = !this.colorSliderMode;
-								this.init();
-							}, Minecraft.getInstance().font),
-						entry.getValue());
+					this.addCategoryWidget(new ColoredTextButton(position - font.width(colorMode) / 2, y, font.width(colorMode),
+							font.lineHeight, Component.literal(colorMode).withColor((glowColor == -1 || glowColor == 16777215) ? 0x000000 : glowColor),
+							button -> { this.hsbMode = !this.hsbMode; this.init(); }, font, this), entry.getValue());
+
+					this.addCategoryWidget(new ColoredTextButton(position - 32 - font.width(sliderMode) / 2, y, font.width(sliderMode),
+							font.lineHeight, Component.literal(sliderMode).withColor((glowColor == -1 || glowColor == 16777215) ? 0x000000 : glowColor),
+							button -> { this.colorSliderMode = !this.colorSliderMode; this.init(); }, font, this), entry.getValue());
+
+					currentY += 24;
+				}
+
+				Category category = entry.getValue();
+				if (config instanceof IItemConfiguration)
+					currentY = makeWidgetForItemProperty(category, widgetX, currentY);
+				else
+					currentY = makeWidgetForProperty(category, widgetX, currentY);
+
+				calculateCategoryBounds(category, categoryButton);
 			}
-
-			Category category = entry.getValue();
-			if(config instanceof IItemConfiguration)
-				makeWidgetForItemProperty(category, x, y);
-			else makeWidgetForProperty(category, x, y);
 		}
 	}
 
-	public void makeWidgetForProperty(Category category, int x, int y)
+	public int makeWidgetForProperty(Category category, int x, int y)
 	{
-		int entryID = 0;
-		for(Map.Entry<String, CategoryEntry> entry : category.entries.entrySet())
+		int currentY = y;
+		for (Map.Entry<String, CategoryEntry> entry : category.entries.entrySet())
 		{
-			Optional<ConfigurationProperty<?>> property = config.getConfigurationProperties(Minecraft.getInstance().level.registryAccess()).stream().filter(
-					prop -> prop.getName().equals(entry.getValue().name)
-									&& prop.getCategory().equals(category.category)).findFirst();
-			if(property.isPresent())
-			{
-				property.get().getInteraction().makeWidget(property.get(), x, y+(entryID)*24+12, this);
-				entryID++;
-			}
+			Optional<ConfigurationProperty<?>> property = config.getConfigurationProperties(Minecraft.getInstance().level.registryAccess()).stream()
+																.filter(prop -> prop.getName().equals(entry.getValue().name) && prop.getCategory().equals(category.category)).findFirst();
+			if (property.isPresent())
+				currentY += property.get().getInteraction().makeWidget(property.get(), x, currentY, this);
+
 		}
+		return currentY;
 	}
 
-	public void makeWidgetForItemProperty(Category category, int x, int y)
+	public int makeWidgetForItemProperty(Category category, int x, int y)
 	{
-		if(!(renderer instanceof ItemPreviewRenderer itemRenderer))
-			return;
-		if(!(config instanceof IItemConfiguration configuration))
-			return;
+		int currentY = y;
 
-		int entryID = 0;
+		if(!(renderer instanceof ItemPreviewRenderer itemRenderer))
+			return currentY;
+		if(!(config instanceof IItemConfiguration configuration))
+			return currentY;
+
 		for(Map.Entry<String, CategoryEntry> entry : category.entries.entrySet())
 		{
 			Optional<ConfigurationProperty<?>> property = configuration.getConfigurationProperties(itemRenderer.stack, Minecraft.getInstance().level.registryAccess()).stream().filter(
 					prop -> prop.getName().equals(entry.getValue().name)
 									&& prop.getCategory().equals(category.category)).findFirst();
 			if(property.isPresent())
-			{
-				property.get().getInteraction().makeWidget(property.get(), x, y+(entryID)*24+12, this);
-				entryID++;
-			}
+				currentY += property.get().getInteraction().makeWidget(property.get(), x, currentY, this);
 		}
+
+		return currentY;
 	}
 
 	@Override
@@ -232,6 +240,28 @@ public class MultiToolScreen extends Screen
 		}
 	}
 
+	public void calculateCategoryBounds(Category category, CategoryButton button)
+	{
+		int minX = button.getX();
+		int maxX = button.getX() + button.getWidth();
+		int maxY = button.getY() + button.getHeight();
+
+		List<Renderable> widgets = categoryWidgets.get(category);
+		if (widgets != null)
+			for (Renderable r : widgets)
+				if (r instanceof AbstractWidget w)
+				{
+					if (w.getX() < minX) minX = w.getX();
+					if (w.getX() + w.getWidth() > maxX) maxX = w.getX() + w.getWidth();
+					if (w.getY() + w.getHeight() > maxY) maxY = w.getY() + w.getHeight();
+				}
+
+		this.categoryBoxX = minX - 12;
+		this.categoryBoxY = button.getY() - 4;
+		this.categoryWidth = (maxX - minX) + 18;
+		this.categoryHeight = (maxY - button.getY()) + 13;
+	}
+
 	@Override
 	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
 	{
@@ -260,7 +290,7 @@ public class MultiToolScreen extends Screen
 			renderable.render(graphics, mouseX, mouseY, partialTick);
 		}
 
-		poseStack.translate(this.width / 2f, this.height / 2f, 0);
+		poseStack.translate(this.width / 2f, this.height / 1.66f, 0);
 		this.renderer.render(graphics, poseStack, mouseX, mouseY, partialTick);
 
 		poseStack.popPose();

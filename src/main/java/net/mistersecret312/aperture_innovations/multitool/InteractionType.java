@@ -22,14 +22,14 @@ import java.util.List;
 
 public abstract class InteractionType
 {
-	public abstract void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen);
+	public abstract int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen);
 
 	public static class Toggle extends InteractionType
 	{
 		public Toggle() {}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			String name = property.getName();
 			MutableComponent component = Component.translatable(property.getTranslatable());
@@ -46,6 +46,7 @@ public abstract class InteractionType
 					Minecraft.getInstance().font);
 
 			screen.addCategoryWidget(button, screen.categories.get(property.getCategory()));
+			return 24;
 		}
 	}
 
@@ -54,9 +55,9 @@ public abstract class InteractionType
 		public NumberField() {}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
-
+			return 24;
 		}
 	}
 
@@ -65,7 +66,7 @@ public abstract class InteractionType
 		public RGBColorPicker() {}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			if(screen.colorSliderMode)
 			{
@@ -75,11 +76,14 @@ public abstract class InteractionType
 			{
 				makeTextBox(property, x, y, screen);
 			}
+			return 40;
 		}
 
 		public void makeSliderBox(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			String name = property.getName();
+			y -= 22;
+			x -= 22;
 			for(int i = 0; i < 3; i++)
 			{
 				SteppedSliderWidget box = new SteppedSliderWidget(x + i * 44, y,
@@ -154,19 +158,42 @@ public abstract class InteractionType
 						screen.renderer.applyFakeState(screen.properties);
 					});
 				screen.addCategoryWidget(box, screen.categories.get(property.getCategory()));
+
+				MutableComponent component = screen.hsbMode ? Component.literal("Hue") : Component.literal("Red");
+				if (i == 1) component = screen.hsbMode ? Component.literal("Saturation") : Component.literal("Green");
+				if (i == 2) component = screen.hsbMode ? Component.literal("Brightness") : Component.literal("Blue");
+
+				int textW = Minecraft.getInstance().font.width(component);
+				int labelX = x + (i * 44) + (20 - textW / 2);
+				int labelY = y + 18;
+
+				MutableComponent finalComponent = component;
+				screen.addCategoryWidget(new AbstractStringWidget(labelX, labelY, textW, Minecraft.getInstance().font.lineHeight,
+						finalComponent, Minecraft.getInstance().font) {
+					@Override
+					protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+						graphics.pose().pushPose();
+						graphics.pose().translate(this.getX(), this.getY(), 0);
+						graphics.pose().scale(0.75f, 0.75f, 1f);
+						graphics.drawString(Minecraft.getInstance().font, finalComponent, 0, 0, 16777215);
+						graphics.pose().popPose();
+					}
+				}, screen.categories.get(property.getCategory()));
 			}
 
 			MutableComponent component = Component.translatable("category.aperture_innovations."+property.getCategory()+"."+name);
-			screen.addCategoryWidget(new AbstractStringWidget(x, y, Minecraft.getInstance().font.width(component),
+			int titleW = Minecraft.getInstance().font.width(component);
+
+			screen.addCategoryWidget(new AbstractStringWidget(x+64-titleW/2, y - 10, Minecraft.getInstance().font.width(component),
 					Minecraft.getInstance().font.lineHeight, component, Minecraft.getInstance().font)
 			{
 				@Override
 				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
 				{
 					int color = ((Color) screen.properties.get(name)).packagedInt();
-					if(color == 0)
+					if (color == 0)
 						color = 16777215;
-					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, color);
+					graphics.drawString(Minecraft.getInstance().font, component, this.getX(), this.getY(), color);
 				}
 			}, screen.categories.get(property.getCategory()));
 		}
@@ -174,6 +201,8 @@ public abstract class InteractionType
 		public void makeTextBox(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			String name = property.getName();
+			y -= 22;
+			x -= 22;
 			for(int i = 0; i < 3; i++)
 			{
 				EditBox box = new EditBox(Minecraft.getInstance().font, x + i * 44, y, 40, 16, Component.empty());
@@ -219,9 +248,9 @@ public abstract class InteractionType
 							if(!screen.hsbMode)
 								value = Integer.parseInt(string);
 							else value = Double.parseDouble(string);
-						} catch(NumberFormatException ignored)
+						}
+						catch(NumberFormatException ignored)
 						{
-							System.out.println("current value - " + box.getValue());
 							box.setValue("");
 						}
 
@@ -266,46 +295,37 @@ public abstract class InteractionType
 				screen.addCategoryWidget(box, screen.categories.get(property.getCategory()));
 
 				MutableComponent component = screen.hsbMode ? Component.literal("Hue") : Component.literal("Red");
-				if(i == 1)
-				{
-					component = screen.hsbMode ? Component.literal("Saturation") : Component.literal("Green");
-				}
-				if(i == 2)
-				{
-					component = screen.hsbMode ? Component.literal("Brightness") : Component.literal("Blue");
-				}
+				if (i == 1) component = screen.hsbMode ? Component.literal("Saturation") : Component.literal("Green");
+				if (i == 2) component = screen.hsbMode ? Component.literal("Brightness") : Component.literal("Blue");
+
+				int textW = Minecraft.getInstance().font.width(component);
+				int labelX = x + (i * 44) + (20 - textW / 2);
+				int labelY = y + 18;
 
 				MutableComponent finalComponent = component;
-				screen.addCategoryWidget(new AbstractStringWidget(x, y, Minecraft.getInstance().font.width(
-						finalComponent),
-						Minecraft.getInstance().font.lineHeight, finalComponent, Minecraft.getInstance().font)
-				{
+				screen.addCategoryWidget(new AbstractStringWidget(labelX, labelY, textW, Minecraft.getInstance().font.lineHeight,
+						finalComponent, Minecraft.getInstance().font) {
 					@Override
-					protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
-					{
-						int i = finalI;
+					protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 						graphics.pose().pushPose();
-						graphics.pose().translate(x-Minecraft.getInstance().font.width(finalComponent)*0f, y-Minecraft.getInstance().font.lineHeight, 0);
-						graphics.pose().translate((10+i*44)-Minecraft.getInstance().font.width(finalComponent)/6f, 16+Minecraft.getInstance().font.lineHeight, 0);
+						graphics.pose().translate(this.getX(), this.getY(), 0);
 						graphics.pose().scale(0.75f, 0.75f, 1f);
 						graphics.drawString(Minecraft.getInstance().font, finalComponent, 0, 0, 16777215);
-
 						graphics.pose().popPose();
 					}
 				}, screen.categories.get(property.getCategory()));
 			}
 
 			MutableComponent component = Component.translatable("category.aperture_innovations."+property.getCategory()+"."+name);
-			screen.addCategoryWidget(new AbstractStringWidget(x, y, Minecraft.getInstance().font.width(component),
-					Minecraft.getInstance().font.lineHeight, component, Minecraft.getInstance().font)
-			{
+			int titleW = Minecraft.getInstance().font.width(component);
+
+			screen.addCategoryWidget(new AbstractStringWidget(x+64-titleW/2, y - 10, titleW, Minecraft.getInstance().font.lineHeight, component, Minecraft.getInstance().font) {
 				@Override
-				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
-				{
+				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 					int color = ((Color) screen.properties.get(name)).packagedInt();
-					if(color == 0)
+					if (color == 0)
 						color = 16777215;
-					graphics.drawString(Minecraft.getInstance().font, component, x-Minecraft.getInstance().font.width(component), y+Minecraft.getInstance().font.lineHeight/2, color);
+					graphics.drawString(Minecraft.getInstance().font, component, this.getX(), this.getY(), color);
 				}
 			}, screen.categories.get(property.getCategory()));
 		}
@@ -320,9 +340,9 @@ public abstract class InteractionType
 		}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
-
+			return 24;
 		}
 	}
 
@@ -339,16 +359,17 @@ public abstract class InteractionType
 		}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			String name = property.getName();
-			SteppedSliderWidget slider = new SteppedSliderWidget(x, y+12, 40, 12,
+			SteppedSliderWidget slider = new SteppedSliderWidget(x, y, 40, 12,
 					Component.literal("R"), min, max, step, 0.0, value ->
 				{
 					screen.renderer.applyFakeState(screen.properties);
 				});
 
 			screen.addCategoryWidget(slider, screen.categories.get(property.getCategory()));
+			return 20;
 		}
 	}
 
@@ -363,14 +384,21 @@ public abstract class InteractionType
 		}
 
 		@Override
-		public void makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
+		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
 		{
 			String name = property.getName();
 			Component component = Component.translatable("multi_tool."+property.get().toString().replace(':', '.'));
-			int width = Minecraft.getInstance().font.width(component)+15;
-			DropdownWidget widget = new DropdownWidget(x, y,
+
+			int width = Minecraft.getInstance().font.width(component) + 15;
+			int centerLineX = x + 90;
+
+			int targetX = centerLineX - (width / 2);
+			if (targetX + width > centerLineX)
+				targetX = centerLineX - width+14;
+
+			DropdownWidget widget = new DropdownWidget(targetX, y-4,
 					width,
-					Minecraft.getInstance().font.lineHeight*2,
+					Minecraft.getInstance().font.lineHeight * 2,
 					allowedValues, property.get().toString(),
 					(selected) ->
 						{
@@ -381,6 +409,8 @@ public abstract class InteractionType
 			Component message = Component.translatable("multi_tool."+screen.properties.get(name).toString().replace(':', '.'));
 			widget.setMessage(message);
 			screen.addCategoryWidget(widget, screen.categories.get(property.getCategory()));
+
+			return 28;
 		}
 	}
 }
