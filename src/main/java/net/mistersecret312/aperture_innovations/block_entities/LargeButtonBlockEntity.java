@@ -1,11 +1,10 @@
 package net.mistersecret312.aperture_innovations.block_entities;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -14,9 +13,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.multiblock.MasterBlockEntity;
 import net.mistersecret312.aperture_innovations.blocks.LargeButtonBlock;
 import net.mistersecret312.aperture_innovations.blocks.multiblock.OrientedMasterBlock;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientLargeButtonVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientLargeButtonVariants;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariants;
+import net.mistersecret312.aperture_innovations.datapack.LargeButtonVariant;
+import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
 import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
 import net.mistersecret312.aperture_innovations.init.MultiToolConfigTypeInit;
 import net.mistersecret312.aperture_innovations.init.SoundInit;
@@ -34,6 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBlockEntity, IHaveConfiguration
 {
@@ -47,6 +54,8 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 	public Color buttonColor = new Color(0, 0, 0);
 	public Color hullColor = new Color(0, 0, 0);
 
+	public ResourceLocation variant = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+			"large_button");
 	public boolean updatePressed = false;
 
 	public LargeButtonBlockEntity(BlockPos pos, BlockState blockState)
@@ -79,6 +88,8 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		tag.putIntArray("button_color", buttonArray);
 		tag.putIntArray("active_color", activeArray);
 
+		tag.putString("variant", variant.toString());
+
 		super.saveAdditional(tag, registries);
 	}
 
@@ -96,7 +107,41 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		this.color = new Color(idleArray[0], idleArray[1], idleArray[2]);
 		this.buttonColor = new Color(buttonArray[0], buttonArray[1], buttonArray[2]);
 		this.activeColor = new Color(activeArray[0], activeArray[1], activeArray[2]);
+
+		this.variant = ResourceLocation.parse(tag.getString("variant"));
 	}
+
+	public ClientLargeButtonVariant getClientVariant()
+	{
+		if(level == null)
+			return ClientLargeButtonVariant.DEFAULT_VARIANT;
+		LargeButtonVariant dataVariant = getVariant(level);
+		if(dataVariant == null)
+			return ClientLargeButtonVariant.DEFAULT_VARIANT;
+
+		return ClientLargeButtonVariants.getButtonVariant(dataVariant.getClientVariant());
+	}
+
+	public LargeButtonVariant getVariant(Level level)
+	{
+		Registry<LargeButtonVariant> registry =
+				level.registryAccess().registryOrThrow(LargeButtonVariant.REGISTRY_KEY);
+		if(registry.get(getVariant()) == null)
+			return registry.get(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+					"large_button"));
+		return registry.get(getVariant());
+	}
+
+	public ResourceLocation getVariant()
+	{
+		return variant;
+	}
+
+	public void setVariant(ResourceLocation variant)
+	{
+		this.variant = variant;
+	}
+
 
 	@Override
 	public void onLoad()
@@ -243,6 +288,21 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 				new InteractionType.RGBColorPicker(),
 				this::setButtonColor, this::getButtonColor));
 
+		List<String> variants = new ArrayList<>();
+		for(Map.Entry<ResourceKey<LargeButtonVariant>, LargeButtonVariant> entry : registryAccess
+																								 .registryOrThrow(LargeButtonVariant.REGISTRY_KEY)
+																								 .entrySet())
+		{
+			variants.add(entry.getKey().location().toString());
+		}
+
+		list.add(new ConfigurationProperty<>("variant", "variant",
+				"multi_tool.aperture_innovations.variant",
+				MultiToolConfigTypeInit.RESOURCE_LOCATION.get(),
+				new InteractionType.ListChoice(variants, getVariant().toString()),
+				this::setVariant, this::getVariant));
+
+
 		for(ConfigurationProperty<?> property : list)
 		{
 			if(property.getName().equals("hull_color"))
@@ -253,6 +313,8 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 				property.setUnsafe(color);
 			if(property.getName().equals("button_color"))
 				property.setUnsafe(color);
+			if(property.getName().equals("variant"))
+				property.setUnsafe(variant);
 		}
 
 		return list;

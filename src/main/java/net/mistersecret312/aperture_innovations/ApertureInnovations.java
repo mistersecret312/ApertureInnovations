@@ -25,10 +25,7 @@ import net.mistersecret312.aperture_innovations.client.renderer.block.PedestalBu
 import net.mistersecret312.aperture_innovations.client.renderer.block.VitalApparatusVentRenderer;
 import net.mistersecret312.aperture_innovations.client.renderer.entity.CubeRenderer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ResourcePackReloadListener;
-import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
-import net.mistersecret312.aperture_innovations.datapack.MultiToolVariant;
-import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
-import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
+import net.mistersecret312.aperture_innovations.datapack.*;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.*;
 import net.mistersecret312.aperture_innovations.mixin.BlockColorAccessor;
@@ -101,7 +98,8 @@ public class ApertureInnovations
 				event.dataPackRegistry(PortalGunVariant.REGISTRY_KEY, PortalGunVariant.CODEC, PortalGunVariant.CODEC);
 				event.dataPackRegistry(CubeVariant.REGISTRY_KEY, CubeVariant.CODEC, CubeVariant.CODEC);
 				event.dataPackRegistry(PedestalButtonVariant.REGISTRY_KEY, PedestalButtonVariant.CODEC, PedestalButtonVariant.CODEC);
-
+				event.dataPackRegistry(LargeButtonVariant.REGISTRY_KEY, LargeButtonVariant.CODEC, LargeButtonVariant.CODEC);
+				event.dataPackRegistry(VitalApparatusVentVariant.REGISTRY_KEY, VitalApparatusVentVariant.CODEC, VitalApparatusVentVariant.CODEC);
 				event.dataPackRegistry(MultiToolVariant.REGISTRY_KEY, MultiToolVariant.CODEC, MultiToolVariant.CODEC);
 			});
 

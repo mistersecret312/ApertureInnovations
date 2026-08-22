@@ -4,9 +4,12 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -156,6 +159,25 @@ public class DummyBlock extends BaseEntityBlock
 			return masterBlock;
 
 		return null;
+	}
+
+	@Override
+	protected void spawnDestroyParticles(Level level, Player player, BlockPos pos, BlockState state)
+	{
+		level.levelEvent(player, 2001, pos, getId(getMaster(level, pos).getBlockState()));
+	}
+
+	@Override
+	public boolean addLandingEffects(BlockState state1, ServerLevel level, BlockPos pos, BlockState state2,
+									 LivingEntity entity, int numberOfParticles)
+	{
+		return true;
+	}
+
+	@Override
+	public boolean addRunningEffects(BlockState state, Level level, BlockPos pos, Entity entity)
+	{
+		return true;
 	}
 
 	@Override

@@ -2,11 +2,13 @@ package net.mistersecret312.aperture_innovations.block_entities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -17,8 +19,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.multiblock.MasterBlockEntity;
 import net.mistersecret312.aperture_innovations.blocks.multiblock.OrientedMasterBlock;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPedestalButtonVariants;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientVitalApparatusVentVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientVitalApparatusVentVariants;
+import net.mistersecret312.aperture_innovations.datapack.PedestalButtonVariant;
+import net.mistersecret312.aperture_innovations.datapack.VitalApparatusVentVariant;
 import net.mistersecret312.aperture_innovations.entities.IFizzle;
 import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
 import net.mistersecret312.aperture_innovations.init.EntityInit;
@@ -37,6 +46,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements GeoBlockEntity, IHaveConfiguration
@@ -56,6 +66,9 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 	private Color hullColor = new Color(0, 0, 0);
 	private Color activeColor = new Color(0, 0, 0);
 	private Color idleColor = new Color(0, 0, 0);
+
+	public ResourceLocation variant = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+			"vital_apparatus_vent");
 
 	private int emptyTime = 0;
 
@@ -144,6 +157,7 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 		tag.putIntArray("idle_color", idleArray);
 		tag.putIntArray("active_color", activeArray);
 
+		tag.putString("variant", variant.toString());
 		tag.putInt("empty_time", this.emptyTime);
 
 		if(this.getTrackingType() != null)
@@ -177,6 +191,8 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 		this.idleColor = new Color(idleArray[0], idleArray[1], idleArray[2]);
 		this.activeColor = new Color(activeArray[0], activeArray[1], activeArray[2]);
 
+		this.variant = ResourceLocation.parse(tag.getString("variant"));
+
 		if(tag.contains("tracking_type"))
 		{
 			String locationString = tag.getString("tracking_type");
@@ -184,6 +200,37 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 
 			this.trackingType = BuiltInRegistries.ENTITY_TYPE.getOptional(location).orElse(EntityInit.CUBE.get());
 		}
+	}
+
+	public ClientVitalApparatusVentVariant getClientVariant()
+	{
+		if(level == null)
+			return ClientVitalApparatusVentVariant.DEFAULT_VARIANT;
+		VitalApparatusVentVariant dataVariant = getVariant(level);
+		if(dataVariant == null)
+			return ClientVitalApparatusVentVariant.DEFAULT_VARIANT;
+
+		return ClientVitalApparatusVentVariants.getVitalApparatusVentVariant(dataVariant.getClientVariant());
+	}
+
+	public VitalApparatusVentVariant getVariant(Level level)
+	{
+		Registry<VitalApparatusVentVariant> registry =
+				level.registryAccess().registryOrThrow(VitalApparatusVentVariant.REGISTRY_KEY);
+		if(registry.get(getVariant()) == null)
+			return registry.get(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+					"vital_apparatus_vent"));
+		return registry.get(getVariant());
+	}
+
+	public ResourceLocation getVariant()
+	{
+		return variant;
+	}
+
+	public void setVariant(ResourceLocation variant)
+	{
+		this.variant = variant;
 	}
 
 	public boolean isOpen()
@@ -429,6 +476,22 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 				new InteractionType.RGBColorPicker(),
 				this::setIdleColor, this::getIdleColor));
 
+		List<String> variants = new ArrayList<>();
+		for(Map.Entry<ResourceKey<VitalApparatusVentVariant>, VitalApparatusVentVariant> entry : registryAccess
+																								 .registryOrThrow(VitalApparatusVentVariant.REGISTRY_KEY)
+																								 .entrySet())
+		{
+			variants.add(entry.getKey().location().toString());
+		}
+
+		list.add(new ConfigurationProperty<>("variant", "variant",
+				"multi_tool.aperture_innovations.variant",
+				MultiToolConfigTypeInit.RESOURCE_LOCATION.get(),
+				new InteractionType.ListChoice(variants, getVariant().toString()),
+				this::setVariant, this::getVariant));
+
+
+
 		for(ConfigurationProperty<?> property : list)
 		{
 			if(property.getName().equals("hull_color"))
@@ -437,6 +500,8 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 				property.setUnsafe(activeColor);
 			if(property.getName().equals("idle_color"))
 				property.setUnsafe(idleColor);
+			if(property.getName().equals("variant"))
+				property.setUnsafe(variant);
 		}
 
 		return list;

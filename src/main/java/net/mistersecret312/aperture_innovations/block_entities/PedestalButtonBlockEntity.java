@@ -197,6 +197,7 @@ public class PedestalButtonBlockEntity extends MasterBlockEntity implements GeoB
 				MultiToolConfigTypeInit.COLOR.get(),
 				new InteractionType.RGBColorPicker(),
 				this::setLinesColor, this::getLinesColor));
+
 		List<String> variants = new ArrayList<>();
 		for(Map.Entry<ResourceKey<PedestalButtonVariant>, PedestalButtonVariant> entry : registryAccess
 																			 .registryOrThrow(PedestalButtonVariant.REGISTRY_KEY)

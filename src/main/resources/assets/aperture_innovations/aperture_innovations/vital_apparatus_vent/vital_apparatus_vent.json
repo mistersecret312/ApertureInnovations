@@ -1,0 +1,10 @@
+{
+  "model": "aperture_innovations:geo/block/vital_apparatus_vent.geo.json",
+  "animation": "aperture_innovations:animations/block/vital_apparatus_vent.animation.json",
+  "hull_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/vital_apparatus_vent.png",
+  "glass_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/glass.png",
+  "inactive_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/vital_apparatus_vent_inactive.png",
+  "active_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/vital_apparatus_vent_active.png",
+  "coloring_glow_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/vital_apparatus_vent_generic.png",
+  "coloring_hull_texture": "aperture_innovations:textures/entity/vital_apparatus_vent/vital_apparatus_vent_hull_generic.png"
+}

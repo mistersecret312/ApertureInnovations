@@ -112,6 +112,9 @@ public class MultiToolScreen extends Screen
 		if(config == null)
 			return;
 
+		int safeCenterX = Math.max(this.width / 2, 290);
+		int safeCenterY = this.height / 2;
+
 		int categoryID = 0;
 		for(Map.Entry<String, Category> entry : categories.entrySet())
 		{
@@ -122,9 +125,8 @@ public class MultiToolScreen extends Screen
 			String type = "category.aperture_innovations."+entry.getKey();
 			MutableComponent component = Component.translatable(type);
 
-			int x = (int) (width/2f)-140;
-			int y = (int) (height/2f)-227/2 + categoryID*24;
-
+			int x = safeCenterX - 140;
+			int y = safeCenterY - (227 / 2) + (categoryID * 24);
 			Font font = Minecraft.getInstance().font;
 
 			CategoryButton categoryButton = new CategoryButton(x-font.width(component)/2, y, font.width(component), font.lineHeight,
@@ -266,12 +268,15 @@ public class MultiToolScreen extends Screen
 	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick)
 	{
 		renderBackground(graphics, mouseX, mouseY, partialTick);
+
+		int safeCenterX = Math.max(this.width / 2, 290);
+		int safeCenterY = this.height / 2;
+
 		PoseStack poseStack = graphics.pose();
 		poseStack.pushPose();
 
 		poseStack.pushPose();
-		poseStack.translate(width/2f, height/2f, 0);
-
+		poseStack.translate(safeCenterX, safeCenterY, 0);
 		Color color = Color.fromInt(mainColor);
 
 		graphics.setColor(color.getRed(), color.getGreen(), color.getBlue(), 1.0f);
@@ -290,8 +295,10 @@ public class MultiToolScreen extends Screen
 			renderable.render(graphics, mouseX, mouseY, partialTick);
 		}
 
-		poseStack.translate(this.width / 2f, this.height / 1.66f, 0);
+		poseStack.pushPose();
+		poseStack.translate(safeCenterX, safeCenterY + 25, 0);
 		this.renderer.render(graphics, poseStack, mouseX, mouseY, partialTick);
+		poseStack.popPose();
 
 		poseStack.popPose();
 

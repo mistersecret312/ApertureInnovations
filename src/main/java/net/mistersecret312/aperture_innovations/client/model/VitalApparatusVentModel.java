@@ -12,18 +12,18 @@ public class VitalApparatusVentModel extends GeoModel<VitalApparatusVentBlockEnt
 	@Override
 	public ResourceLocation getModelResource(VitalApparatusVentBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "geo/block/vital_apparatus_vent.geo.json");
+		return animatable.getClientVariant().modelPath();
 	}
 
 	@Override
 	public ResourceLocation getTextureResource(VitalApparatusVentBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/entity/vital_apparatus_vent/vital_apparatus_vent.png");
+		return animatable.getClientVariant().hullTexture();
 	}
 
 	@Override
 	public ResourceLocation getAnimationResource(VitalApparatusVentBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "animations/block/vital_apparatus_vent.animation.json");
+		return animatable.getClientVariant().animationPath();
 	}
 }

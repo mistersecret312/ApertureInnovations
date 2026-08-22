@@ -69,33 +69,27 @@ public class LargeButtonRenderer extends DynamicGeoBlockRenderer<LargeButtonBloc
 	{
 		int color = animatable.getButtonColor().packagedInt();
 		if(color != 0)
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/block/large_button/large_button_button_generic.png");
+			return animatable.getClientVariant().genericButtonTexture().orElse(null);
 
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/large_button/large_button_button.png");
+		return animatable.getClientVariant().buttonTexture().orElse(null);
 	}
 
 	public ResourceLocation getLinesTexture(GeoBone bone, LargeButtonBlockEntity animatable)
 	{
 		int color = animatable.getColor().packagedInt();
 		if(color != 0)
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-			"textures/block/large_button/large_button_lines_generic.png");
+			return animatable.getClientVariant().genericLinesTexture();
 
 		boolean active = animatable.getBlockState().getValue(LargeButtonBlock.PRESSED);
 		if(active)
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/block/large_button/large_button_lines_active.png");
+			return animatable.getClientVariant().activeLinesTexture();
 
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/large_button/large_button_lines_inactive.png");
+		return animatable.getClientVariant().inactiveLinesTexture();
 	}
 
 	public ResourceLocation getHullTexture(GeoBone bone, LargeButtonBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/large_button/large_button.png");
+		return animatable.getClientVariant().hullTexture();
 	}
 
 	public int getButtonColor(GeoBone bone, LargeButtonBlockEntity animatable)

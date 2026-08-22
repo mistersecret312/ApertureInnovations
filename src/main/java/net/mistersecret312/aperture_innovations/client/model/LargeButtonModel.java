@@ -12,18 +12,18 @@ public class LargeButtonModel extends GeoModel<LargeButtonBlockEntity>
 	@Override
 	public ResourceLocation getModelResource(LargeButtonBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "geo/block/large_button.geo.json");
+		return animatable.getClientVariant().modelPath();
 	}
 
 	@Override
 	public ResourceLocation getTextureResource(LargeButtonBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button.png");
+		return animatable.getClientVariant().hullTexture();
 	}
 
 	@Override
 	public ResourceLocation getAnimationResource(LargeButtonBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "animations/block/large_button.animation.json");
+		return animatable.getClientVariant().animationPath();
 	}
 }

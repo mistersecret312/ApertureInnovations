@@ -124,24 +124,19 @@ public class VitalApparatusVentRenderer extends DynamicGeoBlockRenderer<VitalApp
 
 		if(animatable.getIdleColor().packagedInt() != 0)
 		{
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/entity/vital_apparatus_vent/vital_apparatus_vent_generic.png");
+			return animatable.getClientVariant().glowGeneric();
 		}
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-			"textures/entity/vital_apparatus_vent/vital_apparatus_vent_"
-					+ (animatable.isOpen() ? "active" : "inactive") + ".png");
+		return animatable.isOpen() ? animatable.getClientVariant().activeTexture().orElse(null) : animatable.getClientVariant().inactiveTexture().orElse(null);
 	}
 
 	public ResourceLocation getHullTexture(GeoBone bone, VitalApparatusVentBlockEntity animatable)
 	{
 		if(animatable.getHullColor().packagedInt() != 0)
 		{
-			return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-					"textures/entity/vital_apparatus_vent/vital_apparatus_vent_hull_generic.png");
+			return animatable.getClientVariant().hullGeneric();
 		}
 
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/entity/vital_apparatus_vent/vital_apparatus_vent.png");
+		return animatable.getClientVariant().hullTexture();
 	}
 
 	public int getGlowColor(GeoBone bone, VitalApparatusVentBlockEntity animatable)
