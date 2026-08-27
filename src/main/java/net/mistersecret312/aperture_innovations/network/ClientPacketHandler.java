@@ -4,19 +4,34 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.block_entities.AntlineBlockEntity;
 import net.mistersecret312.aperture_innovations.block_entities.AntlineOutputBlockEntity;
 import net.mistersecret312.aperture_innovations.block_entities.VitalApparatusVentBlockEntity;
+import net.mistersecret312.aperture_innovations.block_entities.multiblock.MasterBlockEntity;
+import net.mistersecret312.aperture_innovations.blocks.multiblock.DummyBlock;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureCapability;
 import net.mistersecret312.aperture_innovations.client.renderer.PortalRenderer;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientMultiToolVariant;
+import net.mistersecret312.aperture_innovations.client.resourcepack.ClientMultiToolVariants;
+import net.mistersecret312.aperture_innovations.client.screen.MultiToolScreen;
+import net.mistersecret312.aperture_innovations.client.screen.renderers.BlockEntityPreviewRenderer;
+import net.mistersecret312.aperture_innovations.client.screen.renderers.EntityPreviewRenderer;
+import net.mistersecret312.aperture_innovations.client.screen.renderers.ItemPreviewRenderer;
+import net.mistersecret312.aperture_innovations.client.screen.renderers.PreviewRenderer;
 import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
+import net.mistersecret312.aperture_innovations.items.MultiToolItem;
+import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
+import net.mistersecret312.aperture_innovations.multitool.IItemConfiguration;
 import net.mistersecret312.aperture_innovations.utilities.ClientAntlineUtilities;
 import net.mistersecret312.aperture_innovations.utilities.ClientPortalUtilities;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
@@ -184,6 +199,84 @@ public class ClientPacketHandler
 				double zOffset = entity.getRandom().nextGaussian() * (length / 3.8);
 				level.addParticle(ParticleTypes.SMOKE, entity.getX() + xOffset, entity.getY() + yOffset, entity.getZ() + zOffset, 0, -0.3, 0);
 			}
+		}
+	}
+
+	public static void openMultiToolItemScreen(boolean toolMain, boolean targetMain)
+	{
+		Minecraft mc = Minecraft.getInstance();
+		Player player = mc.player;
+		if (player == null) return;
+
+		InteractionHand toolHand = toolMain ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+		InteractionHand targetHand = targetMain ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+
+		ItemStack toolStack = player.getItemInHand(toolHand);
+		ItemStack targetStack = player.getItemInHand(targetHand);
+
+		if (toolStack.getItem() instanceof MultiToolItem item) {
+			ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(item.getVariantKey(toolStack));
+			PreviewRenderer renderer = new ItemPreviewRenderer(targetStack, targetHand);
+			MultiToolScreen screen = new MultiToolScreen(targetStack.getHoverName(),
+					targetStack.getItem() instanceof IItemConfiguration config ? config : null,
+					renderer, variant, item.getHullColor(toolStack), item.getGlowColor(toolStack));
+			mc.setScreen(screen);
+		}
+	}
+
+	public static void openMultiToolBlockScreen(BlockPos pos, boolean toolMain)
+	{
+		Minecraft mc = Minecraft.getInstance();
+		Player player = mc.player;
+		Level level = mc.level;
+		if (player == null || level == null)
+			return;
+
+		BlockState state = level.getBlockState(pos);
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+
+		if(state.getBlock() instanceof DummyBlock dummyBlock)
+		{
+			MasterBlockEntity master = dummyBlock.getMaster(level, pos);
+			if(master != null)
+			{
+				blockEntity = master;
+				state = master.getBlockState();
+			}
+		}
+
+		ItemStack toolStack = player.getItemInHand(toolMain ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+		if (toolStack.getItem() instanceof MultiToolItem item)
+		{
+			ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(item.getVariantKey(toolStack));
+			PreviewRenderer renderer = new BlockEntityPreviewRenderer(state, blockEntity, level.registryAccess());
+			MultiToolScreen screen = new MultiToolScreen(state.getBlock().getName(),
+					blockEntity instanceof IHaveConfiguration configuration ? configuration : null,
+					renderer, variant, item.getHullColor(toolStack), item.getGlowColor(toolStack));
+			mc.setScreen(screen);
+		}
+	}
+
+	public static void openMultiToolEntityScreen(int id, boolean toolMain)
+	{
+		Minecraft mc = Minecraft.getInstance();
+		Player player = mc.player;
+		Level level = mc.level;
+		if (player == null || level == null)
+			return;
+
+		Entity entity = level.getEntity(id);
+		if (entity == null) return;
+
+		ItemStack toolStack = player.getItemInHand(toolMain ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+		if (toolStack.getItem() instanceof MultiToolItem item)
+		{
+			ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(item.getVariantKey(toolStack));
+			PreviewRenderer renderer = new EntityPreviewRenderer(level, entity);
+			MultiToolScreen screen = new MultiToolScreen(entity.getName(),
+					entity instanceof IHaveConfiguration config ? config : null, renderer,
+					variant, item.getHullColor(toolStack), item.getGlowColor(toolStack));
+			mc.setScreen(screen);
 		}
 	}
 }

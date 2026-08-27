@@ -120,8 +120,7 @@ public class PedestalButtonRenderer extends DynamicGeoBlockRenderer<PedestalButt
 
 	public ResourceLocation getHullTexture(GeoBone bone, PedestalButtonBlockEntity animatable)
 	{
-		return ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
-				"textures/block/pedestal_button/pedestal_button.png");
+		return animatable.getClientVariant().hullTexture();
 	}
 
 	public ResourceLocation getButtonTexture(GeoBone bone, PedestalButtonBlockEntity animatable)

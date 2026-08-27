@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "aperture_innovations:item/vital_apparatus_vent"
+  }
+}

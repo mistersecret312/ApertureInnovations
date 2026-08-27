@@ -1,0 +1,7 @@
+{
+  "model": "aperture_innovations:geo/block/old_pedestal_button.geo.json",
+  "animations": "aperture_innovations:animations/block/pedestal_old_button.animation.json",
+  "hull_texture": "aperture_innovations:textures/block/pedestal_button/old_pedestal_button.png",
+  "button_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_button.png",
+  "button_coloring_glow_texture": "aperture_innovations:textures/block/pedestal_button/pedestal_button_button_generic.png"
+}

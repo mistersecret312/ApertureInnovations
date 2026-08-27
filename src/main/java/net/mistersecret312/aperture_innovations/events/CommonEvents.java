@@ -184,25 +184,14 @@ public class CommonEvents
 		Player player = event.getEntity();
 
 		Level level = player.level();
-		if(level.isClientSide())
+		if(!level.isClientSide())
 		{
 			ItemStack main = player.getMainHandItem();
 			ItemStack off = player.getOffhandItem();
 			boolean hasMultiTool = main.is(ItemInit.MULTI_TOOL.get()) || off.is(ItemInit.MULTI_TOOL.get());
 			if(!hasMultiTool) return;
 
-			ItemStack toolStack = main.is(ItemInit.MULTI_TOOL.get()) ? main : off;
-			if(toolStack.getItem() instanceof MultiToolItem item)
-			{
-				ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(item.getVariantKey(toolStack));
-
-				PreviewRenderer renderer = new EntityPreviewRenderer(level, entity);
-				MultiToolScreen screen = new MultiToolScreen(entity.getName(),
-						entity instanceof IHaveConfiguration config ? config : null, renderer,
-						variant, item.getHullColor(toolStack), item.getGlowColor(toolStack));
-
-				Minecraft.getInstance().setScreen(screen);
-			}
+			PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundOpenMutliToolEntityScreenPacket(entity.getId(), main.is(ItemInit.MULTI_TOOL.get())));
 		}
 	}
 

@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -37,6 +38,9 @@ import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
 import net.mistersecret312.aperture_innovations.multitool.IItemConfiguration;
 import net.mistersecret312.aperture_innovations.multitool.InteractionType;
+import net.mistersecret312.aperture_innovations.network.ClientboundOpenMutliToolBlockScreenPacket;
+import net.mistersecret312.aperture_innovations.network.ClientboundOpenMutliToolScreenPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
@@ -85,15 +89,13 @@ public class MultiToolItem extends Item implements GeoItem, IItemConfiguration
 			otherStack = player.getItemInHand(usedHand);
 			otherHand = usedHand;
 		}
-		if(level.isClientSide() && !otherStack.isEmpty())
+		if(!level.isClientSide() && !otherStack.isEmpty())
 		{
 			ItemStack stack = player.getItemInHand(usedHand);
-			ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(getVariantKey(stack));
-			PreviewRenderer renderer = new ItemPreviewRenderer(otherStack, otherHand);
-			MultiToolScreen screen = new MultiToolScreen(otherStack.getHoverName(), otherStack.getItem() instanceof IItemConfiguration config ? config : null,
-					renderer, variant, getHullColor(stack), getGlowColor(stack));
+			PacketDistributor.sendToPlayer((ServerPlayer) player, new ClientboundOpenMutliToolScreenPacket(
+					usedHand.equals(InteractionHand.MAIN_HAND),
+					otherHand.equals(InteractionHand.MAIN_HAND)));
 
-			Minecraft.getInstance().setScreen(screen);
 			return InteractionResultHolder.success(stack);
 		}
 
@@ -106,29 +108,11 @@ public class MultiToolItem extends Item implements GeoItem, IItemConfiguration
 		Level level = context.getLevel();
 		BlockPos pos = context.getClickedPos();
 
-		BlockState state = level.getBlockState(pos);
-		BlockEntity blockEntity = level.getBlockEntity(pos);
-
-		if(state.getBlock() instanceof DummyBlock dummyBlock)
+		if(!level.isClientSide())
 		{
-			MasterBlockEntity master = dummyBlock.getMaster(level, pos);
-			if(master != null)
-			{
-				blockEntity = master;
-				state = master.getBlockState();
-			}
-		}
+			PacketDistributor.sendToPlayer((ServerPlayer) context.getPlayer(), new ClientboundOpenMutliToolBlockScreenPacket(pos,
+					context.getHand().equals(InteractionHand.MAIN_HAND)));
 
-		if(level.isClientSide())
-		{
-			ItemStack stack = context.getItemInHand();
-			ClientMultiToolVariant variant = ClientMultiToolVariants.getMultiToolVariant(getVariantKey(stack));
-			PreviewRenderer renderer = new BlockEntityPreviewRenderer(state, blockEntity, level.registryAccess());
-			MultiToolScreen screen = new MultiToolScreen(state.getBlock().getName(),
-					blockEntity instanceof IHaveConfiguration configuration ? configuration : null,
-					renderer, variant, getHullColor(stack), getGlowColor(stack));
-
-			Minecraft.getInstance().setScreen(screen);
 			return InteractionResult.SUCCESS;
 		}
 

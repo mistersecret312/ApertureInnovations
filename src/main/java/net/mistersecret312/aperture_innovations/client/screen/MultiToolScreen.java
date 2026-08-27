@@ -1,6 +1,5 @@
 package net.mistersecret312.aperture_innovations.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -9,7 +8,6 @@ import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -186,7 +184,7 @@ public class MultiToolScreen extends Screen
 			Optional<ConfigurationProperty<?>> property = config.getConfigurationProperties(Minecraft.getInstance().level.registryAccess()).stream()
 																.filter(prop -> prop.getName().equals(entry.getValue().name) && prop.getCategory().equals(category.category)).findFirst();
 			if (property.isPresent())
-				currentY += property.get().getInteraction().makeWidget(property.get(), x, currentY, this);
+				currentY += InteractionFactory.makeWidget(property.get().getInteraction(), property.get(), x, currentY, this);
 
 		}
 		return currentY;
@@ -207,7 +205,8 @@ public class MultiToolScreen extends Screen
 					prop -> prop.getName().equals(entry.getValue().name)
 									&& prop.getCategory().equals(category.category)).findFirst();
 			if(property.isPresent())
-				currentY += property.get().getInteraction().makeWidget(property.get(), x, currentY, this);
+				currentY += InteractionFactory.makeWidget(property.get().getInteraction(), property.get(), x, currentY, this);
+
 		}
 
 		return currentY;
@@ -303,7 +302,7 @@ public class MultiToolScreen extends Screen
 		poseStack.popPose();
 
 		poseStack.pushPose();
-		poseStack.translate(width/2f, height/2f, 0);
+		poseStack.translate(safeCenterX, safeCenterY, 0);
 		poseStack.translate(0, -196/2f, 0);
 		int length = Minecraft.getInstance().font.width(title);
 		int height = Minecraft.getInstance().font.lineHeight;

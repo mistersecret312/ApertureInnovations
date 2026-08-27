@@ -158,5 +158,21 @@ public class NetworkInit
 				ClientboundFizzleParticlesPacket.STREAM_CODEC,
 				ClientboundFizzleParticlesPacket::handle
 		);
+
+		registrar.playToClient(
+				ClientboundOpenMutliToolScreenPacket.TYPE,
+				ClientboundOpenMutliToolScreenPacket.STREAM_CODEC,
+				ClientboundOpenMutliToolScreenPacket::handle
+		);
+		registrar.playToClient(
+				ClientboundOpenMutliToolBlockScreenPacket.TYPE,
+				ClientboundOpenMutliToolBlockScreenPacket.STREAM_CODEC,
+				ClientboundOpenMutliToolBlockScreenPacket::handle
+		);
+		registrar.playToClient(
+				ClientboundOpenMutliToolEntityScreenPacket.TYPE,
+				ClientboundOpenMutliToolEntityScreenPacket.STREAM_CODEC,
+				ClientboundOpenMutliToolEntityScreenPacket::handle
+		);
 	}
 }

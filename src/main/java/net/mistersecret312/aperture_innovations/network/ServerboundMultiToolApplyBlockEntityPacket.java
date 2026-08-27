@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.init.MultiToolConfigTypeInit;
 import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
@@ -75,6 +76,11 @@ public record ServerboundMultiToolApplyBlockEntityPacket(BlockPos pos, String na
 						property.setUnsafe(packet.data);
 					}
 				}
+
+				blockEntity.setChanged();
+
+				BlockState state = blockEntity.getBlockState();
+				level.sendBlockUpdated(packet.pos, state, state, 3);
 			}
 			if(blockEntity != null)
 				blockEntity.setChanged();
