@@ -1,0 +1,10 @@
+{
+  "model": "aperture_innovations:geo/block/large_button.geo.json",
+  "animation": "aperture_innovations:animations/block/large_button.animation.json",
+  "hull_texture": "aperture_innovations:textures/block/large_button/large_button.png",
+  "button_texture": "aperture_innovations:textures/block/large_button/large_button_button.png",
+  "coloring_button_texture": "aperture_innovations:textures/block/large_button/large_button_button_generic.png",
+  "active_lines_texture": "aperture_innovations:textures/block/large_button/large_button_lines_active.png",
+  "inactive_lines_texture": "aperture_innovations:textures/block/large_button/large_button_lines_inactive.png",
+  "coloring_lines_texture": "aperture_innovations:textures/block/large_button/large_button_lines_generic.png"
+}

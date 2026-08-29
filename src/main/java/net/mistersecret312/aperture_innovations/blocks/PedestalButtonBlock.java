@@ -7,44 +7,33 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.mistersecret312.aperture_innovations.block_entities.PedestalButtonBlockEntity;
+import net.mistersecret312.aperture_innovations.blocks.multiblock.OrientedMasterBlock;
 import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
-import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.init.SoundInit;
-import net.mistersecret312.aperture_innovations.items.ColorfulGelItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
 
-public class PedestalButtonBlock extends BaseEntityBlock
+public class PedestalButtonBlock extends OrientedMasterBlock
 {
-	public static final DirectionProperty FACING = DirectionProperty.create("facing");
-	public static final DirectionProperty NORMAL = DirectionProperty.create("normal");
-
 	public static final BooleanProperty PRESSED = BooleanProperty.create("pressed");
 
 	public static final MapCodec<PedestalButtonBlock> CODEC = simpleCodec(PedestalButtonBlock::new);
@@ -53,8 +42,6 @@ public class PedestalButtonBlock extends BaseEntityBlock
 	{
 		super(properties);
 		this.registerDefaultState(this.defaultBlockState()
-									  .setValue(NORMAL, Direction.UP)
-									  .setValue(FACING, Direction.NORTH)
 									  .setValue(PRESSED, false));
 	}
 
@@ -68,22 +55,9 @@ public class PedestalButtonBlock extends BaseEntityBlock
 		if(level != null)
 		{
 			Color hsbColor = Color.getHSBColor(level.getTimeOfDay(1f)*50, 1f, 1f);
-			components.add(Component.translatable("tooltip.aperture_innovations.is_colorable").withStyle((style -> style.withColor(
+			components.add(Component.translatable("tooltip.aperture_innovations.is_configurable").withStyle((style -> style.withColor(
 					hsbColor.getRGB()))));
 		}
-	}
-
-	@Override
-	protected BlockState rotate(BlockState state, Rotation rotation)
-	{
-		state = state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-		return state.setValue(NORMAL, rotation.rotate(state.getValue(NORMAL)));
-	}
-
-	@Override
-	protected BlockState mirror(BlockState state, Mirror mirror)
-	{
-		return state.rotate(mirror.getRotation(state.getValue(NORMAL)));
 	}
 
 	@Override
@@ -108,14 +82,30 @@ public class PedestalButtonBlock extends BaseEntityBlock
 	}
 
 	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
+	{
+		super.createBlockStateDefinition(builder);
+		builder.add(PRESSED);
+	}
+
+	@Override
 	protected RenderShape getRenderShape(BlockState state)
 	{
 		return RenderShape.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
-	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
+	public AABB getDefaultMultiblockVolume()
 	{
+		return new AABB(0, 0, 0, 0, 1, 0);
+	}
+
+	@Override
+	public VoxelShape getFullShape(Level level, BlockPos pos, BlockState state)
+	{
+		if(!state.hasProperty(FACING) || !state.hasProperty(NORMAL))
+			return Shapes.empty();
+
 		Direction facing = state.getValue(FACING);
 		Direction normal = state.getValue(NORMAL);
 
@@ -124,17 +114,20 @@ public class PedestalButtonBlock extends BaseEntityBlock
 		{
 			if(normal.equals(Direction.UP))
 			{
-				shape = Shapes.box(0.1875, 0, 0.375, 0.8125, 1.375, 1);
-				if(facing.equals(Direction.NORTH)) shape = Shapes.box(0.1875, 0, 0, 0.8125, 1.375, 0.625);
-				if(facing.equals(Direction.EAST)) shape = Shapes.box(0.375, 0, 0.1875, 1, 1.375, 0.8125);
-				if(facing.equals(Direction.WEST)) shape = Shapes.box(0, 0, 0.1875, 0.625, 1.375, 0.8125);
+				shape = Shapes.box(0.25, 0, 0.4375, 0.75, 1.375, 0.9375);
+				if(facing.equals(Direction.NORTH)) shape = Shapes.box(0.25, 0, 0.0625, 0.75, 1.375, 0.5625);
+				if(facing.equals(Direction.EAST)) shape = Shapes.box(0.4375, 0, 0.25, 0.9375, 1.375, 0.75);
+				if(facing.equals(Direction.WEST)) shape = Shapes.box(0.0625, 0, 0.25, 0.5625, 1.375, 0.75);
 			}
 			else
 			{
-				shape = Shapes.box(0.1875, -0.375, 0.375, 0.8125, 1, 1);
-				if(facing.equals(Direction.NORTH)) shape = Shapes.box(0.1875, -0.375, 0, 0.8125, 1, 0.625);
-				if(facing.equals(Direction.EAST)) shape = Shapes.box(0.375, -0.375, 0.1875, 1, 1, 0.8125);
-				if(facing.equals(Direction.WEST)) shape = Shapes.box(0, -0.375, 0.1875, 0.625, 1, 0.8125);
+				shape = Shapes.box(0.25, -0.375, 0.4375, 0.75, 1, 0.9375);
+				if(facing.equals(Direction.NORTH)) shape = Shapes.box(0.25, -0.375, 0.0625, 0.75, 1, 0.5625);
+				if(facing.equals(Direction.EAST)) shape = Shapes.box(0.4375, -0.375, 0.25, 0.9375, 1, 0.75);
+				if(facing.equals(Direction.WEST)) shape = Shapes.box(0.0625, -0.375, 0.25, 0.5625, 1, 0.75);
+
+
+				return shape.move(0, -0.01, 0);
 			}
 		}
 
@@ -143,25 +136,25 @@ public class PedestalButtonBlock extends BaseEntityBlock
 			if(facing.equals(Direction.UP))
 			{
 				if(normal.equals(Direction.NORTH))
-					shape = Shapes.box(0.1875, 0.0, -0.375, 0.8125, 0.625, 1.0);
+					shape = Shapes.box(0.25, 0.0625, -0.375, 0.75, 0.5625, 1).move(0, 0, -0.01);
 				if(normal.equals(Direction.SOUTH))
-					shape = Shapes.box(0.1875, 0.0, 0.0, 0.8125, 0.625, 1.375);
+					shape = Shapes.box(0.25, 0.0625, 0.0, 0.75, 0.5625, 1.375);
 				if(normal.equals(Direction.EAST))
-					shape = Shapes.box(0.0, 0.0, 0.1875, 1.375, 0.625, 0.8125);
+					shape = Shapes.box(0.0, 0.0625, 0.25, 1.375, 0.5625, 0.75);
 				if(normal.equals(Direction.WEST))
-					shape = Shapes.box(-0.375, 0.0, 0.1875, 1.0, 0.625, 0.8125);
+					shape = Shapes.box(-0.375, 0.0625, 0.25, 1.0, 0.5625, 0.75).move(-0.01, 0, 0);
 			}
 
 			if(facing.equals(Direction.DOWN))
 			{
 				if(normal.equals(Direction.NORTH))
-					shape = Shapes.box(0.1875, 0.375, -0.375, 0.8125, 1.0, 1.0);
+					shape = Shapes.box(0.25, 0.4375, -0.375, 0.75, 0.9375, 1.0).move(0, 0, -0.01);
 				if(normal.equals(Direction.SOUTH))
-					shape = Shapes.box(0.1875, 0.375, 0.0, 0.8125, 1.0, 1.375);
+					shape = Shapes.box(0.25, 0.4375, 0.0, 0.75, 0.9375, 1.375);
 				if(normal.equals(Direction.EAST))
-					shape = Shapes.box(0.0, 0.375, 0.1875, 1.375, 1.0, 0.8125);
+					shape = Shapes.box(0.0, 0.4375, 0.25, 1.375, 0.9375, 0.75);
 				if(normal.equals(Direction.WEST))
-					shape = Shapes.box(-0.375, 0.375, 0.1875, 1.0, 1.0, 0.8125);
+					shape = Shapes.box(-0.375, 0.4375, 0.25, 1.0, 0.9375, 0.75).move(-0.01, 0, 0);
 			}
 		}
 
@@ -169,24 +162,9 @@ public class PedestalButtonBlock extends BaseEntityBlock
 	}
 
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
+	public VoxelShape getDefaultVoxelShape(Level level, BlockPos pos)
 	{
-		BlockState state = this.defaultBlockState();
-
-		Direction direction = context.getClickedFace().getAxis().isHorizontal() ?
-									  context.getNearestLookingVerticalDirection().getOpposite()
-									  : context.getHorizontalDirection();
-
-		state = state.setValue(NORMAL, context.getClickedFace());
-		state = state.setValue(FACING, direction);
-		return state;
-	}
-
-	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
-		builder.add(NORMAL).add(FACING).add(PRESSED);
-		super.createBlockStateDefinition(builder);
+		return Shapes.empty();
 	}
 
 	@Override
@@ -212,6 +190,8 @@ public class PedestalButtonBlock extends BaseEntityBlock
 	@Override
 	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random)
 	{
+		super.tick(state, level, pos, random);
+
 		level.setBlock(pos, state.setValue(PRESSED, false), 3);
 		level.playSound(null, pos, SoundInit.PEDESTAL_BUTTON_UP.get(), SoundSource.BLOCKS, 0.5f, 1f);
 		super.tick(state, level, pos, random);
@@ -221,41 +201,6 @@ public class PedestalButtonBlock extends BaseEntityBlock
 	protected boolean isSignalSource(BlockState state)
 	{
 		return true;
-	}
-
-	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-											  Player player, InteractionHand hand, BlockHitResult hitResult)
-	{
-		if(stack.is(ItemInit.COLORFUL_GEL))
-		{
-			ColorfulGelItem gelItem = (ColorfulGelItem) stack.getItem();
-			int color = gelItem.getColor(stack);
-
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if(!(blockEntity instanceof PedestalButtonBlockEntity pedestal))
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-
-			if(player.isCrouching())
-				pedestal.buttonColor = color;
-			else pedestal.color = color;
-
-			pedestal.setChanged();
-			return ItemInteractionResult.SUCCESS;
-		}
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-	}
-
-	@Override
-	protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos)
-	{
-		return Shapes.empty();
-	}
-
-	@Override
-	protected boolean useShapeForLightOcclusion(BlockState state)
-	{
-		return super.useShapeForLightOcclusion(state);
 	}
 
 	@Override

@@ -2,6 +2,9 @@
   "values":
   [
     "aperture_innovations:antline_checkmark",
-    "aperture_innovations:antline_timer"
+    "aperture_innovations:antline_timer",
+
+    "aperture_innovations:dummy_block",
+    "aperture_innovations:vital_apparatus_vent"
   ]
 }

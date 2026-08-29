@@ -40,16 +40,26 @@ public class DataComponentInit
 			Codec.INT
 	));
 
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRIMARY_PORTAL_COLOR = register("primary_portal_color", builder -> builder.persistent(
-			Codec.INT));
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SECONDARY_PORTAL_COLOR = register("secondary_portal_color", builder -> builder.persistent(
-			Codec.INT));
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRIMARY_STRIPE_COLOR = register("primary_stripe_color", builder -> builder.persistent(
-			Codec.INT));
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SECONDARY_STRIPE_COLOR = register("secondary_stripe_color", builder -> builder.persistent(
-			Codec.INT));
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> PORTAL_GUN_VARIANT = register("portal_gun_variant", builder -> builder.persistent(
-			ResourceLocation.CODEC));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRIMARY_PORTAL_COLOR =
+			register("primary_portal_color", builder -> builder.persistent(Codec.INT));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SECONDARY_PORTAL_COLOR =
+			register("secondary_portal_color", builder -> builder.persistent(Codec.INT));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PRIMARY_STRIPE_COLOR =
+			register("primary_stripe_color", builder -> builder.persistent(Codec.INT));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SECONDARY_STRIPE_COLOR =
+			register("secondary_stripe_color", builder -> builder.persistent(Codec.INT));
+
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> PORTAL_GUN_VARIANT =
+			register("portal_gun_variant", builder -> builder.persistent(ResourceLocation.CODEC));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> VARIANT =
+			register("variant", builder -> builder.persistent(ResourceLocation.CODEC));
+
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> COLOR =
+			register("color", builder -> builder.persistent(Codec.INT));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ACTIVE_COLOR =
+			register("active_color", builder -> builder.persistent(Codec.INT));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> HULL_COLOR =
+			register("hull_color", builder -> builder.persistent(Codec.INT));
 
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> HELD_ENTITY = register("held_entity", builder -> builder.persistent(
 			Codec.INT

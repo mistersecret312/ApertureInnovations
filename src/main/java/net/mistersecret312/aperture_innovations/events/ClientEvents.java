@@ -7,6 +7,7 @@ import dev.ryanhcode.sable.companion.ClientSubLevelAccess;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
 import dev.ryanhcode.sable.companion.impl.SableCompanionUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -15,17 +16,26 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
+import net.mistersecret312.aperture_innovations.blocks.multiblock.MasterBlock;
+import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
+import net.mistersecret312.aperture_innovations.items.MultiBlockItem;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.mistersecret312.aperture_innovations.network.ServerboundOpenPortalPacket;
 import net.mistersecret312.aperture_innovations.network.ServerboundPickUpEntityPacket;
@@ -42,6 +52,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 
 import java.util.List;
+import java.awt.*;
 import java.util.Map;
 import java.util.UUID;
 
@@ -158,6 +169,74 @@ public class ClientEvents
 	}
 
 	@SubscribeEvent
+	public static void renderMultiBlockBox(RenderHighlightEvent.Block event)
+	{
+		Level level = Minecraft.getInstance().level;
+		Player player = Minecraft.getInstance().player;
+		PoseStack poseStack = event.getPoseStack();
+		MultiBufferSource bufferSource = event.getMultiBufferSource();
+		Camera camera = event.getCamera();
+
+		if(player == null || level == null)
+			return;
+
+		ItemStack mainHandStack = player.getMainHandItem();
+		ItemStack offHandStack = player.getOffhandItem();
+
+		ItemStack itemStack = ItemStack.EMPTY;
+		InteractionHand hand = InteractionHand.MAIN_HAND;
+		if(offHandStack.getItem() instanceof MultiBlockItem)
+			itemStack = offHandStack;
+
+		if(mainHandStack.getItem() instanceof MultiBlockItem)
+		{
+			itemStack = mainHandStack;
+			hand = InteractionHand.OFF_HAND;
+		}
+		if(!(itemStack.getItem() instanceof MultiBlockItem item))
+			return;
+
+		if(!(item.getBlock() instanceof MasterBlock master))
+			return;
+
+		BlockState state = master.getStateForPlacement(new BlockPlaceContext(player, hand, itemStack, event.getTarget()));
+		VoxelShape shape = master.getFullShape(level, event.getTarget().getBlockPos(), state);
+		AABB box = shape.bounds();
+		BlockPos pos = event.getTarget().getBlockPos().relative(event.getTarget().getDirection());
+		poseStack.pushPose();
+		poseStack.translate(-camera.getPosition().x,
+				-camera.getPosition().y, -camera.getPosition().z);
+		poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+
+		LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), box,
+				0f, 200f/255f, 1f, 1f);
+
+		poseStack.popPose();
+
+		poseStack.pushPose();
+		poseStack.translate(-camera.getPosition().x,
+				-camera.getPosition().y, -camera.getPosition().z);
+
+		BlockPos.betweenClosedStream(box.move(pos.getX(), pos.getY(), pos.getZ())).filter(position ->
+			{
+				BlockState otherState = level.getBlockState(position);
+				if(otherState.isAir())
+					return false;
+
+				return !otherState.canBeReplaced();
+			}).forEach(position ->
+			{
+				poseStack.pushPose();
+				poseStack.translate(position.getX(), position.getY(), position.getZ());
+				LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()),
+						new AABB(BlockPos.ZERO), 1f, 0f, 0f, 1f);
+				poseStack.popPose();
+			});
+
+		poseStack.popPose();
+	}
+
+	@SubscribeEvent
 	public static void mouseClicks(InputEvent.MouseButton.Pre event)
 	{
 		Level level = Minecraft.getInstance().level;
@@ -194,7 +273,6 @@ public class ClientEvents
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Pre event)
 	{
-
 		Minecraft mc = Minecraft.getInstance();
 		if(mc.level != null && mc.player != null)
 		{
@@ -224,6 +302,8 @@ public class ClientEvents
 					}
 				});
 		}
+		if(mc.player == null)
+			return;
 
 		while(ApertureInnovations.ClientModEvents.RESET_PORTAL_GUN.get().consumeClick())
 			PacketDistributor.sendToServer(new ServerboundResetPortalLinkPacket());
@@ -231,10 +311,10 @@ public class ClientEvents
 		while(ApertureInnovations.ClientModEvents.PICK_UP.get().consumeClick())
 			PacketDistributor.sendToServer(new ServerboundPickUpEntityPacket());
 
-		while(ApertureInnovations.ClientModEvents.PRIMARY_FIRE.get().consumeClick())
+		while(ApertureInnovations.ClientModEvents.PRIMARY_FIRE.get().consumeClick() && !mc.player.isShiftKeyDown())
 			PacketDistributor.sendToServer(new ServerboundOpenPortalPacket(true));
 
-		while(ApertureInnovations.ClientModEvents.SECONDARY_FIRE.get().consumeClick())
+		while(ApertureInnovations.ClientModEvents.SECONDARY_FIRE.get().consumeClick() && !mc.player.isShiftKeyDown())
 			PacketDistributor.sendToServer(new ServerboundOpenPortalPacket(false));
 	}
 

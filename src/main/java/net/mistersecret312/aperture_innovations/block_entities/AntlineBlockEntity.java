@@ -3,7 +3,9 @@ package net.mistersecret312.aperture_innovations.block_entities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -18,6 +20,7 @@ import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
 import net.mistersecret312.aperture_innovations.init.TagInit;
 import net.mistersecret312.aperture_innovations.network.ClientboundAntlineUpdatePacket;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +44,7 @@ public class AntlineBlockEntity extends BlockEntity
 	private Antline antline = null;
 
 	public int signal = 0;
+	public BlockState fakeState = null;
 
 	public AntlineBlockEntity(BlockPos pos, BlockState blockState)
 	{
@@ -95,6 +99,9 @@ public class AntlineBlockEntity extends BlockEntity
 		tag.putString("up", this.up.name);
 		tag.putString("down", this.down.name);
 
+		if(this.fakeState != null)
+			tag.put("fake_state", NbtUtils.writeBlockState(this.fakeState));
+
 		super.saveAdditional(tag, registries);
 	}
 
@@ -118,6 +125,25 @@ public class AntlineBlockEntity extends BlockEntity
 		this.east = ConnectionState.fromString(tag.getString("east"));
 		this.up = ConnectionState.fromString(tag.getString("up"));
 		this.down = ConnectionState.fromString(tag.getString("down"));
+
+		if(tag.contains("fake_state"))
+			this.fakeState = NbtUtils.readBlockState(registries.lookupOrThrow(BuiltInRegistries.BLOCK.key()),
+					tag.getCompound("fake_state"));
+	}
+
+	public BlockState getFakeState()
+	{
+		if(this.getLevel() != null && !this.getLevel().isClientSide())
+		{
+			this.getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+		}
+		return fakeState;
+	}
+
+	public void setFakeState(BlockState fakeState)
+	{
+		this.fakeState = fakeState;
+		this.setChanged();
 	}
 
 	public boolean isActive()

@@ -9,6 +9,8 @@
   "block.aperture_innovations.metal_surface_1x2_block": "Metal Surface 1x2 Block",
   "block.aperture_innovations.metal_surface_2x2_block": "Metal Surface 2x2 Block",
 
+  "block.aperture_innovations.vital_apparatus_vent": "Vital Apparatus Vent",
+
   "block.aperture_innovations.antline": "Antline",
   "block.aperture_innovations.antline_checkmark": "Antline Checkmark",
   "block.aperture_innovations.antline_timer": "Antline Timer",
@@ -26,6 +28,11 @@
   "item.aperture_innovations.portal_gun.stripe_secondary_color": "Secondary Stripe Color: %s",
   "item.aperture_innovations.portal_gun.portal_primary_color": "Primary Portal Color: %s",
   "item.aperture_innovations.portal_gun.portal_secondary_color": "Secondary Portal Color: %s",
+  "item.aperture_innovations.portal_gun.hull_color": "Hull Color: %s",
+
+  "tooltip.aperture_innovations.is_configurable": "Colored via the Configuration Device",
+  "tooltip.aperture_innovations.multi_tool": "Use RMB on a block or entity, or when holding an item in offhand, to configure it",
+  "tooltip.aperture_innovations.multi_tool_2": "Shift-RMB while holding in offhand to configure itself",
 
   "item.aperture_innovations.portal_gun.not_enough_energy": "Not enough energy!",
 
@@ -45,6 +52,8 @@
   "item.aperture_innovations.weighted_storage_cube": "Weighted Storage Cube",
   "item.aperture_innovations.weighted_companion_cube": "Weighted Companion Cube",
 
+  "item.aperture_innovations.multi_tool": "Aperture Science Handheld Configuration Device",
+
   "aperture_innovations.portal_gun.variant_chell": "Chell Variant",
   "aperture_innovations.portal_gun.variant_pbody": "P-Body Variant",
   "aperture_innovations.portal_gun.variant_atlas": "Atlas Variant",
@@ -55,6 +64,39 @@
   "aperture_innovations.portal_gun.pick_up": "Pick Up via Portal Gun",
   "aperture_innovations.portal_gun.primary_fire": "Primary Fire",
   "aperture_innovations.portal_gun.secondary_fire": "Secondary Fire",
+
+  "category.aperture_innovations.color": "Color",
+  "category.aperture_innovations.color.hull_color": "Hull",
+  "category.aperture_innovations.color.glow_color": "Glow",
+  "category.aperture_innovations.color.active_color": "Active",
+  "category.aperture_innovations.color.idle_color": "Idle",
+  "category.aperture_innovations.color.button_color": "Button",
+  "category.aperture_innovations.color.lines_color": "Lines",
+  "category.aperture_innovations.color.primary_portal_color": "Portal #1",
+  "category.aperture_innovations.color.secondary_portal_color": "Portal #2",
+  "category.aperture_innovations.color.primary_stripe_color": "Stripe #1",
+  "category.aperture_innovations.color.secondary_stripe_color": "Stripe #2",
+
+  "category.aperture_innovations.variant": "Variant",
+  "category.aperture_innovations.variant.variant": "Variant",
+
+  "multi_tool.aperture_innovations.weighted_storage_cube": "Weighted Storage Cube",
+  "multi_tool.aperture_innovations.weighted_companion_cube": "Weighted Companion Cube",
+  "multi_tool.aperture_innovations.old_cube": "Old Aperture",
+
+  "multi_tool.aperture_innovations.chell": "Chell",
+  "multi_tool.aperture_innovations.atlas": "Atlas",
+  "multi_tool.aperture_innovations.pbody": "P-Body",
+  "multi_tool.aperture_innovations.reloaded": "Reloaded",
+
+  "multi_tool.aperture_innovations.pedestal_button": "Pedestal Button",
+  "multi_tool.aperture_innovations.old_pedestal_button": "Old Aperture",
+
+  "multi_tool.aperture_innovations.large_button": "Large Button",
+
+  "multi_tool.aperture_innovations.vital_apparatus_vent": "Vital Apparatus Vent",
+
+  "multi_tool.aperture_innovations.multi_tool": "Multi Tool",
 
   "sound.aperture_innovations.portal_ambient": "Portal Ambient",
   "sound.aperture_innovations.portal_enter": "Portal travel",
@@ -101,8 +143,7 @@
 
   "stat.aperture_innovations.times_used_portals": "Times travelled by Portal",
 
-  "entity.aperture_innovations.weighted_storage_cube": "Weighted Storage Cube",
-  "entity.aperture_innovations.weighted_companion_cube": "Weighted Companion Cube",
+  "entity.aperture_innovations.cube": "Cube",
 
   "container.aperture_innovations.weighted_storage_cube": "Weighted Storage Cube",
   "container.aperture_innovations.weighted_companion_cube": "Weighted Companion Cube",
@@ -135,5 +176,6 @@
   "aperture_innovations.configuration.portal_gun_uses_energy.tooltip": "If true, the Portal Gun will require energy to create and upkeep portals",
   "aperture_innovations.configuration.section.aperture.innovations.common.toml": "Common Aperture Innovations Config",
   "aperture_innovations.configuration.portal_gun_consume_on_shot.tooltip": "If true, the Portal Gun will consume energy when shooting the portal, not when it actually opens",
-  "aperture_innovations.configuration.portal_gun_shoot_range.tooltip": "How far the Portal Gun can shoot and open a portal"
+  "aperture_innovations.configuration.portal_gun_shoot_range.tooltip": "How far the Portal Gun can shoot and open a portal",
+  "tooltip.aperture_innovations.vital_apparatus_vent.dispensing": "RMB a Cube or Spawn Egg on a placed Vital Apparatus Vent to make it dispense it"
 }

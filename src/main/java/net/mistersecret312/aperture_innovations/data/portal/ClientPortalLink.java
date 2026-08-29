@@ -39,6 +39,8 @@ public class ClientPortalLink
 		Registry<PortalGunVariant> registry =
 				Minecraft.getInstance().level.registryAccess().registryOrThrow(PortalGunVariant.REGISTRY_KEY);
 		PortalGunVariant dataVariant = registry.get(variantKey);
+		if(dataVariant == null)
+			return ClientPortalGunVariant.DEFAULT_VARIANT;
 
 		return ClientPortalGunVariants.getPortalGunVariant(dataVariant.getClientVariant());
 	}

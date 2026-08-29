@@ -1,0 +1,135 @@
+{
+	"format_version": "1.21.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "Model",
+					"pivot": [8, 0, -8],
+					"cubes": [
+						{
+							"origin": [-3, 19.55, 0],
+							"size": [6, 0, 6],
+							"uv": {
+								"up": {"uv": [32, 17], "uv_size": [5, 5]}
+							}
+						},
+						{"origin": [-2.75, 0, 0.25], "size": [5.5, 2, 5.5], "uv": [27, 17]},
+						{
+							"origin": [-3, 0, 0],
+							"size": [6, 20, 6],
+							"uv": {
+								"north": {"uv": [6, 0], "uv_size": [6, 20]},
+								"east": {"uv": [0, 0], "uv_size": [6, 20]},
+								"south": {"uv": [18, 0], "uv_size": [6, 20]},
+								"west": {"uv": [12, 0], "uv_size": [6, 20]},
+								"up": {"uv": [0, 20], "uv_size": [10, 10]}
+							}
+						},
+						{
+							"origin": [-3, 0, 0],
+							"size": [6, 19, 6],
+							"inflate": -0.25,
+							"uv": {
+								"north": {"uv": [6, 31], "uv_size": [6, 19]},
+								"east": {"uv": [0, 31], "uv_size": [6, 19]},
+								"south": {"uv": [18, 31], "uv_size": [6, 19]},
+								"west": {"uv": [12, 31], "uv_size": [6, 19]}
+							}
+						},
+						{
+							"origin": [-4, 0, 2],
+							"size": [1, 2, 2],
+							"inflate": 0.1,
+							"uv": {
+								"north": {"uv": [60, 1], "uv_size": [1, 2]},
+								"east": {"uv": [58, 1], "uv_size": [2, 2]},
+								"south": {"uv": [57, 1], "uv_size": [1, 2]},
+								"west": {"uv": [61, 1], "uv_size": [2, 2]},
+								"up": {"uv": [58, 0], "uv_size": [2, 1], "uv_rotation": 90},
+								"down": {"uv": [61, 1], "uv_size": [2, -1], "uv_rotation": 270}
+							}
+						},
+						{
+							"origin": [-5.2, 0, 2],
+							"size": [1, 1, 2],
+							"inflate": 0.1,
+							"uv": {
+								"north": {"uv": [60, 4], "uv_size": [1, 1]},
+								"east": {"uv": [58, 4], "uv_size": [2, 1]},
+								"south": {"uv": [57, 4], "uv_size": [1, 1]},
+								"west": {"uv": [61, 4], "uv_size": [2, 1]},
+								"up": {"uv": [58, 3], "uv_size": [2, 1], "uv_rotation": 90},
+								"down": {"uv": [61, 4], "uv_size": [2, -1], "uv_rotation": 270}
+							}
+						},
+						{
+							"origin": [-12.2, 0, 2],
+							"size": [1, 2, 2],
+							"inflate": 0.1,
+							"pivot": [-4.1, 0.75, 3],
+							"rotation": [0, 180, 0],
+							"uv": {
+								"north": {"uv": [60, 1], "uv_size": [1, 2]},
+								"east": {"uv": [58, 1], "uv_size": [2, 2]},
+								"south": {"uv": [57, 1], "uv_size": [1, 2]},
+								"west": {"uv": [61, 1], "uv_size": [2, 2]},
+								"up": {"uv": [58, 0], "uv_size": [2, 1], "uv_rotation": 90},
+								"down": {"uv": [61, 1], "uv_size": [2, -1], "uv_rotation": 270}
+							}
+						},
+						{
+							"origin": [-13.4, 0, 2],
+							"size": [1, 1, 2],
+							"inflate": 0.1,
+							"pivot": [-4.1, 0.75, 3],
+							"rotation": [0, 180, 0],
+							"uv": {
+								"north": {"uv": [60, 4], "uv_size": [1, 1]},
+								"east": {"uv": [58, 4], "uv_size": [2, 1]},
+								"south": {"uv": [57, 4], "uv_size": [1, 1]},
+								"west": {"uv": [61, 4], "uv_size": [2, 1]},
+								"up": {"uv": [58, 3], "uv_size": [2, 1], "uv_rotation": 90},
+								"down": {"uv": [61, 4], "uv_size": [2, -1], "uv_rotation": 270}
+							}
+						}
+					]
+				},
+				{
+					"name": "Button",
+					"parent": "Model",
+					"pivot": [0, 21, 1],
+					"rotation": [22.5, 0, 0],
+					"cubes": [
+						{"origin": [-2, 20.75, 1.15], "size": [4, 2, 4], "pivot": [0, 21, 3], "rotation": [-22.5, 0, 0], "uv": [24, 8]}
+					]
+				},
+				{
+					"name": "button t2",
+					"parent": "Model",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-2.35, 21.25, 0.65], "size": [4.7, 1, 4.7], "uv": [40, 9]}
+					]
+				},
+				{
+					"name": "button_t3",
+					"parent": "Model",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-2, 19.75, 1], "size": [4, 1, 4], "uv": [39, 0]},
+						{"origin": [-1.75, 20.5, 1.25], "size": [3.5, 1, 3.5], "uv": [39, 5]}
+					]
+				}
+			]
+		}
+	]
+}

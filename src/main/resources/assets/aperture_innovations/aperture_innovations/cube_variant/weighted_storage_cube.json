@@ -1,0 +1,7 @@
+{
+  "model": "aperture_innovations:geo/entity/weighted_cube.geo.json",
+  "hull_texture": "aperture_innovations:textures/entity/weighted_cube.png",
+  "idle_glow_texture": "aperture_innovations:textures/entity/weighted_cube_inactive.png",
+  "active_glow_texture": "aperture_innovations:textures/entity/weighted_cube_active.png",
+  "coloring_glow_texture": "aperture_innovations:textures/entity/weighted_cube_generic.png"
+}

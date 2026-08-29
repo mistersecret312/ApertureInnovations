@@ -40,6 +40,11 @@ public class SoundInit
 
 	public static DeferredHolder<SoundEvent, SoundEvent> TIMER_TICK = registerSoundEvent("timer_tick");
 
+	public static DeferredHolder<SoundEvent, SoundEvent> VITAL_APPARATUS_VENT_OPEN = registerSoundEvent("vital_apparatus_vent_open");
+	public static DeferredHolder<SoundEvent, SoundEvent> VITAL_APPARATUS_VENT_CLOSE = registerSoundEvent("vital_apparatus_vent_close");
+
+	public static DeferredHolder<SoundEvent, SoundEvent> FIZZLE = registerSoundEvent("fizzle");
+
     private static DeferredHolder<SoundEvent, SoundEvent> registerSoundEvent(String sound)
     {
         return SOUNDS.register(sound, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, sound)));

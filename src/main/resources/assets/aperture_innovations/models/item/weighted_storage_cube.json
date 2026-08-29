@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "aperture_innovations:item/weighted_cube_item"
-  }
-}

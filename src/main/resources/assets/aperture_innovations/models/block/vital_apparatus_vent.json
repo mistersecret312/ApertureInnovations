@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "aperture_innovations:block/vital_apparatus_vent"
+  }
+}

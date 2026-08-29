@@ -6,9 +6,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.ColorUtil.RGBA;
 
-public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation idleCoreTexture,
-                                     ResourceLocation crosshairTexture, GenericPortal genericPortal,
-                                     Portal primaryPortal, Portal secondaryPortal, RGBA primaryStripeColor,
+public record ClientPortalGunVariant(ResourceLocation texture,
+                                     ResourceLocation model, ResourceLocation animation,
+                                     ResourceLocation idleCoreTexture, ResourceLocation crosshairTexture,
+                                     GenericPortal genericPortal, Portal primaryPortal,
+                                     Portal secondaryPortal, RGBA primaryStripeColor,
                                      RGBA secondaryStripeColor, ResourceLocation activationSound,
                                      ResourceLocation resetSound) {
     public static final RGBA FULL_COLOR = new RGBA(1F, 1F, 1F, 1F);
@@ -16,6 +18,10 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
     private static final String PORTAL_BLOCK_PATH = "textures/block/portal/";
     private static final String ITEM_PATH = "textures/item/";
 
+    public static final ResourceLocation DEFAULT_MODEL = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+            "geo/item/portal_gun.geo.json");
+    public static final ResourceLocation DEFAULT_ANIMATION = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
+            "animations/item/portal_gun.animation.json");
     public static final ResourceLocation DEFAULT_TEXTURE = ApertureInnovations.of(ITEM_PATH + "portal_gun.png");
     public static final ResourceLocation DEFAULT_IDLE_CORE_TEXTURE = ApertureInnovations.of(ITEM_PATH + "idle_core.png");
     public static final ResourceLocation DEFAULT_CROSSHAIR_TEXTURE = ApertureInnovations.of(ITEM_PATH + "chell/chell_crosshair.png");
@@ -59,7 +65,8 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
     );
 
     public static final ClientPortalGunVariant DEFAULT_VARIANT = new ClientPortalGunVariant(
-            DEFAULT_TEXTURE, DEFAULT_IDLE_CORE_TEXTURE, DEFAULT_CROSSHAIR_TEXTURE,
+            DEFAULT_TEXTURE, DEFAULT_MODEL, DEFAULT_ANIMATION,
+            DEFAULT_IDLE_CORE_TEXTURE, DEFAULT_CROSSHAIR_TEXTURE,
             DEFAULT_GENERIC, DEFAULT_PRIMARY, DEFAULT_SECONDARY,
             FULL_COLOR, FULL_COLOR,
             ApertureInnovations.of("portal_gun_activation"),
@@ -67,6 +74,9 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
     );
 
     public static final String TEXTURE = "texture";
+
+    public static final String MODEL = "model";
+    public static final String ANIMATION = "animation";
 
     public static final String IDLE_CORE_TEXTURE = "idle_core_texture";
     public static final String CROSSHAIR_TEXTURE = "crosshair_texture";
@@ -84,6 +94,8 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
 
     public static final Codec<ClientPortalGunVariant> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf(TEXTURE).forGetter(ClientPortalGunVariant::texture),
+            ResourceLocation.CODEC.optionalFieldOf(MODEL, DEFAULT_MODEL).forGetter(ClientPortalGunVariant::model),
+            ResourceLocation.CODEC.optionalFieldOf(ANIMATION, DEFAULT_ANIMATION).forGetter(ClientPortalGunVariant::animation),
             ResourceLocation.CODEC.fieldOf(IDLE_CORE_TEXTURE).forGetter(ClientPortalGunVariant::idleCoreTexture),
             ResourceLocation.CODEC.fieldOf(CROSSHAIR_TEXTURE).forGetter(ClientPortalGunVariant::crosshairTexture),
             GenericPortal.CODEC.optionalFieldOf(GENERIC_PORTAL, DEFAULT_GENERIC).forGetter(ClientPortalGunVariant::genericPortal),
@@ -94,7 +106,6 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
             ResourceLocation.CODEC.fieldOf(ACTIVATION_SOUND).forGetter(ClientPortalGunVariant::activationSound),
             ResourceLocation.CODEC.fieldOf(RESET_SOUND).forGetter(ClientPortalGunVariant::resetSound)
     ).apply(instance, ClientPortalGunVariant::new));
-
 
     public static class Portal {
         public static final String CLOSED_TEXTURE = "closed_texture";
@@ -194,11 +205,13 @@ public record ClientPortalGunVariant(ResourceLocation texture, ResourceLocation 
             return maskTexture;
         }
 
-        public RGBA getColor() {
+        public RGBA getColor()
+        {
             return color;
         }
 
-        public boolean isGenericColoring() {
+        public boolean isGenericColoring()
+        {
             return genericColoring;
         }
 

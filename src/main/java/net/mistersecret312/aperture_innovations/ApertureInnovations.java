@@ -6,16 +6,31 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.mistersecret312.aperture_innovations.client.Layers;
+import net.mistersecret312.aperture_innovations.client.TintBakedModelWrapper;
 import net.mistersecret312.aperture_innovations.client.overlay.CrosshairOverlay;
 import net.mistersecret312.aperture_innovations.client.renderer.*;
+import net.mistersecret312.aperture_innovations.client.renderer.antline.AntlineOutputRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.antline.AntlineRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.antline.AntlineTimerRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.block.LargeButtonRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.block.PedestalButtonRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.block.VitalApparatusVentRenderer;
+import net.mistersecret312.aperture_innovations.client.renderer.entity.CubeRenderer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ResourcePackReloadListener;
-import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
+import net.mistersecret312.aperture_innovations.datapack.*;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.*;
+import net.mistersecret312.aperture_innovations.mixin.BlockColorAccessor;
+import net.mistersecret312.aperture_innovations.multitool.ConfigurationType;
+import net.mistersecret312.aperture_innovations.utilities.WorldColoringUtils;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,13 +49,15 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.internal.NeoForgeBindings;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.*;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static net.neoforged.fml.loading.FMLEnvironment.dist;
 
@@ -67,29 +84,48 @@ public class ApertureInnovations
 		AdvancementInit.register(modEventBus);
 		AttachmentTypeInit.register(modEventBus);
 		DataComponentInit.register(modEventBus);
+		EntityDataSerializerInit.register(modEventBus);
+		MultiToolConfigTypeInit.register(modEventBus);
 
 		modEventBus.addListener(Layers::registerLayers);
 		modEventBus.addListener(NetworkInit::registerPackets);
 		modEventBus.addListener(ApertureInnovations::registerCapabilities);
 		modEventBus.addListener(ApertureInnovations::commonSetup);
+		modEventBus.addListener(ApertureInnovations::registerRegistry);
 
 		modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) ->
 			{
 				event.dataPackRegistry(PortalGunVariant.REGISTRY_KEY, PortalGunVariant.CODEC, PortalGunVariant.CODEC);
+				event.dataPackRegistry(CubeVariant.REGISTRY_KEY, CubeVariant.CODEC, CubeVariant.CODEC);
+				event.dataPackRegistry(PedestalButtonVariant.REGISTRY_KEY, PedestalButtonVariant.CODEC, PedestalButtonVariant.CODEC);
+				event.dataPackRegistry(LargeButtonVariant.REGISTRY_KEY, LargeButtonVariant.CODEC, LargeButtonVariant.CODEC);
+				event.dataPackRegistry(VitalApparatusVentVariant.REGISTRY_KEY, VitalApparatusVentVariant.CODEC, VitalApparatusVentVariant.CODEC);
+				event.dataPackRegistry(MultiToolVariant.REGISTRY_KEY, MultiToolVariant.CODEC, MultiToolVariant.CODEC);
 			});
 
 		modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_CONFIG, "aperture_innovations-common.toml");
 		if(dist.isClient())
 			modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
+		NeoForge.EVENT_BUS.addListener(ApertureInnovations::registerCommands);
+	}
+
+	public static void registerRegistry(NewRegistryEvent event)
+	{
+		event.register(MultiToolConfigTypeInit.REGISTRY);
 	}
 
 	public static void commonSetup(FMLCommonSetupEvent event)
 	{
 		event.enqueueWork(() ->
 			{
-				DispenserBlock.registerBehavior(ItemInit.WEIGHTED_COMPANION_CUBE.get(), CompanionCubeItem.getDispenserBehaviour());
-				DispenserBlock.registerBehavior(ItemInit.WEIGHTED_STORAGE_CUBE.get(), CubeItem.getDispenserBehaviour());
+				DispenserBlock.registerBehavior(ItemInit.CUBE.get(), CubeItem.getDispenserBehaviour());
 			});
+	}
+
+	public static void registerCommands(RegisterCommandsEvent event)
+	{
+		CommandInit.register(event.getDispatcher());
 	}
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event)
@@ -141,8 +177,9 @@ public class ApertureInnovations
 			event.registerBlockEntityRenderer(BlockEntityInit.PEDESTAL_BUTTON.get(), PedestalButtonRenderer::new);
 			event.registerBlockEntityRenderer(BlockEntityInit.LARGE_BUTTON.get(), LargeButtonRenderer::new);
 
-			event.registerEntityRenderer(EntityInit.WEIGHTED_STORAGE_CUBE.get(), WeightedStorageCubeRenderer::new);
-			event.registerEntityRenderer(EntityInit.WEIGHTED_COMPANION_CUBE.get(), WeightedCompanionCubeRenderer::new);
+			event.registerBlockEntityRenderer(BlockEntityInit.VITAL_APPARATUS_VENT.get(), VitalApparatusVentRenderer::new);
+
+			event.registerEntityRenderer(EntityInit.CUBE.get(), CubeRenderer::new);
 		}
 
 		@SubscribeEvent
@@ -173,10 +210,37 @@ public class ApertureInnovations
 		}
 
 		@SubscribeEvent
+		public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
+//			for (Map.Entry<ModelResourceLocation, BakedModel> entry : event.getModels().entrySet())
+//			{
+//				ResourceLocation keyLoc = ResourceLocation.fromNamespaceAndPath(entry.getKey().id().getNamespace(),
+//						entry.getKey().id().getPath().split("#")[0]);
+//				Block block = BuiltInRegistries.BLOCK.get(keyLoc);
+//				if(!WorldColoringUtils.isBlockAlreadyTinted(block))
+//				{
+//					BakedModel newModel = new TintBakedModelWrapper(entry.getValue());
+//					event.getModels().put(entry.getKey(), newModel);
+//				}
+//			}
+		}
+
+		@SubscribeEvent
 		public static void registerItemColors(RegisterColorHandlersEvent.Item event)
 		{
 			ColorfulGelItem gelItem = ItemInit.COLORFUL_GEL.get();
 			event.register(((stack, color) -> color != 1 ? -1 : FastColor.ARGB32.opaque(gelItem.getColor(stack))), ItemInit.COLORFUL_GEL.get());
+		}
+
+		@SubscribeEvent
+		public static void registerBlockColors(RegisterColorHandlersEvent.Block event)
+		{
+//			BuiltInRegistries.BLOCK.forEach(block ->
+//				{
+//					boolean contains = ((BlockColorAccessor) event.getBlockColors()).getBlockColors().containsKey(block);
+//
+//					if(!contains)
+//						event.register((blockState, level, pos, tint) -> WorldColoringUtils.getColor(event.getBlockColors(), blockState, level, pos, tint), block);
+//				});
 		}
 
 		@SubscribeEvent

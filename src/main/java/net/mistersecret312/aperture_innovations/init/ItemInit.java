@@ -4,6 +4,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.items.*;
 import net.neoforged.bus.api.IEventBus;
@@ -22,10 +23,19 @@ public class ItemInit
 	public static final DeferredItem<LongFallBootsItem> LONG_FALL_BOOTS = ITEMS.register("long_fall_boots",
 			() -> new LongFallBootsItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Properties().stacksTo(1).fireResistant()));
 
-	public static final DeferredItem<CubeItem> WEIGHTED_STORAGE_CUBE = ITEMS.register("weighted_storage_cube",
-			() -> new CubeItem(EntityInit.WEIGHTED_STORAGE_CUBE.get(), new Item.Properties().stacksTo(64)));
-	public static final DeferredItem<CompanionCubeItem> WEIGHTED_COMPANION_CUBE = ITEMS.register("weighted_companion_cube",
-			() -> new CompanionCubeItem(EntityInit.WEIGHTED_COMPANION_CUBE.get(), new Item.Properties().stacksTo(64)));
+	public static final DeferredItem<CubeItem> CUBE = ITEMS.register("cube",
+			() -> new CubeItem(new Item.Properties().stacksTo(64).fireResistant()));
+
+	public static final DeferredItem<MultiBlockItem> VITAL_APPARATUS_VENT = ITEMS.register("vital_apparatus_vent",
+			() -> new MultiBlockItem(BlockInit.VITAL_APPARATUS_VENT.get(), new Item.Properties().stacksTo(64).fireResistant()));
+	public static final DeferredItem<MultiBlockItem> PEDESTAL_BUTTON = ITEMS.register("pedestal_button",
+			() -> new MultiBlockItem(BlockInit.PEDESTAL_BUTTON.get(), new Item.Properties().stacksTo(64).fireResistant()));
+	public static final DeferredItem<MultiBlockItem> LARGE_BUTTON = ITEMS.register("large_button",
+			() -> new MultiBlockItem(BlockInit.LARGE_BUTTON.get(), new Item.Properties().stacksTo(64).fireResistant()));
+
+
+	public static final DeferredItem<MultiToolItem> MULTI_TOOL = ITEMS.register("multi_tool",
+			() -> new MultiToolItem(new Item.Properties().stacksTo(1).fireResistant()));
 
 	public static void register(IEventBus bus)
 	{

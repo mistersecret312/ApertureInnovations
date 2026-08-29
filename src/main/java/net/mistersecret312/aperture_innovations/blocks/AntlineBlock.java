@@ -10,8 +10,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -25,7 +28,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -211,9 +216,49 @@ public class AntlineBlock extends BaseEntityBlock
 	}
 
 	@Override
+	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest,
+									   FluidState fluid)
+	{
+		if(level.getBlockEntity(pos) instanceof AntlineBlockEntity antline)
+		{
+			BlockState fakeState = antline.getFakeState();
+			if(fakeState != null)
+			{
+				antline.setFakeState(null);
+				if(!player.getAbilities().instabuild)
+					Block.popResource(level, pos, new ItemStack(fakeState.getBlock()));
+				return false;
+			}
+		}
+
+		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+	}
+
+	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 											  Player player, InteractionHand hand, BlockHitResult hitResult)
 	{
+		if(stack.getItem() instanceof BlockItem blockItem)
+		{
+			BlockState heldState = blockItem.getBlock().defaultBlockState();
+			if(!(heldState.getBlock() instanceof EntityBlock)
+					   && level.getBlockEntity(pos) instanceof AntlineBlockEntity antline)
+			{
+				if(antline.getFakeState() == null)
+				{
+					heldState = heldState.getBlock().getStateForPlacement(new BlockPlaceContext(player, hand, stack, hitResult));
+					if(heldState != null && !heldState.getShape(level, pos).bounds().equals(Shapes.block().bounds()))
+						return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
+					antline.setFakeState(heldState);
+					if(!player.getAbilities().instabuild)
+						stack.shrink(1);
+					level.scheduleTick(pos, this, 1);
+					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+				}
+			}
+		}
+
 		if(stack.is(ItemInit.COLORFUL_GEL))
 		{
 			ColorfulGelItem gel = (ColorfulGelItem) stack.getItem();
@@ -252,7 +297,7 @@ public class AntlineBlock extends BaseEntityBlock
 	{
 		Direction normal = state.getValue(NORMAL);
 
-		return switch (normal)
+		VoxelShape shape = switch (normal)
 		{
 			case UP -> SHAPE_UP;
 			case DOWN -> SHAPE_DOWN;
@@ -261,6 +306,21 @@ public class AntlineBlock extends BaseEntityBlock
 			case EAST -> SHAPE_EAST;
 			case WEST -> SHAPE_WEST;
 		};
+
+		if(level.getBlockEntity(pos) instanceof AntlineBlockEntity antline)
+			if(antline.getFakeState() != null)
+				return antline.getFakeState().getShape(level, pos);
+
+		return shape;
+	}
+
+	@Override
+	protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
+	{
+		if(level.getBlockEntity(pos) instanceof AntlineBlockEntity antline)
+			if(antline.getFakeState() != null)
+				return antline.getFakeState().getShape(level, pos);
+		return Shapes.empty();
 	}
 
 	@Override
@@ -273,6 +333,26 @@ public class AntlineBlock extends BaseEntityBlock
 		}
 
 		return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+	}
+
+	@Override
+	protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos)
+	{
+		float destroyTime = 0;
+		float digSpeed = player.getDigSpeed(state, pos);
+		if(level.getBlockEntity(pos) instanceof AntlineBlockEntity antline)
+			if(antline.getFakeState() != null)
+			{
+				destroyTime = antline.getFakeState().getDestroySpeed(level, pos);
+				digSpeed = player.getDigSpeed(antline.getFakeState(), pos);
+			}
+
+		if (destroyTime == -1.0F) {
+			return 0.0F;
+		} else {
+			int i = net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(player, state, level, pos) ? 30 : 100;
+			return digSpeed / destroyTime / (float)i;
+		}
 	}
 
 	@Override

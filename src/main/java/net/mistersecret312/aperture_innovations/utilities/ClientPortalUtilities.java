@@ -24,12 +24,13 @@ public class ClientPortalUtilities
 	{
 		ClientPortalGunVariant variant = link.getVariant();
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
+		Color rgbaColor = new Color(gunColor, false);
+
 		ColorUtil.RGBA variantColor = isPrimary ? variant.primaryPortal().getColor() : variant.secondaryPortal().getColor();
-		if(gunColor == -1)
+		if(rgbaColor.getRGB() == -1)
 			return variantColor;
 		else
 		{
-			Color rgbaColor = new Color(gunColor, false);
 			return new ColorUtil.RGBA(rgbaColor.getRed()/255f, rgbaColor.getGreen()/255f, rgbaColor.getBlue()/255f, 1F);
 		}
 	}
@@ -38,7 +39,8 @@ public class ClientPortalUtilities
 	{
 		ClientPortalGunVariant variant = link.getVariant();
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		if(gunColor == -1)
+		Color rgbaColor = new Color(gunColor, false);
+		if(rgbaColor.getRGB() == -1)
 			return variant.crosshairTexture();
 		else
 		{
@@ -56,7 +58,8 @@ public class ClientPortalUtilities
 	{
 		ClientPortalGunVariant variant = link.getVariant();
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		if(gunColor == -1)
+		Color rgbaColor = new Color(gunColor, false);
+		if(rgbaColor.getRGB() == -1)
 			return isPrimary ? variant.primaryPortal().getHighlightTexture() : variant.secondaryPortal().getHighlightTexture();
 		else
 		{
@@ -84,7 +87,8 @@ public class ClientPortalUtilities
 		boolean isPrimary = lastPortal == 0;
 
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		if(gunColor == -1)
+		Color rgbaColor = new Color(gunColor, false);
+		if(rgbaColor.getRGB() == -1)
 			return isPrimary ? primaryCore : secondaryCore;
 		else
 		{
@@ -105,7 +109,8 @@ public class ClientPortalUtilities
 	{
 		ClientPortalGunVariant variant = link.getVariant();
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		if(gunColor == -1)
+		Color rgbaColor = new Color(gunColor, false);
+		if(rgbaColor.getRGB() == -1)
 			return isPrimary ? variant.primaryPortal().getClosedTexture() : variant.secondaryPortal().getClosedTexture();
 		else
 		{
@@ -122,7 +127,8 @@ public class ClientPortalUtilities
 	{
 		ClientPortalGunVariant variant = link.getVariant();
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		if(gunColor == -1)
+		Color rgbaColor = new Color(gunColor, false);
+		if(rgbaColor.getRGB() == -1)
 			return isPrimary ? variant.primaryPortal().getVortexTexture() : variant.secondaryPortal().getVortexTexture();
 		else
 		{

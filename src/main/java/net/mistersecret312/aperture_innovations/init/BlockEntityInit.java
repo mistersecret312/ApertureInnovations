@@ -4,6 +4,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.*;
+import net.mistersecret312.aperture_innovations.block_entities.multiblock.DummyBlockEntity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -33,6 +34,14 @@ public class BlockEntityInit
 			BLOCK_ENTITIES.register("large_button",
 					() -> BlockEntityType.Builder.of(LargeButtonBlockEntity::new, BlockInit.LARGE_BUTTON.get()).build(null));
 
+
+	public static final Supplier<BlockEntityType<DummyBlockEntity>> DUMMY =
+			BLOCK_ENTITIES.register("dummy",
+					() -> BlockEntityType.Builder.of(DummyBlockEntity::new, BlockInit.DUMMY_BLOCK.get()).build(null));
+
+	public static final Supplier<BlockEntityType<VitalApparatusVentBlockEntity>> VITAL_APPARATUS_VENT =
+			BLOCK_ENTITIES.register("vital_apparatus_vent",
+					() -> BlockEntityType.Builder.of(VitalApparatusVentBlockEntity::new, BlockInit.VITAL_APPARATUS_VENT.get()).build(null));
 
 	public static void register(IEventBus bus)
 	{

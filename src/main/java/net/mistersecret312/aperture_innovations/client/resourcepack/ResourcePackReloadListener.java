@@ -16,6 +16,8 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
+import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
+import net.mistersecret312.aperture_innovations.datapack.MultiToolVariant;
 import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,6 +31,12 @@ public class ResourcePackReloadListener
 	public static final String PATH = ApertureInnovations.MODID;
 
 	public static final String GUN_VARIANT = "portal_gun_variant";
+	public static final String CUBE_VARIANT = "cube_variant";
+	public static final String PEDESTAL_BUTTON_VARIANT = "pedestal_button_variant";
+	public static final String LARGE_BUTTON_VARIANT = "large_button_variant";
+	public static final String MULTI_TOOL_VARIANT = "multi_tool_variant";
+	public static final String VITAL_APPARATUS_VENT_VARIANT = "vital_apparatus_vent_variant";
+
 	private static Minecraft minecraft = Minecraft.getInstance();
 
 	@EventBusSubscriber(modid = ApertureInnovations.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -43,19 +51,11 @@ public class ResourcePackReloadListener
 		protected void apply(Map<ResourceLocation, JsonElement> jsonMap, ResourceManager manager, ProfilerFiller filler)
 		{
 			ClientPortalGunVariants.clear();
-
-			ClientPacketListener clientPacketListener = minecraft.getConnection();
-
-			if(clientPacketListener != null)
-			{
-				RegistryAccess registries = clientPacketListener.registryAccess();
-				Registry<PortalGunVariant> variantRegistry = registries.registryOrThrow(PortalGunVariant.REGISTRY_KEY);
-
-				for(Map.Entry<ResourceKey<PortalGunVariant>, PortalGunVariant> stargateVariantEntry : variantRegistry.entrySet())
-				{
-					stargateVariantEntry.getValue().resetMissing();
-				}
-			}
+			ClientCubeVariants.clear();
+			ClientPedestalButtonVariants.clear();
+			ClientLargeButtonVariants.clear();
+			ClientMultiToolVariants.clear();
+			ClientVitalApparatusVentVariants.clear();
 
 			for(Map.Entry<ResourceLocation, JsonElement> jsonEntry : jsonMap.entrySet())
 			{
@@ -66,6 +66,31 @@ public class ResourcePackReloadListener
 				{
 					location = shortenPath(location, GUN_VARIANT);
 					addPortalGunVariant(location, element);
+				}
+				if(canShortenPath(location, CUBE_VARIANT))
+				{
+					location = shortenPath(location, CUBE_VARIANT);
+					addCubeVariant(location, element);
+				}
+				if(canShortenPath(location, PEDESTAL_BUTTON_VARIANT))
+				{
+					location = shortenPath(location, PEDESTAL_BUTTON_VARIANT);
+					addPedestalButtonVariant(location, element);
+				}
+				if(canShortenPath(location, LARGE_BUTTON_VARIANT))
+				{
+					location = shortenPath(location, LARGE_BUTTON_VARIANT);
+					addLargeButtonVariant(location, element);
+				}
+				if(canShortenPath(location, MULTI_TOOL_VARIANT))
+				{
+					location = shortenPath(location, MULTI_TOOL_VARIANT);
+					addMultiToolVariant(location, element);
+				}
+				if(canShortenPath(location, VITAL_APPARATUS_VENT_VARIANT))
+				{
+					location = shortenPath(location, VITAL_APPARATUS_VENT_VARIANT);
+					addVitalApparatusVentVariant(location, element);
 				}
 			}
 		}
@@ -86,7 +111,85 @@ public class ResourcePackReloadListener
 			}
 		}
 
+		private static void addCubeVariant(ResourceLocation location, JsonElement element)
+		{
+			try
+			{
+				JsonObject json = GsonHelper.convertToJsonObject(element, CUBE_VARIANT);
+				ClientCubeVariant cubeVariant = ClientCubeVariant.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(msg -> new DecoderException("Failed to parse Cube Variant "+ msg));
 
+				ClientCubeVariants.addCubeVariant(location, cubeVariant);
+			}
+			catch(RuntimeException e)
+			{
+				ApertureInnovations.LOGGER.error("Could not load Cube Variant: " + location.toString());
+				ApertureInnovations.LOGGER.error(e.getMessage());
+			}
+		}
+
+		private static void addPedestalButtonVariant(ResourceLocation location, JsonElement element)
+		{
+			try
+			{
+				JsonObject json = GsonHelper.convertToJsonObject(element, PEDESTAL_BUTTON_VARIANT);
+				ClientPedestalButtonVariant pedestalButtonVariant = ClientPedestalButtonVariant.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(msg -> new DecoderException("Failed to parse Pedestal Button Variant "+ msg));
+
+				ClientPedestalButtonVariants.addButtonVariant(location, pedestalButtonVariant);
+			}
+			catch(RuntimeException e)
+			{
+				ApertureInnovations.LOGGER.error("Could not load Pedestal Button Variant: " + location.toString());
+				ApertureInnovations.LOGGER.error(e.getMessage());
+			}
+		}
+
+		private static void addLargeButtonVariant(ResourceLocation location, JsonElement element)
+		{
+			try
+			{
+				JsonObject json = GsonHelper.convertToJsonObject(element, LARGE_BUTTON_VARIANT);
+				ClientLargeButtonVariant largeButtonVariant = ClientLargeButtonVariant.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(msg -> new DecoderException("Failed to parse Large Button Variant "+ msg));
+
+				ClientLargeButtonVariants.addButtonVariant(location, largeButtonVariant);
+			}
+			catch(RuntimeException e)
+			{
+				ApertureInnovations.LOGGER.error("Could not load Large Button Variant: " + location.toString());
+				ApertureInnovations.LOGGER.error(e.getMessage());
+			}
+		}
+
+		private static void addMultiToolVariant(ResourceLocation location, JsonElement element)
+		{
+			try
+			{
+				JsonObject json = GsonHelper.convertToJsonObject(element, MULTI_TOOL_VARIANT);
+				ClientMultiToolVariant multiToolVariant = ClientMultiToolVariant.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(msg -> new DecoderException("Failed to parse Multi Tool Variant "+ msg));
+
+				ClientMultiToolVariants.addMultiToolVariant(location, multiToolVariant);
+			}
+			catch(RuntimeException e)
+			{
+				ApertureInnovations.LOGGER.error("Could not load Multi Tool Variant: " + location.toString());
+				ApertureInnovations.LOGGER.error(e.getMessage());
+			}
+		}
+
+		private static void addVitalApparatusVentVariant(ResourceLocation location, JsonElement element)
+		{
+			try
+			{
+				JsonObject json = GsonHelper.convertToJsonObject(element, VITAL_APPARATUS_VENT_VARIANT);
+				ClientVitalApparatusVentVariant ventVariant = ClientVitalApparatusVentVariant.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(msg -> new DecoderException("Failed to parse Vital Apparatus Vent Variant "+ msg));
+
+				ClientVitalApparatusVentVariants.addVitalApparatusVentVariant(location, ventVariant);
+			}
+			catch(RuntimeException e)
+			{
+				ApertureInnovations.LOGGER.error("Could not load Vital Apparatus Vent Variant: " + location.toString());
+				ApertureInnovations.LOGGER.error(e.getMessage());
+			}
+		}
 
 		@SubscribeEvent
 		public static void registerReloadListener(RegisterClientReloadListenersEvent event)
@@ -96,12 +199,12 @@ public class ResourcePackReloadListener
 
 		private static boolean canShortenPath(ResourceLocation location, String shortenBy)
 		{
-			return location.getPath().startsWith(shortenBy) && location.getPath().length() > shortenBy.length(); // If it starts with the string and isn't empty after getting shortened
+			return location.getPath().startsWith(shortenBy) && location.getPath().length() > shortenBy.length();
 		}
 
 		private static ResourceLocation shortenPath(ResourceLocation location, String shortenBy)
 		{
-			return location.withPath(location.getPath().substring(shortenBy.length() + 1)); // Magical 1 because there's also the / symbol
+			return location.withPath(location.getPath().substring(shortenBy.length() + 1));
 		}
 	}
 }

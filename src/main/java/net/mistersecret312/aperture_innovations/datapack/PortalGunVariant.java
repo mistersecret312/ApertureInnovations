@@ -21,9 +21,6 @@ public class PortalGunVariant
 
 	private final ResourceLocation clientVariant;
 
-	private boolean isFound = false;
-	private boolean isMissing = false;
-
 	public PortalGunVariant(ResourceLocation clientVariant)
 	{
 		this.clientVariant = clientVariant;
@@ -32,32 +29,5 @@ public class PortalGunVariant
 	public ResourceLocation getClientVariant()
 	{
 		return clientVariant;
-	}
-
-	public boolean isFound()
-	{
-		return isFound;
-	}
-
-	public boolean isMissing()
-	{
-		return isMissing;
-	}
-
-	public void handleLocation(boolean isLocated)
-	{
-		if(isLocated) this.isFound = true;
-		else if(!isMissing)
-		{
-			isMissing = true;
-			ApertureInnovations.LOGGER.error(
-					"Could not locate Portal Gun variant [" + getClientVariant().getNamespace() + ':' + getClientVariant().getPath() + ']');
-		}
-	}
-
-	public void resetMissing()
-	{
-		isFound = false;
-		isMissing = false;
 	}
 }
