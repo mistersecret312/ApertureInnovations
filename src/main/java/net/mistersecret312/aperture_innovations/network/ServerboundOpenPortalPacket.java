@@ -78,9 +78,9 @@ public record ServerboundOpenPortalPacket(boolean isPrimary) implements CustomPa
 			PortalGunItem portalGun = (PortalGunItem) gunStack.getItem();
 
 			int dualityState = portalGun.getDualityState(gunStack);
-			if(!(dualityState == 2 || dualityState == 0) && !isPrimary)
+			if(!(dualityState == 2 || dualityState == 1) && !isPrimary)
 				return;
-			if(!(dualityState == 2 || dualityState == 1) && isPrimary)
+			if(!(dualityState == 2 || dualityState == 0) && isPrimary)
 				return;
 
 			if(portalGun.getHeldEntity(gunStack) != null)

@@ -148,6 +148,12 @@ public class NetworkInit
 		);
 
 		registrar.playToClient(
+				ClientboundClearPortalCachePacket.TYPE,
+				ClientboundClearPortalCachePacket.STREAM_CODEC,
+				ClientboundClearPortalCachePacket::handle
+		);
+
+		registrar.playToClient(
 				ClientboundGunZapSoundPacket.TYPE,
 				ClientboundGunZapSoundPacket.STREAM_CODEC,
 				ClientboundGunZapSoundPacket::handle

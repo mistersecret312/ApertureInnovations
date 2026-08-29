@@ -279,4 +279,12 @@ public class ClientPacketHandler
 			mc.setScreen(screen);
 		}
 	}
+
+	public static void handleClearPortalCache()
+	{
+		ClientPortalUtilities.PLAYERS.clear();
+		ClientPortalUtilities.OPENING_ANIMATIONS.clear();
+		ClientPortalUtilities.AMBIENTS.clear();
+		PortalRenderer.LINKS.clear();
+	}
 }

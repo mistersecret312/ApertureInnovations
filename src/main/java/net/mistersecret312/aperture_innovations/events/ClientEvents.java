@@ -2,6 +2,11 @@ package net.mistersecret312.aperture_innovations.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Axis;
+import dev.ryanhcode.sable.companion.ClientSubLevelAccess;
+import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
+import dev.ryanhcode.sable.companion.impl.SableCompanionUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -44,7 +49,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.*;
 
+import java.util.List;
 import java.awt.*;
 import java.util.Map;
 import java.util.UUID;
@@ -81,30 +88,59 @@ public class ClientEvents
 				{
 					boolean isPrimary = i == 0;
 					ResourceKey<Level> dimension = isPrimary ? link.getPrimaryPortal().getDimension() : link.getSecondaryPortal().getDimension();
-					if(Minecraft.getInstance().level.dimension() != dimension) continue;
+					if(Minecraft.getInstance().level.dimension() != dimension)
+						continue;
+					if(Minecraft.getInstance().level.dimension() != dimension)
+						continue;
+
+					poseStack.pushPose();
 
 					float scale = ClientPortalUtilities.getPortalOpeningAnimationProgress(link.linkID(), isPrimary);
 
 					Vec3 portalPos = isPrimary ? link.getPrimaryPortal().getPosition() : link.getSecondaryPortal().getPosition();
+
+					if(portalPos != null)
+					{
+						ClientSubLevelAccess access = SableCompanion.INSTANCE.getContainingClient(portalPos);
+						if(access == null)
+							poseStack.translate(-camera.getPosition().x + portalPos.x,
+									-camera.getPosition().y + portalPos.y,
+									-camera.getPosition().z + portalPos.z);
+
+						if(access != null)
+						{
+							portalPos = access.renderPose().transformPosition(portalPos);
+							poseStack.translate(-camera.getPosition().x + portalPos.x,
+									-camera.getPosition().y + portalPos.y,
+									-camera.getPosition().z + portalPos.z);
+
+							Quaternionf rotation = access.renderPose().orientation().get(new Quaternionf());
+							Vector3f angles = rotation.getEulerAnglesYXZ(new Vector3f());
+							poseStack.mulPose(Axis.YP.rotation(angles.y));
+							poseStack.mulPose(Axis.XP.rotation(angles.x));
+							poseStack.mulPose(Axis.ZP.rotation(angles.z));
+						}
+					}
 
 					if(portalPos != null
 							   && Minecraft.getInstance().level.isLoaded(BlockPos.containing(portalPos))
 							   && event.getLevelRenderer().getFrustum().isVisible(new AABB(portalPos, portalPos).inflate(1)))
 					{
 						if(isPrimary)
-							primaryRender(link, buffer, poseStack, camera, scale);
+							primaryRender(link, portalPos, buffer, poseStack, camera, scale);
 						else
-							secondaryRender(link, buffer, poseStack, camera, scale);
+							secondaryRender(link, portalPos, buffer, poseStack, camera, scale);
 					}
 
 					if(isPrimary && link.getPrimaryPortal().isInWorld())
-						renderPortalVortex(link, camera, primary, buffer, poseStack, true);
+						renderPortalVortex(link, portalPos, camera, primary, buffer, poseStack, true);
 					else if(link.getSecondaryPortal().isInWorld())
-						renderPortalVortex(link, camera, secondary, buffer, poseStack, false);
+						renderPortalVortex(link, portalPos, camera, secondary, buffer, poseStack, false);
+
+					poseStack.popPose();
 				}
 
 				poseStack.popPose();
-				buffer.endBatch();
 			}
 		}
 	}

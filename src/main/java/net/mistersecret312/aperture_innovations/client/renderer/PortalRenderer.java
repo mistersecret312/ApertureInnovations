@@ -31,19 +31,14 @@ public class PortalRenderer
 {
 	public static HashMap<UUID, ClientPortalLink> LINKS = new HashMap<>();
 
-	public static void primaryRender(ClientPortalLink link, MultiBufferSource.BufferSource buffer, PoseStack poseStack, Camera camera, float scale) {
+	public static void primaryRender(ClientPortalLink link, Vec3 pos, MultiBufferSource.BufferSource buffer, PoseStack poseStack, Camera camera, float scale) {
 		if (link.getPrimaryPortal().isInWorld())
 		{
 			poseStack.pushPose();
 			if(link.isOpen())
 			{
-				renderPortalNonSee(buffer, poseStack, camera, link, true, scale);
+				renderPortalNonSee(buffer, pos, poseStack, camera, link, true, scale);
 			}
-
-			Vec3 pos = link.getPrimaryPortal().getPosition();
-			poseStack.translate(-camera.getPosition().x + pos.x,
-					-camera.getPosition().y + pos.y,
-					-camera.getPosition().z + pos.z);
 
 			float xRot = link.getPrimaryPortal().getXRotation();
 			float yRot = link.getPrimaryPortal().getYRotation();
@@ -73,18 +68,14 @@ public class PortalRenderer
 		}
 	}
 
-	public static void secondaryRender(ClientPortalLink link, MultiBufferSource.BufferSource buffer, PoseStack poseStack, Camera camera, float scale) {
+	public static void secondaryRender(ClientPortalLink link, Vec3 pos, MultiBufferSource.BufferSource buffer, PoseStack poseStack, Camera camera, float scale) {
 		if (link.getSecondaryPortal().isInWorld())
 		{
 			poseStack.pushPose();
 			if(link.isOpen())
 			{
-				renderPortalNonSee(buffer, poseStack, camera, link, false, scale);
+				renderPortalNonSee(buffer, pos, poseStack, camera, link, false, scale);
 			}
-			Vec3 pos = link.getSecondaryPortal().getPosition();
-			poseStack.translate(-camera.getPosition().x + pos.x,
-					-camera.getPosition().y + pos.y,
-					-camera.getPosition().z + pos.z);
 
 			float xRot = link.getSecondaryPortal().getXRotation();
 			float yRot = link.getSecondaryPortal().getYRotation();
@@ -112,13 +103,9 @@ public class PortalRenderer
 		}
 	}
 
-	public static void renderPortalNonSee(MultiBufferSource buffer, PoseStack poseStack, Camera camera, ClientPortalLink link, boolean isPrimary, float scale)
+	public static void renderPortalNonSee(MultiBufferSource buffer, Vec3 pos, PoseStack poseStack, Camera camera, ClientPortalLink link, boolean isPrimary, float scale)
 	{
 		poseStack.pushPose();
-		Vec3 pos = isPrimary ? link.getPrimaryPortal().getPosition() : link.getSecondaryPortal().getPosition();
-
-		poseStack.translate((float) (pos.x-camera.getPosition().x), (float) (pos.y-camera.getPosition().y),
-				(float) (pos.z-camera.getPosition().z));
 
 		float xRot = isPrimary ? link.getPrimaryPortal().getXRotation() : link.getSecondaryPortal().getXRotation();
 		float yRot = isPrimary ? link.getPrimaryPortal().getYRotation() : link.getSecondaryPortal().getYRotation();
@@ -223,21 +210,17 @@ public class PortalRenderer
 		poseStack.popPose();
 	}
 
-	public static void renderPortalVortex(ClientPortalLink link, Camera camera,
+	public static void renderPortalVortex(ClientPortalLink link, Vec3 pos, Camera camera,
 										  TextureAtlasSprite sprite, MultiBufferSource buffer,
 										  PoseStack poseStack, boolean isPrimary) {
 		poseStack.pushPose();
-		Vec3 pos = isPrimary ? link.getPrimaryPortal().getPosition() : link.getSecondaryPortal().getPosition();
+
 		float xRot = isPrimary ? link.getPrimaryPortal().getXRotation() : link.getSecondaryPortal().getXRotation();
 		float yRot = isPrimary ? link.getPrimaryPortal().getYRotation() : link.getSecondaryPortal().getYRotation();
 
 		Direction direction = Direction.fromYRot(yRot);
 		if(direction.getAxis().equals(Direction.Axis.X))
 			yRot += 180;
-
-		poseStack.translate(pos.x-camera.getPosition().x,
-				pos.y-camera.getPosition().y,
-				pos.z-camera.getPosition().z);
 
 		poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
 		poseStack.mulPose(Axis.XP.rotationDegrees(xRot));

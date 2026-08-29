@@ -97,7 +97,7 @@ public class CommonEvents
 					if(!portalDim.equals(event.getLevel().dimension()))
 						continue;
 
-					List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(portal.getPosition(), portal.getPosition()).inflate(0, ((ServerLevel) level).getLogicalHeight(), 0).inflate(3));
+					List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(portal.getPosition(), portal.getPosition()).inflate(3));
 					for(Entity entity : entities)
 					{
 						ApertureCapability aperture = entity.getData(AttachmentTypeInit.APERTURE);
@@ -121,7 +121,7 @@ public class CommonEvents
 
 					ResourceKey<Level> portalDim = isPrimary ? link.getPrimaryPortal().getDimension() : link.getSecondaryPortal()
 																											.getDimension();
-					if(!portalDim.equals(event.getLevel().dimension()))
+					if(!portalDim.equals(event.getLevel().dimension()) || !level.isLoaded(BlockPos.containing(portalPos)))
 						continue;
 
 
@@ -175,6 +175,13 @@ public class CommonEvents
 				}
 			});
 		}
+	}
+
+	@SubscribeEvent
+	public static void playerLeft(PlayerEvent.PlayerLoggedOutEvent event)
+	{
+		if(event.getEntity() instanceof ServerPlayer player)
+			PacketDistributor.sendToPlayer(player, new ClientboundClearPortalCachePacket());
 	}
 
 	@SubscribeEvent

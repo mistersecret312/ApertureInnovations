@@ -45,6 +45,8 @@ public class ApertureCapability implements INBTSerializable<CompoundTag>
 	{
 		if(level.isClientSide())
 			return;
+		//TODO  do better than frictionlesstime.
+		frictionlessTime = 0;
 
 		if(frictionlessTime > 0)
 			entity.setOnGround(false);
