@@ -9,8 +9,8 @@ import java.util.Optional;
 
 public record ClientLargeButtonVariant(ResourceLocation modelPath, ResourceLocation animationPath, ResourceLocation hullTexture,
 									   Optional<ResourceLocation> buttonTexture, Optional<ResourceLocation> genericButtonTexture,
-									   ResourceLocation activeLinesTexture, ResourceLocation inactiveLinesTexture,
-									   ResourceLocation genericLinesTexture)
+									   Optional<ResourceLocation> activeLinesTexture, Optional<ResourceLocation> inactiveLinesTexture,
+									   Optional<ResourceLocation> genericLinesTexture)
 {
 	public static final String MODEL = "model";
 	public static final String ANIMATION = "animation";
@@ -27,9 +27,9 @@ public record ClientLargeButtonVariant(ResourceLocation modelPath, ResourceLocat
 			ResourceLocation.CODEC.fieldOf(HULL).forGetter(ClientLargeButtonVariant::hullTexture),
 			ResourceLocation.CODEC.lenientOptionalFieldOf(BUTTON).forGetter(ClientLargeButtonVariant::buttonTexture),
 			ResourceLocation.CODEC.lenientOptionalFieldOf(GENERIC_BUTTON).forGetter(ClientLargeButtonVariant::genericButtonTexture),
-			ResourceLocation.CODEC.fieldOf(ACTIVE_LINES).forGetter(ClientLargeButtonVariant::activeLinesTexture),
-			ResourceLocation.CODEC.fieldOf(INACTIVE_LINES).forGetter(ClientLargeButtonVariant::inactiveLinesTexture),
-			ResourceLocation.CODEC.fieldOf(GENERIC_LINES).forGetter(ClientLargeButtonVariant::genericLinesTexture)
+			ResourceLocation.CODEC.lenientOptionalFieldOf(ACTIVE_LINES).forGetter(ClientLargeButtonVariant::activeLinesTexture),
+			ResourceLocation.CODEC.lenientOptionalFieldOf(INACTIVE_LINES).forGetter(ClientLargeButtonVariant::inactiveLinesTexture),
+			ResourceLocation.CODEC.lenientOptionalFieldOf(GENERIC_LINES).forGetter(ClientLargeButtonVariant::genericLinesTexture)
 	).apply(instance, ClientLargeButtonVariant::new));
 
 
@@ -39,9 +39,9 @@ public record ClientLargeButtonVariant(ResourceLocation modelPath, ResourceLocat
 			ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button.png"),
 			Optional.of(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_button.png")),
 			Optional.of(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_button_generic.png")),
-			ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_active.png"),
-			ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_inactive.png"),
-			ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_generic.png")
+			Optional.of(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_active.png")),
+			Optional.of(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_inactive.png")),
+			Optional.of(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/block/large_button/large_button_lines_generic.png"))
 	);
 
 }

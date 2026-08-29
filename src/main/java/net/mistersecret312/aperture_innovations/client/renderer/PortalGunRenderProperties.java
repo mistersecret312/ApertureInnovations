@@ -21,6 +21,8 @@ public class PortalGunRenderProperties implements IClientItemExtensions
 
 	}
 
+	
+
 	@Override
 	public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand,
 													  ItemStack itemStack)

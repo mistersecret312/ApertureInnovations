@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.client.PortalRenderTypes;
+import net.mistersecret312.aperture_innovations.client.model.PortalGunItemModel;
 import net.mistersecret312.aperture_innovations.client.renderer.ColoredGlowingLayer;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariant;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariants;
@@ -37,7 +38,7 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
 {
     public PortalGunRenderer()
     {
-        super(new DefaultedItemGeoModel<>(ApertureInnovations.of("portal_gun")));
+        super(new PortalGunItemModel());
         //Hull
         this.addRenderLayer(new ColoredGlowingLayer<>(this,
                 this::getHullTexture, this::getHullColor, this::getHullRenderType));

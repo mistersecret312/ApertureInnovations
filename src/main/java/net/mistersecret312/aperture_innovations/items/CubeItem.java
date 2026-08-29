@@ -124,7 +124,7 @@ public class CubeItem extends Item implements GeoItem
 		if(level != null)
 		{
 			Color hsbColor = Color.getHSBColor(level.getTimeOfDay(1f)*50, 1f, 1f);
-			components.add(Component.translatable("tooltip.aperture_innovations.is_colorable").withStyle((style -> style.withColor(
+			components.add(Component.translatable("tooltip.aperture_innovations.is_configurable").withStyle((style -> style.withColor(
 					hsbColor.getRGB()))));
 		}
 	}

@@ -1,13 +1,17 @@
 package net.mistersecret312.aperture_innovations.blocks;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -27,6 +31,9 @@ import net.mistersecret312.aperture_innovations.init.EntityInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+import java.util.List;
+
 public class VitalApparatusVentBlock extends OrientedMasterBlock
 {
 	public static final MapCodec<VitalApparatusVentBlock> CODEC = simpleCodec(VitalApparatusVentBlock::new);
@@ -37,11 +44,20 @@ public class VitalApparatusVentBlock extends OrientedMasterBlock
 	}
 
 	@Override
-	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
-											   BlockHitResult hitResult)
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> components,
+								TooltipFlag tooltipFlag)
 	{
-		BlockEntity blockEntity = level.getBlockEntity(pos);
-		return super.useWithoutItem(state, level, pos, player, hitResult);
+		super.appendHoverText(stack, context, components, tooltipFlag);
+
+		components.add(Component.translatable("tooltip.aperture_innovations.vital_apparatus_vent.dispensing").withStyle(ChatFormatting.DARK_PURPLE));
+
+		Level level = context.level();
+		if(level != null)
+		{
+			Color hsbColor = Color.getHSBColor(level.getTimeOfDay(1f)*50, 1f, 1f);
+			components.add(Component.translatable("tooltip.aperture_innovations.is_configurable").withStyle((style -> style.withColor(
+					hsbColor.getRGB()))));
+		}
 	}
 
 	@Override

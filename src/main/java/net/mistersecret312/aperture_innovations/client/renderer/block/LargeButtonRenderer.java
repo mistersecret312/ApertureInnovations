@@ -78,13 +78,13 @@ public class LargeButtonRenderer extends DynamicGeoBlockRenderer<LargeButtonBloc
 	{
 		int color = animatable.getColor().packagedInt();
 		if(color != 0)
-			return animatable.getClientVariant().genericLinesTexture();
+			return animatable.getClientVariant().genericLinesTexture().orElse(null);
 
 		boolean active = animatable.getBlockState().getValue(LargeButtonBlock.PRESSED);
 		if(active)
-			return animatable.getClientVariant().activeLinesTexture();
+			return animatable.getClientVariant().activeLinesTexture().orElse(null);
 
-		return animatable.getClientVariant().inactiveLinesTexture();
+		return animatable.getClientVariant().inactiveLinesTexture().orElse(null);
 	}
 
 	public ResourceLocation getHullTexture(GeoBone bone, LargeButtonBlockEntity animatable)

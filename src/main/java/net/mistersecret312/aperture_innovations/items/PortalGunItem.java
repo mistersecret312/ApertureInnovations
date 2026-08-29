@@ -128,6 +128,8 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 
 		int dualityState = getDualityState(stack);
 
+		int hullColor = getHullColor(stack);
+
 		int primaryStripeColor = getPrimaryStripeColor(stack);
 		int secondaryStripeColor = getSecondaryStripeColor(stack);
 
@@ -147,8 +149,11 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.energy").append(ApertureEnergy.energyToString(getEnergy(stack), getCapacity())).withStyle(ChatFormatting.DARK_RED));
 		}
 
-		if(primaryPortalColor != -1 || primaryStripeColor != -1 || secondaryPortalColor != -1 || secondaryStripeColor != -1)
+		if(primaryPortalColor != -1 || primaryStripeColor != -1 || secondaryPortalColor != -1 || secondaryStripeColor != -1 || hullColor != -1)
 			components.add(Component.literal(""));
+
+		if(hullColor != -1 || flag.hasShiftDown())
+			components.add(Component.translatable("item.aperture_innovations.portal_gun.hull_color", Integer.toHexString(hullColor).toUpperCase()).withStyle(style -> style.withColor(hullColor)));
 
 		if(primaryPortalColor != -1 || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.portal_primary_color", Integer.toHexString(primaryPortalColor).toUpperCase()).withStyle(style -> style.withColor(primaryPortalColor)));
@@ -167,7 +172,7 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 		if(level != null)
 		{
 			Color hsbColor = Color.getHSBColor(level.getTimeOfDay(1f)*50, 1f, 1f);
-			components.add(Component.translatable("tooltip.aperture_innovations.is_colorable").withStyle((style -> style.withColor(
+			components.add(Component.translatable("tooltip.aperture_innovations.is_configurable").withStyle((style -> style.withColor(
 					hsbColor.getRGB()))));
 		}
 	}

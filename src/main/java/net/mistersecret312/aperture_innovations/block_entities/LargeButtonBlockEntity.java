@@ -312,7 +312,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 			if(property.getName().equals("idle_color"))
 				property.setUnsafe(color);
 			if(property.getName().equals("button_color"))
-				property.setUnsafe(color);
+				property.setUnsafe(buttonColor);
 			if(property.getName().equals("variant"))
 				property.setUnsafe(variant);
 		}
