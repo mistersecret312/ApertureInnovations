@@ -57,8 +57,6 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
                                          VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay,
                                          int colour)
     {
-//        if(true)
-//            return true;
         if(bone.getName().equals("StripePrimary") || bone.getName().equals("StripeSecondary"))
         {
             boolean isPrimary = bone.getName().equals("StripePrimary");
@@ -71,13 +69,12 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
             {
                 ClientPortalLink link = PortalUtilities.getPortalLinks()
                                                        .get(this.getAnimatable().getUUID(this.currentItemStack, false));
-                ClientPortalGunVariant variant = ClientPortalGunVariant.DEFAULT_VARIANT;
+                ClientPortalGunVariant variant = link.getVariant();
+                if(variant == null)
+                    variant = ClientPortalGunVariant.DEFAULT_VARIANT;
 
                 if(animatable.getVariant(currentItemStack) != null)
                     variant = ClientPortalGunVariants.getPortalGunVariant(animatable.getVariant(currentItemStack));
-
-//                if(link != null)
-//                    variant = link.getVariant();
 
                 ColorUtil.RGBA color = isPrimary ? variant.primaryStripeColor() : variant.secondaryStripeColor();
 
@@ -141,6 +138,8 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
             return null;
 
         ClientPortalGunVariant variant = animatable.getGunVariant(this.currentItemStack);
+        if(variant == null)
+            variant = ClientPortalGunVariant.DEFAULT_VARIANT;
         return variant.texture();
     }
 
@@ -148,6 +147,8 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
     {
         List<String> gunCore = Lists.newArrayList("CoreOuter", "CoreInner", "PortalLight", "Muzzle");
         ClientPortalGunVariant variant = animatable.getGunVariant(this.currentItemStack);
+        if(variant == null)
+            variant = ClientPortalGunVariant.DEFAULT_VARIANT;
         int lastPortal = animatable.getLastShotPortal(this.currentItemStack);
         if(!gunCore.contains(bone.getName()) || bone.getName().equals("Zap"))
             return null;

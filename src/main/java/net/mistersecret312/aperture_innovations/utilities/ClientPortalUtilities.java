@@ -23,6 +23,8 @@ public class ClientPortalUtilities
 	public static ColorUtil.RGBA getPortalColor(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if(variant == null)
+			variant = ClientPortalGunVariant.DEFAULT_VARIANT;
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		Color rgbaColor = new Color(gunColor, false);
 
@@ -38,6 +40,8 @@ public class ClientPortalUtilities
 	public static ResourceLocation getCrosshairTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if(variant == null)
+			variant = ClientPortalGunVariant.DEFAULT_VARIANT;
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		Color rgbaColor = new Color(gunColor, false);
 		if(rgbaColor.getRGB() == -1)
@@ -57,6 +61,8 @@ public class ClientPortalUtilities
 	public static ResourceLocation getPortalHighlightTexture(ClientPortalLink link, boolean isPrimary)
 	{
 		ClientPortalGunVariant variant = link.getVariant();
+		if(variant == null)
+			variant = ClientPortalGunVariant.DEFAULT_VARIANT;
 		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
 		Color rgbaColor = new Color(gunColor, false);
 		if(rgbaColor.getRGB() == -1)
@@ -71,38 +77,6 @@ public class ClientPortalUtilities
 									 variant.secondaryPortal().getHighlightTexture();
 		}
 
-	}
-
-	public static ResourceLocation getPortalGunCoreTexture(ClientPortalLink link, int lastPortal)
-	{
-		ClientPortalGunVariant variant = link.getVariant();
-
-		ResourceLocation genericCore = variant.genericPortal().getCoreTexture();
-		ResourceLocation idleCore = variant.idleCoreTexture();
-		ResourceLocation primaryCore = variant.primaryPortal().getCoreTexture();
-		ResourceLocation secondaryCore = variant.secondaryPortal().getCoreTexture();
-
-		if(lastPortal == -1)
-			return idleCore;
-		boolean isPrimary = lastPortal == 0;
-
-		int gunColor = isPrimary ? link.getPrimaryPortal().getColor() : link.getSecondaryPortal().getColor();
-		Color rgbaColor = new Color(gunColor, false);
-		if(rgbaColor.getRGB() == -1)
-			return isPrimary ? primaryCore : secondaryCore;
-		else
-		{
-			return isPrimary ? variant.primaryPortal().isGenericColoring() ?
-									   genericCore : primaryCore
-						     : variant.secondaryPortal().isGenericColoring() ?
-									   genericCore : secondaryCore;
-		}
-	}
-
-	public static ResourceLocation getPortalGunTexture(ClientPortalLink link)
-	{
-		ClientPortalGunVariant variant = link.getVariant();
-		return variant.texture();
 	}
 
 	public static ResourceLocation getPortalClosedTexture(ClientPortalLink link, boolean isPrimary)
