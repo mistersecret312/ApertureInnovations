@@ -1,19 +1,5 @@
 package net.mistersecret312.aperture_innovations.multitool;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractStringWidget;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.PlainTextButton;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.mistersecret312.aperture_innovations.client.screen.MultiToolScreen;
-import net.mistersecret312.aperture_innovations.client.screen.inputs.DropdownWidget;
-import net.mistersecret312.aperture_innovations.client.screen.inputs.SteppedSliderWidget;
-
-import java.text.NumberFormat;
 import java.util.List;
 
 public abstract class InteractionType
@@ -21,26 +7,6 @@ public abstract class InteractionType
 	public static class Toggle extends InteractionType
 	{
 		public Toggle() {}
-
-		public int makeWidget(ConfigurationProperty<?> property, int x, int y, MultiToolScreen screen)
-		{
-			String name = property.getName();
-			MutableComponent component = Component.translatable(property.getTranslatable());
-			PlainTextButton button = new PlainTextButton(x, y, Minecraft.getInstance().font.width(component), Minecraft.getInstance().font.lineHeight,
-					component,
-					press ->
-						{
-							Object object = screen.properties.get(name);
-							if(object instanceof Boolean bool)
-							{
-								screen.properties.put(property.getName(), !bool);
-							}
-						},
-					Minecraft.getInstance().font);
-
-			screen.addCategoryWidget(button, screen.categories.get(property.getCategory()));
-			return 24;
-		}
 	}
 
 	public static class NumberField extends InteractionType
