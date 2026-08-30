@@ -69,9 +69,9 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
             {
                 ClientPortalLink link = PortalUtilities.getPortalLinks()
                                                        .get(this.getAnimatable().getUUID(this.currentItemStack, false));
-                ClientPortalGunVariant variant = link.getVariant();
-                if(variant == null)
-                    variant = ClientPortalGunVariant.DEFAULT_VARIANT;
+                ClientPortalGunVariant variant = ClientPortalGunVariant.DEFAULT_VARIANT;
+                if(link != null && link.getVariant() != null)
+                    variant = link.getVariant();
 
                 if(animatable.getVariant(currentItemStack) != null)
                     variant = ClientPortalGunVariants.getPortalGunVariant(animatable.getVariant(currentItemStack));
