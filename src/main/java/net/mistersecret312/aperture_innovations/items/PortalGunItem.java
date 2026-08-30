@@ -152,20 +152,20 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 		if(primaryPortalColor != -1 || primaryStripeColor != -1 || secondaryPortalColor != -1 || secondaryStripeColor != -1 || hullColor != -1)
 			components.add(Component.literal(""));
 
-		if(hullColor != -1 || flag.hasShiftDown())
+		if((hullColor != -1 && hullColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.hull_color", Integer.toHexString(hullColor).toUpperCase()).withStyle(style -> style.withColor(hullColor)));
 
-		if(primaryPortalColor != -1 || flag.hasShiftDown())
+		if((primaryPortalColor != -1 && primaryPortalColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.portal_primary_color", Integer.toHexString(primaryPortalColor).toUpperCase()).withStyle(style -> style.withColor(primaryPortalColor)));
 
-		if(secondaryPortalColor != -1 || flag.hasShiftDown())
+		if((secondaryPortalColor != -1 && secondaryPortalColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.portal_secondary_color", Integer.toHexString(secondaryPortalColor).toUpperCase()).withStyle(style -> style.withColor(secondaryPortalColor)));
 
 
-		if(primaryStripeColor != -1 || flag.hasShiftDown())
+		if((primaryStripeColor != -1 && primaryStripeColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.stripe_primary_color", Integer.toHexString(primaryStripeColor).toUpperCase()).withStyle(style -> style.withColor(primaryStripeColor)));
 
-		if(secondaryStripeColor != -1 || flag.hasShiftDown())
+		if((secondaryStripeColor != -1 && secondaryStripeColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.stripe_secondary_color", Integer.toHexString(secondaryStripeColor).toUpperCase()).withStyle(style -> style.withColor(secondaryStripeColor)));
 
 		Level level = context.level();

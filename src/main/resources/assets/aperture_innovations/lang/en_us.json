@@ -58,6 +58,7 @@
   "aperture_innovations.portal_gun.variant_pbody": "P-Body Variant",
   "aperture_innovations.portal_gun.variant_atlas": "Atlas Variant",
   "aperture_innovations.portal_gun.variant_reloaded": "Reloaded Variant",
+  "aperture_innovations.portal_gun.variant_cubed": "Portal Cubed",
 
   "key.category.aperture_innovations": "Aperture Innovations",
   "aperture_innovations.portal_gun.reset": "Reset Portal Gun",
@@ -88,6 +89,7 @@
   "multi_tool.aperture_innovations.atlas": "Atlas",
   "multi_tool.aperture_innovations.pbody": "P-Body",
   "multi_tool.aperture_innovations.reloaded": "Reloaded",
+  "multi_tool.aperture_innovations.cubed": "Portal Cubed",
 
   "multi_tool.aperture_innovations.pedestal_button": "Pedestal Button",
   "multi_tool.aperture_innovations.old_pedestal_button": "Old Aperture",

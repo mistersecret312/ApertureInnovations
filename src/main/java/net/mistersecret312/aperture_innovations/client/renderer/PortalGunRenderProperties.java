@@ -28,7 +28,7 @@ public class PortalGunRenderProperties implements IClientItemExtensions
 													  ItemStack itemStack)
 	{
 		if(entityLiving.getItemInHand(hand).getItem() instanceof PortalGunItem)
-			return HumanoidModel.ArmPose.THROW_SPEAR;
+			return HumanoidModel.ArmPose.CROSSBOW_HOLD;
 
 		return HumanoidModel.ArmPose.EMPTY;
 	}
