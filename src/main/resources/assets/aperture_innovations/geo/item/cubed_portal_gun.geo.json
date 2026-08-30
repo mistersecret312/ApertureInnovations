@@ -109,16 +109,14 @@
 								"west": {"uv": [7, 0], "uv_size": [9, 5]},
 								"up": {"uv": [6, 9], "uv_size": [-6, -9]}
 							}
-						},
-						{
-							"origin": [1.75, 7.2625, -2.275],
-							"size": [1.75, 3.5, 15.75],
-							"uv": {
-								"north": {"uv": [26, 13], "uv_size": [1, 2]},
-								"south": {"uv": [27, 10], "uv_size": [-1, 2]},
-								"up": {"uv": [21, 27], "uv_size": [-9, -1], "uv_rotation": 90}
-							}
-						},
+						}
+					]
+				},
+				{
+					"name": "StripeSecondary",
+					"parent": "back",
+					"pivot": [0, 6.80313, 6.475],
+					"cubes": [
 						{
 							"origin": [-3.5, 7.2625, -2.275],
 							"size": [1.75, 3.5, 15.75],
@@ -126,6 +124,22 @@
 								"north": {"uv": [28, 13], "uv_size": [1, 2]},
 								"south": {"uv": [29, 10], "uv_size": [-1, 2]},
 								"up": {"uv": [21, 25], "uv_size": [-9, -1], "uv_rotation": 90}
+							}
+						}
+					]
+				},
+				{
+					"name": "StripePrimary",
+					"parent": "back",
+					"pivot": [0, 6.80313, 6.475],
+					"cubes": [
+						{
+							"origin": [1.75, 7.2625, -2.275],
+							"size": [1.75, 3.5, 15.75],
+							"uv": {
+								"north": {"uv": [26, 13], "uv_size": [1, 2]},
+								"south": {"uv": [27, 10], "uv_size": [-1, 2]},
+								"up": {"uv": [21, 27], "uv_size": [-9, -1], "uv_rotation": 90}
 							}
 						}
 					]
