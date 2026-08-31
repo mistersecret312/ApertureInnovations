@@ -65,7 +65,7 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
                                                                                                   .getSecondaryStripeColor(
                                                                                                           this.currentItemStack);
             Color rgbStripeColor = new Color(stripeColor, false);
-            if(rgbStripeColor.getRGB() == -1)
+            if(rgbStripeColor.getRGB() == -1 || rgbStripeColor.getRGB() == 16777215)
             {
                 ClientPortalLink link = PortalUtilities.getPortalLinks()
                                                        .get(this.getAnimatable().getUUID(this.currentItemStack, false));
@@ -78,7 +78,8 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
 
                 ColorUtil.RGBA color = isPrimary ? variant.primaryStripeColor() : variant.secondaryStripeColor();
 
-                if(color.red() == 1F && color.green() == 1F && color.blue() == 1F && color.alpha() == 1F) return true;
+//                if(color.red() == 1F && color.green() == 1F && color.blue() == 1F && color.alpha() == 1F)
+//                    return true;
 
                 Color originalColor = new Color(colour, true);
 
@@ -93,7 +94,8 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
             } else
             {
                 Color color = new Color(stripeColor, false);
-                if(color.getRGB() == -1) return true;
+                if(color.getRGB() == -1)
+                    return true;
 
                 Color originalColor = new Color(colour, true);
 

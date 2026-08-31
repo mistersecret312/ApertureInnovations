@@ -5,25 +5,25 @@
   "animation": "aperture_innovations:animations/item/cubed_portal_gun.animation.json",
 
   "idle_core_texture": "aperture_innovations:textures/item/cubed/portal_gun_lights_static.png",
-  "crosshair_texture": "aperture_innovations:textures/gui/chell/chell_crosshair.png",
+  "crosshair_texture": "aperture_innovations:textures/gui/cubed/portal_cubed_crosshair_tinted.png",
 
   "generic_portal":
   {
-    "closed_texture": "aperture_innovations:textures/block/portal/generic/portal_closed.png",
-    "highlight_texture": "aperture_innovations:textures/block/portal/generic/portal_highlight.png",
-    "vortex_texture": "aperture_innovations:block/portal/generic/portal_vortex",
+    "closed_texture": "aperture_innovations:textures/block/portal/cubed/closed_base.png",
+    "highlight_texture": "aperture_innovations:textures/block/portal/cubed/tracer.png",
+    "vortex_texture": "aperture_innovations:block/portal/cubed/closed_vortex",
     "core_texture": "aperture_innovations:textures/item/cubed/portal_gun_lights_static.png",
-    "crosshair_texture": "aperture_innovations:textures/gui/generic_crosshair.png"
+    "crosshair_texture": "aperture_innovations:textures/gui/cubed/portal_cubed_crosshair_generic.png"
   },
 
   "primary_portal":
   {
-    "closed_texture": "aperture_innovations:textures/block/portal/chell/portal_blue_closed.png",
-    "highlight_texture": "aperture_innovations:textures/block/portal/chell/portal_highlight_blue.png",
-    "vortex_texture": "aperture_innovations:block/portal/chell/portal_blue_vortex",
+    "closed_texture": "aperture_innovations:textures/block/portal/cubed/blue_closed_base.png",
+    "highlight_texture": "aperture_innovations:textures/block/portal/cubed/blue_tracer.png",
+    "vortex_texture": "aperture_innovations:block/portal/cubed/blue_vortex",
     "core_texture": "aperture_innovations:textures/item/cubed/portal_gun_lights_static.png",
 
-    "portal_mask_texture": "aperture_innovations:textures/block/portal/portal_mask.png",
+    "portal_mask_texture": "aperture_innovations:textures/block/portal/cubed/mask.png",
 
     "color": { "red": 1.0, "green": 1.0, "blue": 1.0, "alpha": 1.0 },
     "generic_coloring": true,
@@ -38,12 +38,12 @@
 
   "secondary_portal":
   {
-    "closed_texture": "aperture_innovations:textures/block/portal/chell/portal_orange_closed.png",
-    "highlight_texture": "aperture_innovations:textures/block/portal/chell/portal_highlight_orange.png",
-    "vortex_texture": "aperture_innovations:block/portal/chell/portal_orange_vortex",
+    "closed_texture": "aperture_innovations:textures/block/portal/cubed/orange_closed_base.png",
+    "highlight_texture": "aperture_innovations:textures/block/portal/cubed/orange_tracer.png",
+    "vortex_texture": "aperture_innovations:block/portal/cubed/orange_vortex",
     "core_texture": "aperture_innovations:textures/item/cubed/portal_gun_lights_static.png",
 
-    "portal_mask_texture": "aperture_innovations:textures/block/portal/portal_mask.png",
+    "portal_mask_texture": "aperture_innovations:textures/block/portal/cubed/mask.png",
 
     "color": { "red": 1.0, "green": 1.0, "blue": 1.0, "alpha": 1.0 },
     "generic_coloring": true,

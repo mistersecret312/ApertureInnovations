@@ -149,7 +149,8 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.energy").append(ApertureEnergy.energyToString(getEnergy(stack), getCapacity())).withStyle(ChatFormatting.DARK_RED));
 		}
 
-		if(primaryPortalColor != -1 || primaryStripeColor != -1 || secondaryPortalColor != -1 || secondaryStripeColor != -1 || hullColor != -1)
+		if((primaryPortalColor != -1 || primaryStripeColor != -1 || secondaryPortalColor != -1 || secondaryStripeColor != -1 || hullColor != -1)
+		&&  (primaryPortalColor != 16777215 || primaryStripeColor != 16777215 || secondaryPortalColor != 16777215 || secondaryStripeColor != 16777215 || hullColor != 16777215))
 			components.add(Component.literal(""));
 
 		if((hullColor != -1 && hullColor != 16777215) || flag.hasShiftDown())
