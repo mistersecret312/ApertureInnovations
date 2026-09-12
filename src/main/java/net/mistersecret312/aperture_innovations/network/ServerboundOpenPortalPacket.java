@@ -29,6 +29,7 @@ import net.mistersecret312.aperture_innovations.data.PortalLinkData;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
+import net.mistersecret312.aperture_innovations.future.obb.OrientedPortalUtils;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.init.TagInit;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
@@ -311,6 +312,8 @@ public record ServerboundOpenPortalPacket(boolean isPrimary) implements CustomPa
 				{
 					VoxelShape shape = state.getCollisionShape(level, pos)
 											.move(pos.getX(), pos.getY(), pos.getZ());
+					if(shape.isEmpty())
+						shape = Shapes.block().move(pos.getX(), pos.getY(), pos.getZ());
 
 					if(state.is(TagInit.Blocks.IMPORTALABLE) || (PortalGunConfig.use_portalable_tag.get() && !state.is(TagInit.Blocks.PORTALABLE)))
 						shape = Shapes.create(shape.bounds().inflate(0.025));
