@@ -62,7 +62,7 @@
 
   "key.category.aperture_innovations": "Aperture Innovations",
   "aperture_innovations.portal_gun.reset": "Reset Portal Gun",
-  "aperture_innovations.portal_gun.pick_up": "Pick Up via Portal Gun",
+  "aperture_innovations.portal_gun.pick_up": "Interact with Portal Gun",
   "aperture_innovations.portal_gun.primary_fire": "Primary Fire",
   "aperture_innovations.portal_gun.secondary_fire": "Secondary Fire",
 

@@ -21,6 +21,9 @@
     }
   },
   "result": {
-    "id": "aperture_innovations:weighted_storage_cube"
+    "id": "aperture_innovations:cube",
+    "components": {
+      "aperture_innovations:variant": "aperture_innovations:weighted_storage_cube"
+    }
   }
 }

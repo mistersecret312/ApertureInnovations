@@ -29,7 +29,6 @@ import net.mistersecret312.aperture_innovations.data.PortalLinkData;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
-import net.mistersecret312.aperture_innovations.future.obb.OrientedPortalUtils;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.init.TagInit;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;

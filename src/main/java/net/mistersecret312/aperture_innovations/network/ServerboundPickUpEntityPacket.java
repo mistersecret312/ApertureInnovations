@@ -7,14 +7,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.capabilities.HoldEntityCapability;
 import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
@@ -65,6 +63,7 @@ public record ServerboundPickUpEntityPacket() implements CustomPacketPayload
 					return;
 
 				ItemStack gunStack = main.is(ItemInit.PORTAL_GUN.get()) ? main : off;
+				InteractionHand gunHand = main.is(ItemInit.PORTAL_GUN.get()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 				PortalGunItem portalGun = (PortalGunItem) gunStack.getItem();
 
 				if(portalGun.getHeldEntity(gunStack) != null)
@@ -89,6 +88,13 @@ public record ServerboundPickUpEntityPacket() implements CustomPacketPayload
 					portalGun.setHeldEntity(gunStack, null);
 					PacketDistributor.sendToAllPlayers(
 							new ClientboundGunZapSoundPacket(player.getUUID(), true));
+
+					BlockHitResult blockHitResult = PortalGunItem.rayTrace(level, player, player.blockInteractionRange());
+					if(blockHitResult.getType() == HitResult.Type.BLOCK)
+					{
+						player.gameMode.useItemOn(player, level, gunStack, gunHand, blockHitResult);
+						return;
+					}
 
 					level.playSound(null, player.blockPosition(),
 							SoundInit.PORTAL_GUN_HOLD_FAIL.get(), SoundSource.PLAYERS, 1f, 1f);
