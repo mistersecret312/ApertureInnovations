@@ -117,16 +117,14 @@ public class CubeEntity extends Entity implements IFizzle, GeoEntity, IHaveConfi
 		if(state.getBlock() instanceof DummyBlock dummy)
 		{
 			BlockEntity master = dummy.getMaster(level(), this.blockPosition());
-			if(master instanceof LargeButtonBlockEntity)
-				this.setActive(master.getBlockState().getValue(LargeButtonBlock.PRESSED));
+			if(master instanceof LargeButtonBlockEntity button)
+				this.setActive(button.isPressed);
 			else this.setActive(false);
 		}
 		else this.setActive(false);
 
-		if(state.getBlock() instanceof LargeButtonBlock)
-		{
-			this.setActive(state.getValue(LargeButtonBlock.PRESSED));
-		}
+		if(level().getBlockEntity(this.blockPosition()) instanceof LargeButtonBlockEntity button)
+			this.setActive(button.isPressed);
 
 		float friction = 0.85f;
 		if(!this.onGround())

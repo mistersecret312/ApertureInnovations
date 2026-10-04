@@ -56,6 +56,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 
 	public ResourceLocation variant = ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID,
 			"large_button");
+	public boolean isPressed = false;
 	public boolean updatePressed = false;
 
 	public LargeButtonBlockEntity(BlockPos pos, BlockState blockState)
@@ -89,6 +90,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		tag.putIntArray("active_color", activeArray);
 
 		tag.putString("variant", variant.toString());
+		tag.putBoolean("is_pressed", isPressed);
 
 		super.saveAdditional(tag, registries);
 	}
@@ -109,6 +111,7 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		this.activeColor = new Color(activeArray[0], activeArray[1], activeArray[2]);
 
 		this.variant = ResourceLocation.parse(tag.getString("variant"));
+		this.isPressed = tag.getBoolean("is_pressed");
 	}
 
 	public ClientLargeButtonVariant getClientVariant()
@@ -182,7 +185,6 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 				level.setBlock(pos, blockState.setValue(LargeButtonBlock.UPDATE, false), 1 | 2);
 				blockState.getBlock().setPlacedBy(level, pos, blockState, null, ItemStack.EMPTY);
 			}
-
 		}
 
 		if(!(blockState.getBlock() instanceof OrientedMasterBlock master))
@@ -194,15 +196,14 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		List<Entity> entities = level.getEntities((Entity) null, box, entity -> entity.getBoundingBox().getSize() > 0.25 && !entity.getType().is(
 				TagInit.Entities.BUTTON_IGNORE));
 
-		boolean isPressed = blockState.getValue(LargeButtonBlock.PRESSED);
-		if(level.isClientSide())
-			return;
+		boolean isPressed = button.isPressed;
 
 		if(isPressed || button.updatePressed)
 		{
 			if(entities.isEmpty())
 			{
-				level.setBlock(pos, blockState.setValue(LargeButtonBlock.PRESSED, false), 3);
+				button.isPressed = false;
+				blockState.onPlace(level, pos, blockState, false);
 				button.triggerAnim("press", "up");
 				if(!button.updatePressed)
 					level.playSound(null, pos, SoundInit.LARGE_BUTTON_UP.get(), SoundSource.BLOCKS, 0.5f, 1f);
@@ -214,7 +215,8 @@ public class LargeButtonBlockEntity extends MasterBlockEntity implements GeoBloc
 		{
 			if(!entities.isEmpty())
 			{
-				level.setBlock(pos, blockState.setValue(LargeButtonBlock.PRESSED, true), 3);
+				button.isPressed = true;
+				blockState.onPlace(level, pos, blockState, false);
 				button.triggerAnim("press", "down");
 				if(!button.updatePressed)
 					level.playSound(null, pos, SoundInit.LARGE_BUTTON_DOWN.get(), SoundSource.BLOCKS, 0.5f, 1f);

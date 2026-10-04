@@ -80,7 +80,7 @@ public class LargeButtonRenderer extends DynamicGeoBlockRenderer<LargeButtonBloc
 		if(color != 0)
 			return animatable.getClientVariant().genericLinesTexture().orElse(null);
 
-		boolean active = animatable.getBlockState().getValue(LargeButtonBlock.PRESSED);
+		boolean active = animatable.isPressed;
 		if(active)
 			return animatable.getClientVariant().activeLinesTexture().orElse(null);
 
@@ -103,7 +103,7 @@ public class LargeButtonRenderer extends DynamicGeoBlockRenderer<LargeButtonBloc
 
 	public int getLinesColor(GeoBone bone, LargeButtonBlockEntity animatable)
 	{
-		boolean active = animatable.getBlockState().getValue(LargeButtonBlock.PRESSED);
+		boolean active = animatable.isPressed;
 		int color = active ? animatable.getActiveColor().packagedInt() : animatable.getColor().packagedInt();
 
 		if(color != 0)

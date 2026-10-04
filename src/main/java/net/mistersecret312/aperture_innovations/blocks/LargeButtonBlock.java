@@ -48,14 +48,10 @@ import java.util.List;
 
 public class LargeButtonBlock extends OrientedMasterBlock
 {
-	public static final BooleanProperty PRESSED = BooleanProperty.create("pressed");
-
 	public static final MapCodec<LargeButtonBlock> CODEC = simpleCodec(LargeButtonBlock::new);
 
 	public LargeButtonBlock(Properties properties) {
 		super(properties);
-		this.registerDefaultState(this.defaultBlockState()
-									  .setValue(PRESSED, false));
 	}
 
 	@Override
@@ -82,8 +78,8 @@ public class LargeButtonBlock extends OrientedMasterBlock
 	@Override
 	protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		if (state.getValue(PRESSED))
-			return 15;
+		if (level.getBlockEntity(pos) instanceof LargeButtonBlockEntity blockEntity)
+			return blockEntity.isPressed ? 15 : 0;
 
 		return super.getSignal(state, level, pos, direction);
 	}
@@ -167,13 +163,6 @@ public class LargeButtonBlock extends OrientedMasterBlock
 	protected RenderShape getRenderShape(BlockState state)
 	{
 		return RenderShape.ENTITYBLOCK_ANIMATED;
-	}
-
-	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
-		super.createBlockStateDefinition(builder);
-		builder.add(PRESSED);
 	}
 
 	@Override
