@@ -42,7 +42,7 @@ public class PedestalButtonBlock extends OrientedMasterBlock
 	{
 		super(properties);
 		this.registerDefaultState(this.defaultBlockState()
-									  .setValue(PRESSED, false));
+				.setValue(PRESSED, false));
 	}
 
 	@Override
@@ -181,7 +181,10 @@ public class PedestalButtonBlock extends OrientedMasterBlock
 			level.setBlock(pos, state.setValue(PRESSED, true), 3);
 			level.scheduleTick(pos, this, 25);
 			if(!level.isClientSide())
+			{
+				this.updateNeighbours(state, level, pos);
 				level.playSound(null, pos, SoundInit.PEDESTAL_BUTTON_DOWN.get(), SoundSource.BLOCKS, 0.5f, 1f);
+			}
 			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
@@ -193,8 +196,24 @@ public class PedestalButtonBlock extends OrientedMasterBlock
 		super.tick(state, level, pos, random);
 
 		level.setBlock(pos, state.setValue(PRESSED, false), 3);
+		this.updateNeighbours(state, level, pos);
 		level.playSound(null, pos, SoundInit.PEDESTAL_BUTTON_UP.get(), SoundSource.BLOCKS, 0.5f, 1f);
 		super.tick(state, level, pos, random);
+	}
+
+	private void updateNeighbours(BlockState state, Level level, BlockPos pos)
+	{
+		level.updateNeighborsAt(pos, this);
+		level.updateNeighborsAt(pos.relative(state.getValue(NORMAL).getOpposite()), this);
+	}
+
+	@Override
+	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
+	{
+		if(!movedByPiston && !state.is(newState.getBlock()) && state.getValue(PRESSED))
+			this.updateNeighbours(state, level, pos);
+
+		super.onRemove(state, level, pos, newState, movedByPiston);
 	}
 
 	@Override
