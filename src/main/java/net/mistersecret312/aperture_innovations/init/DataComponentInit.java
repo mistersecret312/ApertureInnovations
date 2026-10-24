@@ -3,8 +3,10 @@ package net.mistersecret312.aperture_innovations.init;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
+import net.mistersecret312.aperture_innovations.data_components.PortalGunPiercingComponent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -64,6 +66,8 @@ public class DataComponentInit
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> HELD_ENTITY = register("held_entity", builder -> builder.persistent(
 			Codec.INT
 	));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<PortalGunPiercingComponent>> PIERCING =
+			register("piercing", builder -> builder.persistent(PortalGunPiercingComponent.CODEC));
 
 	private static <T>DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator)
 	{

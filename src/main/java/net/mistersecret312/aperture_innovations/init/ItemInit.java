@@ -33,6 +33,8 @@ public class ItemInit
 	public static final DeferredItem<MultiBlockItem> LARGE_BUTTON = ITEMS.register("large_button",
 			() -> new MultiBlockItem(BlockInit.LARGE_BUTTON.get(), new Item.Properties().stacksTo(64).fireResistant()));
 
+	public static final DeferredItem<PotatOSItem> POTATOS = ITEMS.register("potatos",
+			() -> new PotatOSItem(new Item.Properties().stacksTo(1)));
 
 	public static final DeferredItem<MultiToolItem> MULTI_TOOL = ITEMS.register("multi_tool",
 			() -> new MultiToolItem(new Item.Properties().stacksTo(1).fireResistant()));

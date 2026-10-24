@@ -1,6 +1,8 @@
 package net.mistersecret312.aperture_innovations.client.renderer.item;
 
 import com.google.common.collect.Lists;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -8,11 +10,20 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.client.PortalRenderTypes;
@@ -25,6 +36,7 @@ import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.utilities.ClientPortalUtilities;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
@@ -32,6 +44,7 @@ import software.bernie.geckolib.renderer.specialty.DynamicGeoItemRenderer;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
@@ -57,6 +70,26 @@ public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>
                                          VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay,
                                          int colour)
     {
+        ItemStack stack = this.getAnimatable().getPiercingItem(this.currentItemStack);
+        if(bone.getName().equals("ClawTop2") && stack != null && !stack.isEmpty())
+        {
+            poseStack.pushPose();
+            BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null, -1);
+            if(model.isGui3d())
+            {
+                poseStack.translate(0, 1.05, -1);
+                poseStack.scale(0.25f, 0.25f, 0.25f);
+            }
+            else
+            {
+                poseStack.translate(0, .65, -1.05);
+                poseStack.scale(0.5f, 0.5f, 0.5f);
+            }
+            Minecraft.getInstance().getItemRenderer().renderStatic(stack,
+                    ItemDisplayContext.HEAD, packedLight, packedOverlay, poseStack, bufferSource, null, -1);
+            poseStack.popPose();
+        }
+
         if(bone.getName().equals("StripePrimary") || bone.getName().equals("StripeSecondary"))
         {
             boolean isPrimary = bone.getName().equals("StripePrimary");

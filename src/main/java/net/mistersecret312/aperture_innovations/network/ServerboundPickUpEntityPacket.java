@@ -18,6 +18,7 @@ import net.mistersecret312.aperture_innovations.capabilities.HoldEntityCapabilit
 import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.init.SoundInit;
+import net.mistersecret312.aperture_innovations.items.IPortalGunPiercingAction;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -93,6 +94,9 @@ public record ServerboundPickUpEntityPacket() implements CustomPacketPayload
 					if(blockHitResult.getType() == HitResult.Type.BLOCK)
 					{
 						player.gameMode.useItemOn(player, level, gunStack, gunHand, blockHitResult);
+						ItemStack piercingStack = portalGun.getPiercingItem(gunStack);
+						if(piercingStack.getItem() instanceof IPortalGunPiercingAction piercing)
+							piercing.action(player, level, gunStack, blockHitResult);
 						return;
 					}
 

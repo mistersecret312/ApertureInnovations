@@ -19,6 +19,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
@@ -36,6 +37,7 @@ import net.mistersecret312.aperture_innovations.client.renderer.item.PortalGunRe
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariant;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariants;
 import net.mistersecret312.aperture_innovations.config.PortalGunConfig;
+import net.mistersecret312.aperture_innovations.data_components.PortalGunPiercingComponent;
 import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
 import net.mistersecret312.aperture_innovations.datapack.PortalGunVariant;
 import net.mistersecret312.aperture_innovations.init.*;
@@ -566,6 +568,17 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 		return stack.getOrDefault(DataComponentInit.ZAP_TICK, -1);
 	}
 
+	public void setPiercingItem(ItemStack stack, ItemStack piercing)
+	{
+		if(piercing.isEmpty())
+			stack.remove(DataComponentInit.PIERCING);
+		else stack.set(DataComponentInit.PIERCING, new PortalGunPiercingComponent(piercing));
+	}
+
+	public ItemStack getPiercingItem(ItemStack stack)
+	{
+		return stack.getOrDefault(DataComponentInit.PIERCING.get(), new PortalGunPiercingComponent(ItemStack.EMPTY)).stack();
+	}
 
 	private <T extends PortalGunItem> PlayState handleAnimationState(AnimationState state) {
 		return PlayState.STOP;

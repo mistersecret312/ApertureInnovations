@@ -34,6 +34,7 @@ public class ItemTabInit
 							  output.accept(ItemInit.LONG_FALL_BOOTS.get());
 
 							  output.accept(ItemInit.COLORFUL_GEL.get());
+							  output.accept(ItemInit.POTATOS.get());
 
 							  output.accept(BlockInit.CONCRETE_SURFACE_BLOCK.get());
 							  output.accept(BlockInit.CONCRETE_SURFACE_TILE_BLOCK.get());
