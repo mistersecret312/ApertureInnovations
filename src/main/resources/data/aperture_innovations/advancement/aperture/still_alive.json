@@ -1,0 +1,29 @@
+{
+  "criteria": {
+    "death": {
+      "trigger": "aperture_innovations:totem_gun_use",
+      "conditions": {
+        "item": "minecraft:totem_of_undying"
+      }
+    }
+  },
+  "display": {
+    "icon": {
+      "id": "minecraft:cake"
+    },
+    "title": {
+      "translate": "advancements.aperture_innovations.aperture.still_alive.title"
+    },
+    "description": {
+      "translate": "advancements.aperture_innovations.aperture.still_alive.description"
+    },
+    "frame": "challenge",
+    "hidden": true
+  },
+  "parent": "aperture_innovations:aperture/reproducible_human_error_problem",
+  "requirements": [
+    [
+      "death"
+    ]
+  ]
+}
