@@ -10,7 +10,6 @@
     "LivingEntityMixin"
   ],
   "client": [
-    "BlockColorAccessor",
     "LocalPlayerMixin"
   ],
   "injectors": {

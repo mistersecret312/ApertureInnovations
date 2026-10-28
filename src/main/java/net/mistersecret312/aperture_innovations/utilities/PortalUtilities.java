@@ -17,6 +17,7 @@ import net.mistersecret312.aperture_innovations.data.PortalLinkData;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
+import org.joml.Vector2d;
 
 import java.util.*;
 
@@ -356,6 +357,15 @@ public class PortalUtilities
 		if(entity == null)
 			return Pair.of(uuid, isPrimary);
 
+		Vec3 entityPos;
+		try
+		{
+			entityPos = entity.position();
+		} catch(Exception e)
+		{
+			return Pair.of(uuid, isPrimary);
+		}
+
 		Level level = entity.level();
 		if(level.isClientSide())
 		{
@@ -368,7 +378,7 @@ public class PortalUtilities
 					if(pos == null)
 						continue;
 
-					double distance = entity.position().distanceTo(pos);
+					double distance = entityPos.distanceTo(pos);
 					if(closestDistance > distance)
 					{
 						closestDistance = distance;
@@ -390,7 +400,7 @@ public class PortalUtilities
 					if(pos == null)
 						continue;
 
-					double distance = entity.position().distanceTo(pos);
+					double distance = entityPos.distanceTo(pos);
 					if(closestDistance > distance)
 					{
 						closestDistance = distance;
