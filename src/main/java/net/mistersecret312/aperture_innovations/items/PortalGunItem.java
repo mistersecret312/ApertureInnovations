@@ -171,6 +171,10 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 		if((secondaryStripeColor != -1 && secondaryStripeColor != 16777215) || flag.hasShiftDown())
 			components.add(Component.translatable("item.aperture_innovations.portal_gun.stripe_secondary_color", Integer.toHexString(secondaryStripeColor).toUpperCase()).withStyle(style -> style.withColor(secondaryStripeColor)));
 
+		ItemStack piercing = getPiercingItem(stack);
+		if(!piercing.isEmpty())
+			components.add(Component.translatable("item.aperture_innovations.portal_gun.piercing", piercing.getDisplayName()));
+
 		Level level = context.level();
 		if(level != null)
 		{

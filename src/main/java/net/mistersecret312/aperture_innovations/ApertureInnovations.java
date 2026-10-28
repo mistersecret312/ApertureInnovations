@@ -6,15 +6,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.mistersecret312.aperture_innovations.client.Layers;
-import net.mistersecret312.aperture_innovations.client.TintBakedModelWrapper;
 import net.mistersecret312.aperture_innovations.client.overlay.CrosshairOverlay;
 import net.mistersecret312.aperture_innovations.client.renderer.*;
 import net.mistersecret312.aperture_innovations.client.renderer.antline.AntlineOutputRenderer;
@@ -28,9 +23,6 @@ import net.mistersecret312.aperture_innovations.client.resourcepack.ResourcePack
 import net.mistersecret312.aperture_innovations.datapack.*;
 import net.mistersecret312.aperture_innovations.init.*;
 import net.mistersecret312.aperture_innovations.items.*;
-import net.mistersecret312.aperture_innovations.mixin.BlockColorAccessor;
-import net.mistersecret312.aperture_innovations.multitool.ConfigurationType;
-import net.mistersecret312.aperture_innovations.utilities.WorldColoringUtils;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -57,7 +49,6 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static net.neoforged.fml.loading.FMLEnvironment.dist;
 

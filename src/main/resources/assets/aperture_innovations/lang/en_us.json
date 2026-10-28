@@ -29,6 +29,9 @@
   "item.aperture_innovations.portal_gun.portal_primary_color": "Primary Portal Color: %s",
   "item.aperture_innovations.portal_gun.portal_secondary_color": "Secondary Portal Color: %s",
   "item.aperture_innovations.portal_gun.hull_color": "Hull Color: %s",
+  "item.aperture_innovations.portal_gun.piercing": "Piercing: %s",
+
+  "item.aperture_innovations.potatos": "PotatOS",
 
   "tooltip.aperture_innovations.is_configurable": "Colored via the Configuration Device",
   "tooltip.aperture_innovations.multi_tool": "Use RMB on a block or entity, or when holding an item in offhand, to configure it",

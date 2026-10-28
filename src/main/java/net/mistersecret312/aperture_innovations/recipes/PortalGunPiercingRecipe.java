@@ -90,10 +90,10 @@ public class PortalGunPiercingRecipe extends CustomRecipe
 				}
 			}
 
-		if (portalGun.isEmpty() || !(portalGun.getItem() instanceof PortalGunItem gunItem))
+		if (portalGun.isEmpty() || !(portalGun.getItem() instanceof PortalGunItem gunItem) || (!gunItem.getPiercingItem(portalGun).isEmpty() && !otherItem.isEmpty()))
 			return ItemStack.EMPTY;
 
-		if (!otherItem.isEmpty())
+		if (!otherItem.isEmpty() && gunItem.getPiercingItem(portalGun).isEmpty())
 			gunItem.setPiercingItem(portalGun, otherItem);
 		else
 			gunItem.setPiercingItem(portalGun, ItemStack.EMPTY);
