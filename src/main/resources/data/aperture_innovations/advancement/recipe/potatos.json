@@ -1,0 +1,44 @@
+{
+	"parent": "minecraft:recipes/root",
+	"criteria":
+	{
+		"has_potato":
+		{
+			"conditions":
+			{
+				"items":
+				[
+					{
+						"items":
+						[
+							"minecraft:potato"
+						]
+					}
+				]
+			},
+			"trigger": "minecraft:inventory_changed"
+		},
+		"has_the_recipe":
+		{
+			"conditions":
+			{
+				"recipe": "aperture_innovations:potatos"
+			},
+			"trigger": "minecraft:recipe_unlocked"
+		}
+	},
+	"requirements":
+	[
+		[
+			"has_potatos",
+			"has_the_recipe"
+		]
+	],
+	"rewards":
+	{
+		"recipes":
+		[
+			"aperture_innovations:potatos"
+		]
+	}
+}

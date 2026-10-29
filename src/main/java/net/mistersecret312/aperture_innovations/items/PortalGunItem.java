@@ -173,7 +173,7 @@ public class PortalGunItem extends Item implements GeoItem, IItemConfiguration
 
 		ItemStack piercing = getPiercingItem(stack);
 		if(!piercing.isEmpty())
-			components.add(Component.translatable("item.aperture_innovations.portal_gun.piercing", piercing.getDisplayName()));
+			components.add(Component.translatable("item.aperture_innovations.portal_gun.piercing", piercing.getDisplayName().copy().withStyle(ChatFormatting.AQUA)).withStyle(ChatFormatting.DARK_AQUA));
 
 		Level level = context.level();
 		if(level != null)
