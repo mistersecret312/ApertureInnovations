@@ -1,5 +1,7 @@
 package net.mistersecret312.aperture_innovations.block_entities;
 
+import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.SubLevelAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -39,6 +41,7 @@ import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
 import net.mistersecret312.aperture_innovations.multitool.InteractionType;
 import org.checkerframework.checker.units.qual.C;
+import org.joml.Vector3d;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -121,8 +124,13 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 				List<Entity> entities = level.getEntities((Entity) null, volume, entity -> true);
 				for(Entity entity : entities)
 				{
-					Vec3 normal = Vec3.atLowerCornerOf(
-							vent.getBlockState().getValue(OrientedMasterBlock.NORMAL).getNormal());
+					Vec3 normal = Vec3.atLowerCornerOf(vent.getBlockState().getValue(OrientedMasterBlock.NORMAL).getNormal());
+					if(SableCompanion.INSTANCE.isInPlotGrid(vent))
+					{
+						SubLevelAccess access = SableCompanion.INSTANCE.getContaining(vent);
+						normal = access.logicalPose().transformNormal(normal);
+					}
+
 					if(normal.y >= 0)
 						entity.addDeltaMovement(normal.multiply(0.25, 0.6, 0.25));
 				}
@@ -392,6 +400,19 @@ public class VitalApparatusVentBlockEntity extends MasterBlockEntity implements 
 		Vec3 position = getBlockPos().getBottomCenter().add(normal);
 		if(getTrackingData() != null && !getTrackingData().isEmpty())
 			entity.load(getTrackingData());
+
+		if(SableCompanion.INSTANCE.isInPlotGrid(this))
+		{
+			//noinspection UnstableApiUsage
+			Vec3 subPos = SableCompanion.INSTANCE.projectOutOfSubLevel(level, position);
+			SubLevelAccess access = SableCompanion.INSTANCE.getContaining(this);
+
+			//noinspection UnstableApiUsage
+			Vec3 subSpeed = SableCompanion.INSTANCE.getVelocity(level, access.logicalPose().transformPositionInverse(position));
+
+			entity.addDeltaMovement(subSpeed);
+			position = subPos;
+		}
 
 		entity.setPos(position);
 		entity.setNoGravity(false);
