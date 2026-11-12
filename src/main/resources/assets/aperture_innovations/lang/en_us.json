@@ -185,5 +185,6 @@
   "aperture_innovations.configuration.section.aperture.innovations.common.toml": "Common Aperture Innovations Config",
   "aperture_innovations.configuration.portal_gun_consume_on_shot.tooltip": "If true, the Portal Gun will consume energy when shooting the portal, not when it actually opens",
   "aperture_innovations.configuration.portal_gun_shoot_range.tooltip": "How far the Portal Gun can shoot and open a portal",
-  "tooltip.aperture_innovations.vital_apparatus_vent.dispensing": "RMB a Cube or Spawn Egg on a placed Vital Apparatus Vent to make it dispense it"
+  "tooltip.aperture_innovations.vital_apparatus_vent.dispensing": "RMB a Cube or Spawn Egg on a placed Vital Apparatus Vent to make it dispense it",
+  "message.aperture_innovations.multiblock.not_enough_room": "Not Enough Room to Place Multiblock!"
 }

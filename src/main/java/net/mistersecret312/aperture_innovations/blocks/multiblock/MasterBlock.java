@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -156,10 +157,6 @@ public abstract class MasterBlock extends BaseEntityBlock
 	{
 		builder.add(UPDATE);
 	}
-
-	//TODO Make sure the math for getting the voxelshape for a large multiblock
-	//TODO gets mathed out correctly and center the shapes Joining
-	//TODO At a later point, make it only calculate this once and then cache it in the block entity;
 
 	public VoxelShape getFullShape(Level level, BlockPos pos, BlockState state)
 	{

@@ -31,8 +31,7 @@ public abstract class OrientedMasterBlock extends MasterBlock
 		super(properties);
 		this.registerDefaultState(this.defaultBlockState()
 									  .setValue(FACING, Direction.NORTH)
-									  .setValue(NORMAL, Direction.UP)
-									  .setValue(UPDATE, false));
+									  .setValue(NORMAL, Direction.UP));
 	}
 
 	@Override
@@ -46,7 +45,6 @@ public abstract class OrientedMasterBlock extends MasterBlock
 	protected BlockState rotate(BlockState state, Rotation rotation)
 	{
 		state = state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
-		state = state.setValue(UPDATE, true);
 		return state.setValue(NORMAL, rotation.rotate(state.getValue(NORMAL)));
 	}
 
@@ -69,19 +67,6 @@ public abstract class OrientedMasterBlock extends MasterBlock
 		state = state.setValue(FACING, direction);
 
 		return state;
-	}
-
-	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
-									 LevelAccessor level, BlockPos pos, BlockPos neighborPos)
-	{
-		if(state.getValue(UPDATE))
-		{
-			level.setBlock(pos, state.setValue(UPDATE, false), 3);
-			level.scheduleTick(pos, this, 2);
-		}
-
-		return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
 	}
 
 	@Override
@@ -123,15 +108,6 @@ public abstract class OrientedMasterBlock extends MasterBlock
 		}
 
 		return shape;
-	}
-
-	@Override
-	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random)
-	{
-		super.tick(state, level, pos, random);
-
-		this.removeDummyBlocks(level, pos);
-		this.placeDummyBlocks(level, null, pos);
 	}
 
 	protected AABB rotateAABB(AABB original, Direction normal, Direction facing)

@@ -1,6 +1,5 @@
 package net.mistersecret312.aperture_innovations.block_entities.multiblock;
 
-import mekanism.common.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
@@ -10,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.aperture_innovations.blocks.multiblock.DummyBlock;
+import net.mistersecret312.aperture_innovations.blocks.multiblock.MasterBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,24 @@ public class MasterBlockEntity extends BlockEntity
 	public MasterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
 	{
 		super(type, pos, blockState);
+	}
+
+	@Override
+	public void onLoad()
+	{
+		super.onLoad();
+
+		if(level != null && !level.isClientSide())
+			((MasterBlock) getBlockState().getBlock()).placeDummyBlocks(level, null, worldPosition);
+	}
+
+	@Override
+	public void setRemoved()
+	{
+		super.setRemoved();
+
+		if(level != null && !level.isClientSide())
+			((MasterBlock) getBlockState().getBlock()).removeDummyBlocks(level, worldPosition);
 	}
 
 	@Override

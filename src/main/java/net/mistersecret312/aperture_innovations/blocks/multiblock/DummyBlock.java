@@ -78,8 +78,6 @@ public class DummyBlock extends BaseEntityBlock
 
 		MasterBlock masterBlock = (MasterBlock) master.getBlockState().getBlock();
 		return masterBlock.getCloneItemStack(state, target, realLevel, pos, player);
-
-
 	}
 
 	@Override
@@ -196,18 +194,6 @@ public class DummyBlock extends BaseEntityBlock
 	public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state)
 	{
 		return BlockEntityInit.DUMMY.get().create(pos, state);
-	}
-
-	@Override
-	protected BlockState rotate(BlockState state, Rotation rotation)
-	{
-		return Blocks.AIR.defaultBlockState();
-	}
-
-	@Override
-	protected BlockState mirror(BlockState state, Mirror mirror)
-	{
-		return Blocks.AIR.defaultBlockState();
 	}
 
 	@Override
