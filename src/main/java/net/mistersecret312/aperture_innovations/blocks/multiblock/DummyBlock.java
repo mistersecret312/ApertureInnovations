@@ -162,7 +162,9 @@ public class DummyBlock extends BaseEntityBlock
 	@Override
 	protected void spawnDestroyParticles(Level level, Player player, BlockPos pos, BlockState state)
 	{
-		level.levelEvent(player, 2001, pos, getId(getMaster(level, pos).getBlockState()));
+		MasterBlockEntity master = getMaster(level, pos);
+		if(master != null)
+			level.levelEvent(player, 2001, pos, getId(getMaster(level, pos).getBlockState()));
 	}
 
 	@Override

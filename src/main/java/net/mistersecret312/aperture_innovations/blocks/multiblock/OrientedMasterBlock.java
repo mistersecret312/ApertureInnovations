@@ -31,6 +31,7 @@ public abstract class OrientedMasterBlock extends MasterBlock
 		super(properties);
 		this.registerDefaultState(this.defaultBlockState()
 									  .setValue(FACING, Direction.NORTH)
+									  .setValue(UPDATE, false)
 									  .setValue(NORMAL, Direction.UP));
 	}
 

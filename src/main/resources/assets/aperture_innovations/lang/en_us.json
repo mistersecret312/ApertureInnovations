@@ -124,6 +124,9 @@
   "sound.aperture_innovations.portal_gun_hold_start": "Portal Gun picks up something",
   "sound.aperture_innovations.portal_gun_hold_loop": "Portal Gun swirls as it holds something",
   "sound.aperture_innovations.portal_gun_hold_fail": "Portal Gun fails to pick up something",
+  "sound.aperture_innovations.vital_apparatus_vent.open": "Vital Apparatus Vent opens",
+  "sound.aperture_innovations.vital_apparatus_vent.close": "Vital Apparatus Vent opens",
+  "sound.aperture_innovations.fizzle": "Fizzling",
 
   "advancements.aperture_innovations.aperture.root.title": "Aperture Science Innovators",
   "advancements.aperture_innovations.aperture.root.description": "Obtain the Aperture Science Handheld Portal Device",

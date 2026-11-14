@@ -1,21 +1,14 @@
 {
 	"type": "minecraft:block",
-	"pools": [
+	"pools":
+	[
 		{
 			"rolls": 1,
-			"entries": [
+			"entries":
+			[
 				{
 					"type": "minecraft:item",
 					"name": "aperture_innovations:large_button"
-				}
-			],
-			"conditions": [
-				{
-					"condition": "minecraft:block_state_property",
-					"block": "aperture_innovations:large_button",
-					"properties": {
-						"part": "0"
-					}
 				}
 			]
 		}

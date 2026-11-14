@@ -38,9 +38,6 @@ public class MasterBlockEntity extends BlockEntity
 	public void setRemoved()
 	{
 		super.setRemoved();
-
-		if(level != null && !level.isClientSide())
-			((MasterBlock) getBlockState().getBlock()).removeDummyBlocks(level, worldPosition);
 	}
 
 	@Override
@@ -61,6 +58,7 @@ public class MasterBlockEntity extends BlockEntity
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries)
 	{
 		super.loadAdditional(tag, registries);
+		this.dummies.clear();
 
 		ListTag dummiesTag = tag.getList("dummies", Tag.TAG_INT_ARRAY);
 		for(Tag dummyTag : dummiesTag)
