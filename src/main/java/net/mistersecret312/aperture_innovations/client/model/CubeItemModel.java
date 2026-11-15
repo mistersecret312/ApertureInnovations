@@ -2,8 +2,6 @@ package net.mistersecret312.aperture_innovations.client.model;
 
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariant;
-import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariants;
-import net.mistersecret312.aperture_innovations.entities.CubeEntity;
 import net.mistersecret312.aperture_innovations.items.CubeItem;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.model.GeoModel;

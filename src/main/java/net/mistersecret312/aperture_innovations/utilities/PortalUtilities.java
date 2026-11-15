@@ -17,7 +17,6 @@ import net.mistersecret312.aperture_innovations.data.PortalLinkData;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
-import org.joml.Vector2d;
 
 import java.util.*;
 

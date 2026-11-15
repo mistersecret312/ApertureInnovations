@@ -31,7 +31,6 @@ import net.mistersecret312.aperture_innovations.client.renderer.item.CubeItemRen
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariant;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientCubeVariants;
 import net.mistersecret312.aperture_innovations.datapack.CubeVariant;
-import net.mistersecret312.aperture_innovations.entities.CubeEntity;
 import net.mistersecret312.aperture_innovations.init.DataComponentInit;
 import net.mistersecret312.aperture_innovations.init.EntityInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;

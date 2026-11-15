@@ -3,13 +3,9 @@ package net.mistersecret312.aperture_innovations.utilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
-import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
-import org.jetbrains.annotations.Nullable;
 
 public class CoordUtil
 {

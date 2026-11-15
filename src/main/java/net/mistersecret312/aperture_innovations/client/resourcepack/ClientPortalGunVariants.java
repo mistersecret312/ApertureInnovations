@@ -1,6 +1,5 @@
 package net.mistersecret312.aperture_innovations.client.resourcepack;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 

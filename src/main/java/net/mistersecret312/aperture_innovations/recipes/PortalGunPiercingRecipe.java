@@ -1,9 +1,7 @@
 package net.mistersecret312.aperture_innovations.recipes;
 
-import com.google.common.collect.Lists;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -11,11 +9,7 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.mistersecret312.aperture_innovations.init.RecipeInit;
-import net.mistersecret312.aperture_innovations.items.ColorfulGelItem;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
-
-import java.util.List;
-import java.util.UUID;
 
 public class PortalGunPiercingRecipe extends CustomRecipe
 {

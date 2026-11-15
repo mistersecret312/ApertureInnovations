@@ -12,7 +12,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.block_entities.AntlineBlockEntity;
-import net.mistersecret312.aperture_innovations.blocks.AntlineBlock;
 import net.mistersecret312.aperture_innovations.blocks.enums.ConnectionState;
 import net.mistersecret312.aperture_innovations.data.antline.Antline;
 

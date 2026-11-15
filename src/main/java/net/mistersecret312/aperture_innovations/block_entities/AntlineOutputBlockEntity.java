@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.mistersecret312.aperture_innovations.blocks.AntlineOutputBlock;
 import net.mistersecret312.aperture_innovations.init.BlockEntityInit;
 import net.mistersecret312.aperture_innovations.network.ClientboundAntlineOutputUpdatePacket;
-import net.mistersecret312.aperture_innovations.network.ClientboundAntlineUpdatePacket;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class AntlineOutputBlockEntity extends BlockEntity

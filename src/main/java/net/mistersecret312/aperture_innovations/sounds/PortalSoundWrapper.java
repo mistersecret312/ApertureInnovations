@@ -1,7 +1,6 @@
 package net.mistersecret312.aperture_innovations.sounds;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 
 public class PortalSoundWrapper<T extends ClientPortalLink> extends SoundWrapper

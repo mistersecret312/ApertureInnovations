@@ -1,8 +1,6 @@
 package net.mistersecret312.aperture_innovations.client.renderer.item;
 
 import com.google.common.collect.Lists;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -16,14 +14,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.client.PortalRenderTypes;
@@ -33,18 +26,14 @@ import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortal
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariants;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
-import net.mistersecret312.aperture_innovations.utilities.ClientPortalUtilities;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.renderer.specialty.DynamicGeoItemRenderer;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class PortalGunRenderer extends DynamicGeoItemRenderer<PortalGunItem>

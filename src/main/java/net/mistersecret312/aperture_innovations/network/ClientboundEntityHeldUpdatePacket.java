@@ -7,7 +7,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.joml.Vector3f;
 
 
 public record ClientboundEntityHeldUpdatePacket(int id, boolean held) implements CustomPacketPayload

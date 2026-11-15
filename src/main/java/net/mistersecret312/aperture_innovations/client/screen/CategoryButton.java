@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.Mth;
 import net.mistersecret312.aperture_innovations.multitool.Color;
 
 public class CategoryButton extends PlainTextButton

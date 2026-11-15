@@ -15,7 +15,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.block_entities.AntlineBlockEntity;
 import net.mistersecret312.aperture_innovations.block_entities.AntlineOutputBlockEntity;
-import net.mistersecret312.aperture_innovations.block_entities.VitalApparatusVentBlockEntity;
 import net.mistersecret312.aperture_innovations.block_entities.multiblock.MasterBlockEntity;
 import net.mistersecret312.aperture_innovations.blocks.multiblock.DummyBlock;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureCapability;
@@ -37,8 +36,6 @@ import net.mistersecret312.aperture_innovations.utilities.ClientPortalUtilities;
 import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
 import org.joml.Vector3f;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.animation.AnimationController;
 
 import java.util.UUID;
 

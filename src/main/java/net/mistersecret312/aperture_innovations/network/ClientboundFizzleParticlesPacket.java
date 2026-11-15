@@ -6,7 +6,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
-import net.mistersecret312.aperture_innovations.sounds.SoundAccess;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientboundFizzleParticlesPacket(int id) implements CustomPacketPayload

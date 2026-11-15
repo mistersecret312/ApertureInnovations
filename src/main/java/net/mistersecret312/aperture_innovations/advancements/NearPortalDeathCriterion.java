@@ -1,14 +1,9 @@
 package net.mistersecret312.aperture_innovations.advancements;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.GsonHelper;
-import net.mistersecret312.aperture_innovations.ApertureInnovations;
 
 import java.util.Optional;
 

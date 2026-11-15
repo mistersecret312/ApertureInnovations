@@ -2,7 +2,6 @@ package net.mistersecret312.aperture_innovations.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,7 +11,6 @@ import net.mistersecret312.aperture_innovations.sounds.SoundAccess;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public record ClientboundPortalAmbientSoundPacket(UUID linkID, boolean isPrimary, boolean stop) implements CustomPacketPayload
 {

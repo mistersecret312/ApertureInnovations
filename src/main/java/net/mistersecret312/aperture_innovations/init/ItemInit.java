@@ -1,10 +1,8 @@
 package net.mistersecret312.aperture_innovations.init;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
 import net.mistersecret312.aperture_innovations.items.*;
 import net.neoforged.bus.api.IEventBus;

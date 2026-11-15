@@ -14,10 +14,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.mistersecret312.aperture_innovations.block_entities.VitalApparatusVentBlockEntity;
 import net.mistersecret312.aperture_innovations.multitool.ConfigurationProperty;
 import net.mistersecret312.aperture_innovations.multitool.IHaveConfiguration;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.HashMap;
 

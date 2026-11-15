@@ -1,6 +1,5 @@
 package net.mistersecret312.aperture_innovations.init;
 
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.registries.Registries;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;

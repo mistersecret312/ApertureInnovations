@@ -2,7 +2,6 @@ package net.mistersecret312.aperture_innovations.client.resourcepack;
 
 import net.minecraft.resources.ResourceLocation;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
-import net.mistersecret312.aperture_innovations.datapack.MultiToolVariant;
 
 import java.util.HashMap;
 

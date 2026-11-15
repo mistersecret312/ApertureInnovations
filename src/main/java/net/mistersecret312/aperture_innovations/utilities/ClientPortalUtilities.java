@@ -6,7 +6,6 @@ import net.mistersecret312.aperture_innovations.client.ColorUtil;
 import net.mistersecret312.aperture_innovations.client.resourcepack.ClientPortalGunVariant;
 import net.mistersecret312.aperture_innovations.data.portal.ClientPortalLink;
 import net.mistersecret312.aperture_innovations.sounds.GunSoundWrapper;
-import net.mistersecret312.aperture_innovations.sounds.GunZapSound;
 import net.mistersecret312.aperture_innovations.sounds.PortalSoundWrapper;
 
 import java.awt.*;
