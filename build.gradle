@@ -100,7 +100,7 @@ dependencies {
 
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     implementation "curse.maven:sodium-394468:8756580"
-    implementation "curse.maven:irisshaders-455508:6661598"
+    compileOnly "curse.maven:irisshaders-455508:6661598"
 
     jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${project.minecraft_version}:[${project.sable_companion_version},)")) {
         version {
