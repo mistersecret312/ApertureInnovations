@@ -10,10 +10,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.mistersecret312.aperture_innovations.data.portal.ClientPortalTransitHandler;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -95,6 +97,5 @@ public class LocalPlayerMixin
 				}
 			}
 		}
-
 	}
 }

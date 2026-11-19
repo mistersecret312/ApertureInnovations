@@ -180,5 +180,10 @@ public class NetworkInit
 				ClientboundOpenMutliToolEntityScreenPacket.STREAM_CODEC,
 				ClientboundOpenMutliToolEntityScreenPacket::handle
 		);
+		registrar.playToClient(
+				ClientboundPortalTransitPacket.TYPE,
+				ClientboundPortalTransitPacket.STREAM_CODEC,
+				ClientboundPortalTransitPacket::handle
+		);
 	}
 }

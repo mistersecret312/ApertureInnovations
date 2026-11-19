@@ -69,34 +69,6 @@ public class CommonEvents
 			for(Map.Entry<UUID, PortalLink> entry : data.portalLinks.entrySet())
 			{
 				PortalLink link = entry.getValue();
-
-				portals:
-				for(int i = 0; i < 2; i++)
-				{
-					boolean isPrimary = i == 0;
-					Portal portal = isPrimary ? link.getPrimaryPortal() : link.getSecondaryPortal();
-					if(portal.getPosition() == null)
-						continue;
-
-					ResourceKey<Level> portalDim = isPrimary ? link.getPrimaryPortal().getDimension() : link.getSecondaryPortal()
-																											.getDimension();
-					if(!portalDim.equals(event.getLevel().dimension()))
-						continue;
-
-					List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(portal.getPosition(), portal.getPosition()).inflate(3));
-					for(Entity entity : entities)
-					{
-						ApertureCapability aperture = entity.getData(AttachmentTypeInit.APERTURE);
-						if(aperture.ignorePortalsTime != 0)
-							break;
-
-						aperture.setFrictionlessTime(4);
-
-						if(link.teleportLogic(entity, aperture, link, level, isPrimary))
-							break portals;
-					}
-				}
-
 				for(int i = 0; i < 2; i++)
 				{
 					boolean isPrimary = i == 0;
@@ -109,7 +81,6 @@ public class CommonEvents
 																											.getDimension();
 					if(!portalDim.equals(event.getLevel().dimension()) || !level.isLoaded(BlockPos.containing(portalPos)))
 						continue;
-
 
 					float xRot = isPrimary ? link.getPrimaryPortal().getXRotation() : link.getSecondaryPortal()
 																						  .getXRotation();

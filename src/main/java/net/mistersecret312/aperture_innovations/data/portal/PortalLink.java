@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -40,6 +41,7 @@ import net.mistersecret312.aperture_innovations.init.TagInit;
 import net.mistersecret312.aperture_innovations.neo_events.PortalTravelEvent;
 import net.mistersecret312.aperture_innovations.network.ClientboundEntityPortalLerpPacket;
 import net.mistersecret312.aperture_innovations.network.ClientboundPortalSoundsPacket;
+import net.mistersecret312.aperture_innovations.network.ClientboundPortalTransitPacket;
 import net.mistersecret312.aperture_innovations.network.ClientboundTeleportMomentumPacket;
 import net.mistersecret312.aperture_innovations.utilities.CoordUtil;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
@@ -430,21 +432,13 @@ public class PortalLink
 	}
 
 	public boolean teleportLogic(Entity entity, ApertureCapability aperture,
-									 PortalLink link, Level level, boolean isPrimary)
+								 PortalLink link, Level level, boolean isPrimary)
 	{
 		UUID linkID = link.linkID;
-		if(level.isClientSide())
-			return false;
-		if(aperture.ignorePortalsTime != 0)
+		if (level.isClientSide())
 			return false;
 
-		Vec3 currentPos = entity.position().add(0, entity.getBbHeight() / 2f, 0);
-
-		Vec3 speed = entity.getDeltaMovement();
-		Vec3 nextPos = currentPos.add(speed.multiply(2f, 2f, 2f));
-
-		AABB movementBox = entity.getBoundingBox().expandTowards(speed);
-		if(link == null || !link.isOpen())
+		if (link == null || !link.isOpen())
 			return false;
 
 		Portal portal = isPrimary ? link.getPrimaryPortal() : link.getSecondaryPortal();
@@ -452,7 +446,7 @@ public class PortalLink
 
 		Vec3 portalPosition = portal.getPosition();
 		SubLevelAccess portalAccess = null;
-		if(!portal.isMoonshot())
+		if (!portal.isMoonshot())
 		{
 			portalAccess = SableCompanion.INSTANCE.getContaining(level, portalPosition);
 			//noinspection UnstableApiUsage
@@ -461,7 +455,7 @@ public class PortalLink
 
 		Vec3 otherPortalPosition = new Vec3(0, 0, 0);
 		SubLevelAccess otherPortalAccess = null;
-		if(!otherPortal.isMoonshot())
+		if (!otherPortal.isMoonshot())
 		{
 			otherPortalPosition = otherPortal.getPosition();
 			otherPortalAccess = SableCompanion.INSTANCE.getContaining(level, otherPortalPosition);
@@ -469,187 +463,313 @@ public class PortalLink
 			otherPortalPosition = SableCompanion.INSTANCE.projectOutOfSubLevel(level, otherPortalPosition);
 		}
 
-		double distance = portalPosition.distanceTo(entity.position());
-		if(distance < 6 && otherPortal.isMoonshot() && !(entity instanceof ServerPlayer && ((ServerPlayer) entity).getAbilities().instabuild))
+		Vec3 currentPos = new Vec3(entity.xo, entity.yo + entity.getBbHeight() / 2.0, entity.zo);
+		Vec3 nextPos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
+
+		Direction direction = PortalUtilities.getPortalDirection(level, linkID, isPrimary);
+		Vector3f normal = direction.step();
+		Vec3 normalVec = new Vec3(normal.x(), normal.y(), normal.z());
+
+		double intersectionFraction = getPlaneIntersectionFraction(currentPos, nextPos, portalPosition, normalVec);
+		if (intersectionFraction < 0.0)
+			return false;
+
+		Vec3 exactIntersectionPoint = currentPos.lerp(nextPos, intersectionFraction);
+		AABB teleportBox = PortalUtilities.getPortalTeleportBox(portalPosition, portal.getXRotation(), portal.getYRotation());
+
+		if (!teleportBox.inflate(0.05).contains(exactIntersectionPoint))
+			return false;
+
+		boolean movingToward = entity.getDeltaMovement().dot(normalVec) <= 0.05;
+		if (!movingToward)
+			return false;
+
+		double xSpeed = entity.position().x() - entity.xOld;
+		double ySpeed = entity.position().y() - entity.yOld;
+		double zSpeed = entity.position().z() - entity.zOld;
+
+		entity.resetFallDistance();
+
+		ServerLevel targetLevel;
+		if (otherPortal.isMoonshot()) targetLevel = (ServerLevel) level;
+		else targetLevel = level.getServer().getLevel(otherPortal.getDimension());
+		if (targetLevel == null)
+			return false;
+
+		boolean smallEntity = entity.getBoundingBox().getYsize() < 1.5f;
+		double verticalOffset = smallEntity ? -entity.getBoundingBox().getYsize() :
+										otherPortal.isOnCeiling() ? -entity.getBoundingBox().getYsize() / 2 : entity.getBoundingBox().getYsize();
+		verticalOffset = Math.min(entity.getBoundingBox().getYsize() * 0.95f, verticalOffset);
+		Vec3 relativePosition = new Vec3(otherPortal.isOnWall() ? -0.15 : portal.isOnWall() ? 0 : verticalOffset,
+				otherPortal.isOnWall() ? -entity.getBoundingBox().getYsize() / 2 : 0, 0);
+
+		if (otherPortalAccess != null)
+			relativePosition = relativePosition.add(-0.75, 0, 0);
+
+		Vec3 relativeMomentum;
+		if (direction.getAxis().isHorizontal())
+			relativeMomentum = CoordUtil.toPortalCoords(portal, new Vec3(xSpeed, 0, zSpeed));
+		else relativeMomentum = CoordUtil.toPortalCoords(portal, new Vec3(0, entity.getDeltaMovement().y(), 0));
+
+		Vec3 lookAngle = entity.getLookAngle();
+		if (portalAccess != null)
 		{
-			Direction direction = PortalUtilities.getPortalDirection(level, linkID, isPrimary);
+			Vec3 momentum = new Vec3(xSpeed, 0, zSpeed);
+			momentum = portalAccess.logicalPose().transformNormalInverse(momentum);
 
-			Vec3 portalPos = PortalUtilities.getPortalTeleportBox(portalPosition, portal.getXRotation(),
-					portal.getYRotation()).getCenter();
-			portalPos = portalPos.add(direction.getOpposite().getStepX() * entity.getBbWidth() / 2f,
-					direction.getOpposite().getStepY() * entity.getBbHeight() / 1.25f,
-					direction.getOpposite().getStepZ() * entity.getBbWidth() / 2f);
-
-			Vec3 pushVector = portalPos.subtract(entity.position()).multiply(0.08, 0.08, 0.08);
-			entity.push(pushVector);
-			if(entity instanceof ServerPlayer player) PacketDistributor.sendToPlayer(player,
-					new ClientboundTeleportMomentumPacket(player.getDeltaMovement().toVector3f()));
+			relativeMomentum = CoordUtil.toPortalCoords(portal, momentum);
+			lookAngle = portalAccess.logicalPose().transformNormalInverse(lookAngle);
 		}
-		else if(distance < 0.5D)
+		Vec3 relativeLookAngle = CoordUtil.toPortalCoords(portal, lookAngle);
+
+		Vec3 destinationPosition;
+		Vec3 destinationMomentum;
+		Vec3 destinationLookAngle;
+		if (!otherPortal.isMoonshot())
 		{
-			aperture.setFrictionlessTime(2);
+			destinationPosition = CoordUtil.fromPortalCoords(otherPortal, relativePosition, true);
+			if (entity instanceof Player)
+				destinationPosition = destinationPosition.add(otherPortal.getPosition());
+			else destinationPosition = destinationPosition.add(otherPortalPosition);
+
+			destinationMomentum = CoordUtil.fromPortalCoords(otherPortal, relativeMomentum, true);
+			destinationLookAngle = CoordUtil.fromPortalCoords(otherPortal, relativeLookAngle, true);
+		}
+		else
+		{
+			destinationPosition = portalPosition.add(0, 1000, 0);
+			destinationMomentum = new Vec3(0, 0, 0);
+			destinationLookAngle = entity.getLookAngle();
 		}
 
-		AABB teleportBox = PortalUtilities.getPortalTeleportBox(portalPosition, portal.getXRotation(),
-				portal.getYRotation());
-		AABB portalBox = PortalUtilities.getPortalBoundingBox(portalPosition, portal.getXRotation(),
-				portal.getYRotation());
-
-		if(movementBox.inflate(0.05f).intersects(teleportBox) || portalBox.intersects(entity.getBoundingBox()))
+		if (otherPortalAccess != null)
 		{
-			Direction direction = PortalUtilities.getPortalDirection(level, linkID, isPrimary);
-			Vector3f normal = direction.step();
+			destinationMomentum = otherPortalAccess.logicalPose().transformNormal(destinationMomentum);
+			destinationLookAngle = otherPortalAccess.logicalPose().transformNormal(destinationLookAngle);
+		}
 
-			Vec3 portalPos = PortalUtilities.getPortalTeleportBox(portalPosition, portal.getXRotation(),
-					portal.getYRotation()).getCenter();
-			portalPos = portalPos.add(direction.getOpposite().getStepX() * entity.getBbWidth() / 2f,
-					direction.getOpposite().getStepY() * entity.getBbHeight() / 1.25f,
-					direction.getOpposite().getStepZ() * entity.getBbWidth() / 2f);
+		PortalTravelEvent.Pre event = NeoForge.EVENT_BUS.post(new PortalTravelEvent.Pre(link, portal, isPrimary, level,
+				targetLevel, currentPos, destinationPosition, otherPortal.isMoonshot()));
 
-			Vec3 offsetFromPortal = currentPos.subtract(portalPos);
-			Vec3 nextOffsetFromPortal = nextPos.subtract(portalPos);
+		targetLevel = (ServerLevel) event.getTargetLevel();
+		destinationPosition = event.getTargetPos();
 
-			double relativePos = offsetFromPortal.dot(new Vec3(normal));
-			double nextRelativePos = nextOffsetFromPortal.dot(new Vec3(normal));
+		if (event.isCanceled())
+			return false;
 
-			boolean slow = portalPos.closerThan(currentPos, 0.5f) && relativePos >= 0;
-			boolean fast = relativePos > 0 && nextRelativePos <= 0;
+		PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level,
+				new ChunkPos(BlockPos.containing(portalPosition)),
+				new ClientboundPortalSoundsPacket.EnterPortal(link.linkID, isPrimary));
 
-			AABB boundingBox = PortalUtilities.getPortalBoundingBox(portalPosition, portal.getXRotation(), portal.getYRotation());
-			boolean full = portal.getDirection().equals(Direction.UP) && boundingBox.contains(entity.getBoundingBox().getCenter().add(0, entity.getBbHeight()/2f, 0));
+		entity.hasImpulse = false;
+		entity.setOldPosAndRot();
 
-			boolean touchInContraption = boundingBox.intersects(entity.getBoundingBox()) && portalAccess != null;
+		PacketDistributor.sendToPlayersTrackingChunk(targetLevel,
+				new ChunkPos(BlockPos.containing(destinationPosition)),
+				new ClientboundPortalSoundsPacket.EnterPortal(link.linkID, !isPrimary));
 
-			if(slow || fast || full || touchInContraption)
+		if (entity instanceof ServerPlayer player)
+		{
+			player.awardStat(StatisticsInit.TIMES_USED_PORTALS.get(), 1);
+			player.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
+					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
+			player.setDeltaMovement(destinationMomentum);
+
+			aperture.setPortal(Pair.of(linkID, isPrimary));
+			aperture.updateDistance();
+			AdvancementInit.PORTAL_TRAVEL.get().trigger(player, portal.getDimension().location(),
+					targetLevel.dimension().location(), portalPosition.distanceToSqr(destinationPosition),
+					aperture.verticalDistance, aperture.horizontalDistance, otherPortal.isMoonshot());
+		}
+		else
+		{
+			entity.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
+					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
+			entity.setDeltaMovement(destinationMomentum);
+
+			PacketDistributor.sendToPlayersTrackingEntity(entity,
+					new ClientboundEntityPortalLerpPacket(entity.getId(), destinationPosition.toVector3f(),
+							entity.getDeltaMovement().toVector3f(),
+							entity.getXRot(),
+							CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle)));
+		}
+
+		NeoForge.EVENT_BUS.post(new PortalTravelEvent.Post(link, portal, isPrimary, level,
+				targetLevel, currentPos, destinationPosition, otherPortal.isMoonshot()));
+
+		return true;
+	}
+
+	public boolean portalIntersects(Entity entity, Vec3 movement, boolean isPrimary)
+	{
+		Portal portal = isPrimary ? primaryPortal : secondaryPortal;
+		if (portal == null || !portal.isInWorld()) return false;
+
+		Vec3 portalPos = portal.getPosition();
+		if (entity.position().distanceToSqr(portalPos) > 64.0D)
+			return false;
+
+		Direction direction = portal.getDirection();
+		Vector3f normal = direction.step();
+		Vec3 normalVec = new Vec3(normal.x(), normal.y(), normal.z());
+
+		Vec3 currentPos = new Vec3(entity.xo, entity.yo + entity.getBbHeight() / 2.0, entity.zo);
+		Vec3 nextPos = currentPos.add(movement);
+
+		double currentDot = currentPos.subtract(portalPos).dot(normalVec);
+		double nextDot = nextPos.subtract(portalPos).dot(normalVec);
+
+		boolean crossedPlane = (currentDot >= 0 && nextDot < 0) || (currentDot <= 0 && nextDot > 0);
+		boolean movingToward = entity.getDeltaMovement().dot(normalVec) <= 0.05;
+
+		return crossedPlane && movingToward;
+	}
+
+	public double getPlaneIntersectionFraction(Vec3 startPos, Vec3 endPos, Vec3 portalPos, Vec3 normalVec)
+	{
+		Vec3 direction = endPos.subtract(startPos);
+		double denominator = direction.dot(normalVec);
+
+		if (Math.abs(denominator) < 1.0E-5)
+			return -1.0;
+
+		double numerator = portalPos.subtract(startPos).dot(normalVec);
+		double t = numerator / denominator;
+
+		return (t >= 0.0 && t <= 1.0) ? t : -1.0;
+	}
+
+	public double getPortalIntersectionFraction(Entity entity, ApertureCapability aperture, Vec3 movement, boolean isPrimary)
+	{
+		Portal portal = isPrimary ? primaryPortal : secondaryPortal;
+		if (portal == null || !portal.isInWorld()) return -1.0;
+
+		Vec3 portalPos = portal.getPosition();
+		if (entity.position().distanceToSqr(portalPos) > 64.0D)
+			return -1.0;
+
+		Vec3 startPos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
+		Vec3 endPos = startPos.add(movement);
+
+		Vec3 startOffset = startPos.subtract(portalPos);
+		Vec3 endOffset = endPos.subtract(portalPos);
+
+		Vec3 localStart = CoordUtil.toPortalCoords(portal, startOffset);
+		Vec3 localEnd = CoordUtil.toPortalCoords(portal, endOffset);
+
+		double xStart = localStart.x();
+		double xEnd = localEnd.x();
+
+		if (xStart > 0.0 && xEnd <= 0.0)
+		{
+			double denominator = xEnd - xStart;
+			if (Math.abs(denominator) < 1.0E-5)
+				return -1.0;
+
+			double t = -xStart / denominator;
+			if (t < 0.0 || t > 1.0)
+				return -1.0;
+
+			// --- Y & Z DIMENSION VALIDATION (1x2 Portal Frame + Entity Tolerance) ---
+			double intersectionY = localStart.y() + (localEnd.y() - localStart.y()) * t;
+			double intersectionZ = localStart.z() + (localEnd.z() - localStart.z()) * t;
+
+			double halfWidth = entity.getBbWidth() / 2.0;
+			double halfHeight = entity.getBbHeight() / 2.0;
+
+			// Portal dimensions: Width Z (-0.5 to 0.5), Height Y (0.0 to 2.0)
+			if (intersectionY >= -halfHeight && intersectionY <= 2.0 + halfHeight &&
+						intersectionZ >= -0.5 - halfWidth && intersectionZ <= 0.5 + halfWidth)
 			{
-				if(direction.getAxis().isHorizontal())
-					aperture.setIgnorePortalsTime(5);
-				if(link.isInWorld() && link.isInterdimensionalLink())
-					aperture.setIgnorePortalsTime(20);
-
-				if(otherPortalAccess != null)
-					aperture.setIgnorePortalsTime(40);
-
-				double xSpeed = entity.position().x()-entity.xOld;
-				double ySpeed = entity.position().y()-entity.yOld;
-				double zSpeed = entity.position().z()-entity.zOld;
-
-				entity.resetFallDistance();
-
-				ServerLevel targetLevel;
-				if(otherPortal.isMoonshot()) targetLevel = (ServerLevel) level;
-				else targetLevel = level.getServer().getLevel(otherPortal.getDimension());
-				if(targetLevel == null)
-					return false;
-
-				boolean smallEntity = entity.getBoundingBox().getYsize() < 1.5f;
-				double verticalOffset = smallEntity ? -entity.getBoundingBox().getYsize() :
-												otherPortal.isOnCeiling() ? -entity.getBoundingBox().getYsize()/2 : entity.getBoundingBox().getYsize();
-				verticalOffset = Math.min(entity.getBoundingBox().getYsize()*0.95f, verticalOffset);
-				Vec3 relativePosition = new Vec3(otherPortal.isOnWall() ? -0.15 : portal.isOnWall() ? 0 : verticalOffset,
-						otherPortal.isOnWall() ? -entity.getBoundingBox().getYsize()/2 : 0, 0);
-
-				if(otherPortalAccess != null)
-					relativePosition = relativePosition.add(-0.75, 0, 0);
-
-//				relativePosition = new Vec3(otherPortal.isOnWall() ? -0.15 : -0.15,
-//						otherPortal.isOnWall() ? -entity.getBoundingBox().getYsize()/2 : 0, 0);
-
-				Vec3 relativeMomentum;
-				if(direction.getAxis().isHorizontal())
-					relativeMomentum = CoordUtil.toPortalCoords(portal, new Vec3(xSpeed, 0, zSpeed));
-				else relativeMomentum = CoordUtil.toPortalCoords(portal, new Vec3(0, entity.getDeltaMovement().y(), 0));
-
-				Vec3 lookAngle = entity.getLookAngle();
-				if(portalAccess != null)
-				{
-					Vec3 momentum = new Vec3(xSpeed, 0, zSpeed);
-					momentum = portalAccess.logicalPose().transformNormalInverse(momentum);
-
-					relativeMomentum = CoordUtil.toPortalCoords(portal, momentum);
-					lookAngle = portalAccess.logicalPose().transformNormalInverse(lookAngle);
-				}
-				Vec3 relativeLookAngle = CoordUtil.toPortalCoords(portal, lookAngle);
-
-				Vec3 destinationPosition;
-				Vec3 destinationMomentum;
-				Vec3 destinationLookAngle;
-				if(!otherPortal.isMoonshot())
-				{
-					destinationPosition = CoordUtil.fromPortalCoords(otherPortal, relativePosition, true);
-					if(entity instanceof Player)
-						destinationPosition = destinationPosition.add(otherPortal.getPosition());
-					else destinationPosition = destinationPosition.add(otherPortalPosition);
-
-					destinationMomentum = CoordUtil.fromPortalCoords(otherPortal, relativeMomentum, true);
-					destinationLookAngle = CoordUtil.fromPortalCoords(otherPortal, relativeLookAngle, true);
-				}
-				else
-				{
-					destinationPosition = portalPosition.add(0, 1000, 0);
-					destinationMomentum = new Vec3(0, 0, 0);
-					destinationLookAngle = entity.getLookAngle();
-				}
-
-				if(otherPortalAccess != null)
-				{
-					destinationMomentum = otherPortalAccess.logicalPose().transformNormal(destinationMomentum);
-					destinationLookAngle = otherPortalAccess.logicalPose().transformNormal(destinationLookAngle);
-				}
-
-				PortalTravelEvent.Pre event = NeoForge.EVENT_BUS.post(new PortalTravelEvent.Pre(link, portal, isPrimary, level,
-						targetLevel, currentPos, destinationPosition, otherPortal.isMoonshot()));
-
-				targetLevel = (ServerLevel) event.getTargetLevel();
-				destinationPosition = event.getTargetPos();
-
-				boolean eventCanceled = event.isCanceled();
-				if(eventCanceled)
-					return false;
-
-				PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level,
-						new ChunkPos(BlockPos.containing(portalPosition)),
-						new ClientboundPortalSoundsPacket.EnterPortal(link.linkID, isPrimary));
-
-
-				entity.hasImpulse = false;
-				entity.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
-						Set.of(),
-						CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
-				entity.setDeltaMovement(destinationMomentum);
-				entity.setOldPosAndRot();
-
-				PacketDistributor.sendToPlayersTrackingChunk(targetLevel,
-						new ChunkPos(BlockPos.containing(destinationPosition)),
-						new ClientboundPortalSoundsPacket.EnterPortal(link.linkID, !isPrimary));
-
-				aperture.setFrictionlessTime(100 * 20);
-				NeoForge.EVENT_BUS.post(new PortalTravelEvent.Post(link, portal, isPrimary, level,
-						targetLevel, currentPos, destinationPosition, otherPortal.isMoonshot()));
-
-				if(entity instanceof ServerPlayer player)
-				{
-					player.awardStat(StatisticsInit.TIMES_USED_PORTALS.get(), 1);
-					player.connection.send(new ClientboundSetEntityMotionPacket(player));
-					aperture.setPortal(Pair.of(linkID, isPrimary));
-					aperture.updateDistance();
-					AdvancementInit.PORTAL_TRAVEL.get().trigger(player, portal.getDimension().location(),
-							targetLevel.dimension().location(), portalPosition.distanceToSqr(destinationPosition),
-							aperture.verticalDistance, aperture.horizontalDistance, otherPortal.isMoonshot());
-				}
-				else
-				{
-					PacketDistributor.sendToPlayersTrackingEntity(entity,
-							new ClientboundEntityPortalLerpPacket(entity.getId(), destinationPosition.toVector3f(),
-									entity.getDeltaMovement().toVector3f(),
-									entity.getXRot(),
-									CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle)));
-				}
-
-				return true;
+				return t;
 			}
 		}
-		return false;
+
+		return -1.0;
+	}
+
+	public boolean executeSubTickTeleport(Entity entity, ServerLevel level, boolean isPrimary, double intersectionT, Vec3 movement, MoverType moverType)
+	{
+		Portal portal = isPrimary ? primaryPortal : secondaryPortal;
+		Portal otherPortal = isPrimary ? secondaryPortal : primaryPortal;
+
+		Vec3 portalPosition = portal.getPosition();
+		Vec3 otherPortalPosition = otherPortal.getPosition();
+
+		entity.resetFallDistance();
+
+		ServerLevel targetLevel = otherPortal.isMoonshot() ? level : level.getServer().getLevel(otherPortal.getDimension());
+		if (targetLevel == null)
+			return false;
+
+		double remainingFraction = Math.max(0.0, 1.0 - intersectionT);
+		Vec3 remainingMovement = movement.scale(remainingFraction);
+
+		Vec3 relativeRemainingMovement = CoordUtil.toPortalCoords(portal, remainingMovement);
+		Vec3 destinationMovement = CoordUtil.fromPortalCoords(otherPortal, relativeRemainingMovement, true);
+
+		Vec3 destinationPosition = otherPortalPosition.add(destinationMovement);
+		destinationPosition = destinationPosition.subtract(0, entity.getBbHeight() / 2.0, 0);
+
+		Vec3 currentVelocity = entity.getDeltaMovement();
+		Vec3 relativeVelocity = CoordUtil.toPortalCoords(portal, currentVelocity);
+		Vec3 lookAngle = entity.getLookAngle();
+		Vec3 relativeLookAngle = CoordUtil.toPortalCoords(portal, lookAngle);
+
+		Vec3 destinationVelocity = CoordUtil.fromPortalCoords(otherPortal, relativeVelocity, true);
+		Vec3 destinationLookAngle = CoordUtil.fromPortalCoords(otherPortal, relativeLookAngle, true);
+
+		Direction exitDir = otherPortal.getDirection();
+		if (exitDir.equals(Direction.UP))
+		{
+			double minVerticalSpeed = 0.3;
+			if (destinationVelocity.y < minVerticalSpeed)
+			{
+				destinationVelocity = new Vec3(destinationVelocity.x, Math.max(minVerticalSpeed, destinationVelocity.y + 0.25), destinationVelocity.z);
+			}
+
+			if (portal.getDirection().getAxis().isHorizontal())
+			{
+				Vector3f exitNormal = exitDir.step();
+				Vec3 forwardPush = new Vec3(exitNormal.x(), 0, exitNormal.z()).normalize().scale(0.3);
+				destinationVelocity = destinationVelocity.add(forwardPush);
+			}
+		}
+
+		entity.hasImpulse = false;
+		entity.setOldPosAndRot();
+
+		if (entity instanceof ServerPlayer player)
+		{
+			player.awardStat(StatisticsInit.TIMES_USED_PORTALS.get(), 1);
+			player.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
+					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
+			player.setDeltaMovement(destinationVelocity);
+			player.connection.send(new ClientboundSetEntityMotionPacket(player));
+		}
+		else
+		{
+			entity.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
+					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
+			entity.setDeltaMovement(destinationVelocity);
+
+			PacketDistributor.sendToPlayersTrackingEntity(entity,
+					new ClientboundEntityPortalLerpPacket(entity.getId(), destinationPosition.toVector3f(),
+							destinationVelocity.toVector3f(),
+							entity.getXRot(),
+							CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle)));
+		}
+
+		if (firstLengthSqr(destinationVelocity) > 1.0E-7)
+		{
+			entity.move(moverType, destinationVelocity);
+		}
+
+		return true;
+	}
+
+	private double firstLengthSqr(Vec3 vec) {
+		return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
 	}
 
 	public static PortalLink load(CompoundTag tag)
