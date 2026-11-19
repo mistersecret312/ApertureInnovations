@@ -85,8 +85,8 @@ public class LivingEntityMixin
 			living.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
 			living.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
 			living.level().broadcastEntityEvent(living, (byte)35);
-		}
 
-		cir.setReturnValue(stack != null);
+			cir.setReturnValue(stack != null);
+		}
 	}
 }
