@@ -1,5 +1,6 @@
 package net.mistersecret312.aperture_innovations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -14,58 +15,55 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.init.AdvancementInit;
+import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
 import net.mistersecret312.aperture_innovations.items.PortalGunItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin
 {
-	@Inject(method = "travel", at = @At("HEAD"))
-	private void aperture$applySourcePhysics(Vec3 travelVector, CallbackInfo ci) {
-		LivingEntity entity = (LivingEntity) (Object) this;
+	@ModifyExpressionValue(method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
+	at = @At(value = "CONSTANT", args = "floatValue=0.91"))
+	public float dontAir(float original)
+	{
+		LivingEntity living = (LivingEntity) (Object) this;
+		boolean hasLongFallBoots = living.getItemBySlot(EquipmentSlot.FEET).is(ItemInit.LONG_FALL_BOOTS.get());
+		if(hasLongFallBoots && !living.onGround())
+			return 1f;
 
-		boolean hasLongFallBoots = entity.getItemBySlot(EquipmentSlot.FEET).is(ItemInit.LONG_FALL_BOOTS.get());
+		return original;
+	}
 
-		if (hasLongFallBoots) {
-			Vec3 motion = entity.getDeltaMovement();
+	@ModifyArg(method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
+	at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;handleRelativeFrictionAndCalculateMovement(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;"))
+	private float modifyFrictionValue(float friction)
+	{
+		LivingEntity living = (LivingEntity) (Object) this;
+		boolean hasLongFallBoots = living.getItemBySlot(EquipmentSlot.FEET).is(ItemInit.LONG_FALL_BOOTS.get());
+		if(hasLongFallBoots && !living.onGround())
+			friction = 1f;
+		return friction;
+	}
 
-			if (!entity.onGround()) {
-				double airDragFactor = 0.91;
-				double newX = motion.x() / airDragFactor;
-				double newZ = motion.z() / airDragFactor;
-
-				double newY = motion.y();
-				double maxFallSpeed = 3.92; // Standard Minecraft / Portal high-speed freefall limit
-				if (Math.abs(newY) > maxFallSpeed) {
-					newY = Math.signum(newY) * Math.min(Math.abs(newY), 3.92);
-				}
-
-				entity.setDeltaMovement(new Vec3(newX, newY, newZ));
-			}
-			else if (entity instanceof Player player) {
-				double maxInputSpeed = 0.42;
-				Vec3 horizontalVel = new Vec3(motion.x(), 0, motion.z());
-				double currentSpeed = horizontalVel.length();
-
-				if (currentSpeed > maxInputSpeed) {
-					Vec3 normalizedVel = horizontalVel.normalize();
-					double projectedInput = travelVector.dot(new Vec3(normalizedVel.x, 0, normalizedVel.z));
-
-					if (projectedInput > 0) {
-						double restrictedX = motion.x() - (normalizedVel.x * projectedInput * 0.05);
-						double restrictedZ = motion.z() - (normalizedVel.z * projectedInput * 0.05);
-						entity.setDeltaMovement(new Vec3(restrictedX, motion.y(), restrictedZ));
-					}
-				}
-			}
+	@Inject(method = "shouldDiscardFriction", at = @At("HEAD"), cancellable = true)
+	private void discardFriction(CallbackInfoReturnable<Boolean> cir)
+	{
+		LivingEntity living = (LivingEntity) (Object) this;
+		boolean hasLongFallBoots = living.getItemBySlot(EquipmentSlot.FEET).is(ItemInit.LONG_FALL_BOOTS.get());
+		if(living instanceof Player player)
+		{
+			if(player.getAbilities().flying)
+				return;
 		}
+
+		if(hasLongFallBoots && !living.onGround())
+			cir.setReturnValue(true);
 	}
 
 	@Inject(method = "checkTotemDeathProtection(Lnet/minecraft/world/damagesource/DamageSource;)Z",

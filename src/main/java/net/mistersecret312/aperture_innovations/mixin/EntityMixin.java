@@ -14,6 +14,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureCapability;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
+import net.mistersecret312.aperture_innovations.entities.CubeEntity;
 import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
 import net.mistersecret312.aperture_innovations.init.EntityInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
@@ -57,33 +58,19 @@ public abstract class EntityMixin
 			cir.setReturnValue(false);
 	}
 
-//	@ModifyExpressionValue(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V",
-//			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getBlockSpeedFactor()F"))
-//	private float modifyFrictionValue(float original)
-//	{
-//		Entity entity = (Entity) (Object) this;
-//		if(!entity.onGround())
-//			return 0.98f;
-//
-//		return original;
-//	}
-
-	@Inject(method = "tick", at = @At("HEAD"))
-	private void aperture$applyNonLivingPhysics(CallbackInfo ci)
+	@ModifyExpressionValue(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/entity/Entity;getBlockSpeedFactor()F"
+			)
+	)
+	private float modifyFrictionValue(float original)
 	{
 		Entity entity = (Entity) (Object) this;
-		if (entity.level().isClientSide() || entity instanceof LivingEntity)
-			return;
+//		if(entity instanceof CubeEntity && !entity.onGround())
+//			return 0.98f;
 
-		if (entity.getType().equals(EntityInit.CUBE.get()))
-		{
-			if (!this.onGround())
-			{
-				Vec3 motion = this.getDeltaMovement();
-				double airDragFactor = 0.91;
-				entity.setDeltaMovement(new Vec3(motion.x() / airDragFactor, motion.y() / airDragFactor, motion.z() / airDragFactor));
-			}
-		}
+		return original;
 	}
 
 	@Inject(method = "move", at = @At("HEAD"), cancellable = true)
