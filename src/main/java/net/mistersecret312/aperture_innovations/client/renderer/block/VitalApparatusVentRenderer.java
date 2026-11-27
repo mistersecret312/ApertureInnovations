@@ -8,9 +8,11 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.mistersecret312.aperture_innovations.ApertureInnovations;
@@ -23,12 +25,15 @@ import net.mistersecret312.aperture_innovations.client.renderer.ColoredGlowingLa
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.specialty.DynamicGeoBlockRenderer;
+import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
 import java.awt.*;
+import java.util.HashMap;
 
-public class VitalApparatusVentRenderer extends DynamicGeoBlockRenderer<VitalApparatusVentBlockEntity>
+public class VitalApparatusVentRenderer extends GeoBlockRenderer<VitalApparatusVentBlockEntity>
 {
+	private final HashMap<VitalApparatusVentBlockEntity, Entity> entityCache = new HashMap<>();
+
 	public VitalApparatusVentRenderer(BlockEntityRendererProvider.Context context)
 	{
 		super(new VitalApparatusVentModel());
@@ -47,16 +52,6 @@ public class VitalApparatusVentRenderer extends DynamicGeoBlockRenderer<VitalApp
 				(vent, bone) -> getHullColor(bone, vent),
 				(vent, bone) -> RenderType.entityTranslucent(ResourceLocation.fromNamespaceAndPath(ApertureInnovations.MODID, "textures/entity/vital_apparatus_vent/glass.png"))
 		));
-	}
-
-	@Override
-	public void actuallyRender(PoseStack poseStack, VitalApparatusVentBlockEntity animatable, BakedGeoModel model,
-							   @Nullable RenderType renderType, MultiBufferSource bufferSource,
-							   @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
-							   int packedOverlay, int colour)
-	{
-		super.actuallyRender(poseStack, animatable, model, renderType, bufferSource,
-				buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
 	}
 
 	@Override
@@ -168,5 +163,38 @@ public class VitalApparatusVentRenderer extends DynamicGeoBlockRenderer<VitalApp
 			return masterBlock.getFullShape(blockEntity.getLevel(), blockEntity.getBlockPos(), blockEntity.getBlockState()).bounds().move(blockEntity.getBlockPos());
 
 		return super.getRenderBoundingBox(blockEntity);
+	}
+
+	private @Nullable Entity getOrCreateEntity(VitalApparatusVentBlockEntity vent, Level level)
+	{
+		EntityType<?> desiredType = vent.getTrackingType();
+		if (desiredType == null)
+		{
+			entityCache.remove(vent);
+			return null;
+		}
+
+		Entity cached = entityCache.get(vent);
+		if (cached != null && cached.getType() == desiredType)
+		{
+			if(cached.saveWithoutId(new CompoundTag()).equals(vent.getTrackingData()))
+				cached.load(vent.getTrackingData());
+			return cached;
+		}
+
+		Entity created = desiredType.create(level);
+		if (created == null)
+		{
+			entityCache.remove(vent);
+			return null;
+		}
+
+		CompoundTag data = vent.getTrackingData();
+		if (data != null && !data.isEmpty())
+			created.load(data);
+
+		created.tickCount = vent.getEmptyTime();
+		entityCache.put(vent, created);
+		return created;
 	}
 }

@@ -14,11 +14,11 @@ import net.mistersecret312.aperture_innovations.items.CubeItem;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.specialty.DynamicGeoItemRenderer;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.awt.*;
 
-public class CubeItemRenderer extends DynamicGeoItemRenderer<CubeItem>
+public class CubeItemRenderer extends GeoItemRenderer<CubeItem>
 {
 
     public CubeItemRenderer()

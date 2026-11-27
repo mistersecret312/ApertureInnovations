@@ -19,13 +19,13 @@ import net.mistersecret312.aperture_innovations.client.renderer.ColoredGlowingLa
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.specialty.DynamicGeoBlockRenderer;
+import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
 import java.awt.*;
 
 import static net.mistersecret312.aperture_innovations.client.renderer.item.PortalGunRenderer.GLOWING_RENDER_TYPE;
 
-public class PedestalButtonRenderer extends DynamicGeoBlockRenderer<PedestalButtonBlockEntity>
+public class PedestalButtonRenderer extends GeoBlockRenderer<PedestalButtonBlockEntity>
 {
 	public PedestalButtonRenderer(BlockEntityRendererProvider.Context context)
 	{

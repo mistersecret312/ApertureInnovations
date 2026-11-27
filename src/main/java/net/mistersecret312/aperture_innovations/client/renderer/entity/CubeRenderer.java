@@ -17,11 +17,11 @@ import net.mistersecret312.aperture_innovations.entities.CubeEntity;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.specialty.DynamicGeoEntityRenderer;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import java.awt.*;
 
-public class CubeRenderer extends DynamicGeoEntityRenderer<CubeEntity>
+public class CubeRenderer extends GeoEntityRenderer<CubeEntity>
 {
 	public CubeRenderer(EntityRendererProvider.Context context)
 	{
@@ -39,31 +39,12 @@ public class CubeRenderer extends DynamicGeoEntityRenderer<CubeEntity>
 	}
 
 	@Override
-	public software.bernie.geckolib.util.Color getRenderColor(CubeEntity animatable, float partialTick,
-															  int packedLight)
-	{
-//		if(animatable.getFizzlingTick() != -1)
-//		{
-//			float delta = (this.getAnimatable().getFizzlingTick() - 30f) /
-//								  (this.getAnimatable().getMaxFizzleTime() - 30f);
-//
-//			float colorDelta = this.getAnimatable().getFizzlingTick()/10f;
-//			float color = Mth.clampedLerp(1f, 0f, colorDelta);
-//
-//			return software.bernie.geckolib.util.Color.ofARGB(Mth.clampedLerp(1f, 0f, delta),
-//					color, color, color);
-//		}
-		return super.getRenderColor(animatable, partialTick, packedLight);
-	}
-
-	@Override
 	public void preRender(PoseStack poseStack, CubeEntity animatable, BakedGeoModel model,
 						  @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender,
 						  float partialTick, int packedLight, int packedOverlay, int colour)
 	{
 		super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight,
 				packedOverlay, colour);
-
 		poseStack.mulPose(Axis.YP.rotationDegrees(animatable.getYRot()));
 	}
 
@@ -72,16 +53,7 @@ public class CubeRenderer extends DynamicGeoEntityRenderer<CubeEntity>
 							   @Nullable RenderType renderType, MultiBufferSource bufferSource,
 							   @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
 							   int packedOverlay, int colour)
-	{
-
-	}
-
-	@Override
-	public void render(CubeEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
-					   MultiBufferSource bufferSource, int packedLight)
-	{
-		super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-	}
+	{}
 
 	@Override
 	public @Nullable RenderType getRenderType(CubeEntity animatable, ResourceLocation texture,
