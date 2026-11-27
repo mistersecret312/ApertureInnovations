@@ -13,11 +13,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.mistersecret312.aperture_innovations.capabilities.ApertureCapability;
+import net.mistersecret312.aperture_innovations.data.portal.Portal;
 import net.mistersecret312.aperture_innovations.data.portal.PortalLink;
 import net.mistersecret312.aperture_innovations.entities.CubeEntity;
 import net.mistersecret312.aperture_innovations.init.AttachmentTypeInit;
 import net.mistersecret312.aperture_innovations.init.EntityInit;
 import net.mistersecret312.aperture_innovations.init.ItemInit;
+import net.mistersecret312.aperture_innovations.utilities.CoordUtil;
 import net.mistersecret312.aperture_innovations.utilities.PortalUtilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -126,11 +128,25 @@ public abstract class EntityMixin
 			try
 			{
 				Vec3 firstPartMovement = movement.scale(earliestT);
-				if (firstPartMovement.lengthSqr() > 1.0E-7)
+				if (firstPartMovement.lengthSqr() > 0)
 					entity.move(type, firstPartMovement);
 
 				if (closestLink.executeSubTickTeleport(entity, serverLevel, isPrimaryPortal, earliestT, movement, type))
+				{
+					double remainingT = 1.0 - earliestT;
+					if (remainingT > 0)
+					{
+						Portal entryPortal = isPrimaryPortal ? closestLink.getPrimaryPortal() : closestLink.getSecondaryPortal();
+						Portal exitPortal = isPrimaryPortal ? closestLink.getSecondaryPortal() : closestLink.getPrimaryPortal();
+
+						Vec3 remainingWorld = movement.scale(remainingT);
+						Vec3 remainingRelative = CoordUtil.toPortalCoords(entryPortal, remainingWorld);
+						Vec3 exitRemainingMovement = CoordUtil.fromPortalCoords(exitPortal, remainingRelative, true);
+
+						entity.move(type, exitRemainingMovement);
+					}
 					ci.cancel();
+				}
 			} finally {
 				isHandlingPortalMove = false;
 			}

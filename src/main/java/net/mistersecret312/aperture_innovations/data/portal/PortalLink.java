@@ -648,7 +648,7 @@ public class PortalLink
 		if (entity.position().distanceToSqr(portalPos) > 64.0D)
 			return -1.0;
 
-		Vec3 startPos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
+		Vec3 startPos = entity.getBoundingBox().getCenter();
 		Vec3 endPos = startPos.add(movement);
 
 		Vec3 startOffset = startPos.subtract(portalPos);
@@ -670,14 +670,12 @@ public class PortalLink
 			if (t < 0.0 || t > 1.0)
 				return -1.0;
 
-			// --- Y & Z DIMENSION VALIDATION (1x2 Portal Frame + Entity Tolerance) ---
 			double intersectionY = localStart.y() + (localEnd.y() - localStart.y()) * t;
 			double intersectionZ = localStart.z() + (localEnd.z() - localStart.z()) * t;
 
 			double halfWidth = entity.getBbWidth() / 2.0;
 			double halfHeight = entity.getBbHeight() / 2.0;
 
-			// Portal dimensions: Width Z (-0.5 to 0.5), Height Y (0.0 to 2.0)
 			if (intersectionY >= -halfHeight && intersectionY <= 2.0 + halfHeight &&
 						intersectionZ >= -0.5 - halfWidth && intersectionZ <= 0.5 + halfWidth)
 			{
@@ -695,21 +693,17 @@ public class PortalLink
 
 		Vec3 portalPosition = portal.getPosition();
 		Vec3 otherPortalPosition = otherPortal.getPosition();
+		Vec3 entityCenter = entity.getBoundingBox().getCenter();
 
+		float entityHeight = entity.getBbHeight();
 		entity.resetFallDistance();
 
 		ServerLevel targetLevel = otherPortal.isMoonshot() ? level : level.getServer().getLevel(otherPortal.getDimension());
 		if (targetLevel == null)
 			return false;
 
-		double remainingFraction = Math.max(0.0, 1.0 - intersectionT);
-		Vec3 remainingMovement = movement.scale(remainingFraction);
-
-		Vec3 relativeRemainingMovement = CoordUtil.toPortalCoords(portal, remainingMovement);
-		Vec3 destinationMovement = CoordUtil.fromPortalCoords(otherPortal, relativeRemainingMovement, true);
-
-		Vec3 destinationPosition = otherPortalPosition.add(destinationMovement);
-		destinationPosition = destinationPosition.subtract(0, entity.getBbHeight() / 2.0, 0);
+		Vec3 relativePosition = CoordUtil.toPortalCoords(portal, entityCenter.subtract(portalPosition));
+		relativePosition = relativePosition.add(0, 0, 0);
 
 		Vec3 currentVelocity = entity.getDeltaMovement();
 		Vec3 relativeVelocity = CoordUtil.toPortalCoords(portal, currentVelocity);
@@ -718,51 +712,48 @@ public class PortalLink
 
 		Vec3 destinationVelocity = CoordUtil.fromPortalCoords(otherPortal, relativeVelocity, true);
 		Vec3 destinationLookAngle = CoordUtil.fromPortalCoords(otherPortal, relativeLookAngle, true);
-
-		Direction exitDir = otherPortal.getDirection();
-		if (exitDir.equals(Direction.UP))
-		{
-			double minVerticalSpeed = 0.3;
-			if (destinationVelocity.y < minVerticalSpeed)
-			{
-				destinationVelocity = new Vec3(destinationVelocity.x, Math.max(minVerticalSpeed, destinationVelocity.y + 0.25), destinationVelocity.z);
-			}
-
-			if (portal.getDirection().getAxis().isHorizontal())
-			{
-				Vector3f exitNormal = exitDir.step();
-				Vec3 forwardPush = new Vec3(exitNormal.x(), 0, exitNormal.z()).normalize().scale(0.3);
-				destinationVelocity = destinationVelocity.add(forwardPush);
-			}
-		}
+		Vec3 destinationPosition = CoordUtil.fromPortalCoords(otherPortal, relativePosition, true)
+											.add(otherPortalPosition);
+		destinationPosition = destinationPosition.subtract(0, entityHeight / 2.0, 0);
 
 		entity.hasImpulse = false;
 		entity.setOldPosAndRot();
 
 		if (entity instanceof ServerPlayer player)
 		{
+			System.out.println("Pre-TP portal relative: " + relativePosition);
+			System.out.println("Pre-TP position: " + entityCenter);
+			System.out.println("Pre-TP speed: " + entity.getDeltaMovement());
+
 			player.awardStat(StatisticsInit.TIMES_USED_PORTALS.get(), 1);
 			player.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
 					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
 			player.setDeltaMovement(destinationVelocity);
 			player.connection.send(new ClientboundSetEntityMotionPacket(player));
+
+			entityCenter = entity.getBoundingBox().getCenter();
+			System.out.println("Post-TP portal relative: " + CoordUtil.toPortalCoords(otherPortal, entityCenter.subtract(otherPortalPosition)));
+			System.out.println("Post-TP position: " + entityCenter);
+			System.out.println("Post-TP speed: " + entity.getDeltaMovement());
 		}
 		else
 		{
+			System.out.println("Pre-TP position: " + entity.position());
+			System.out.println("Pre-TP speed: " + entity.getDeltaMovement());
+
 			entity.teleportTo(targetLevel, destinationPosition.x(), destinationPosition.y(), destinationPosition.z(),
 					Set.of(), CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle), entity.getXRot());
 			entity.setDeltaMovement(destinationVelocity);
+
+			System.out.println("Post-TP position: " + entity.position());
+			System.out.println("Post-TP speed: " + entity.getDeltaMovement());
+
 
 			PacketDistributor.sendToPlayersTrackingEntity(entity,
 					new ClientboundEntityPortalLerpPacket(entity.getId(), destinationPosition.toVector3f(),
 							destinationVelocity.toVector3f(),
 							entity.getXRot(),
 							CoordUtil.CoordinateSystems.lookAngleY(destinationLookAngle)));
-		}
-
-		if (firstLengthSqr(destinationVelocity) > 1.0E-7)
-		{
-			entity.move(moverType, destinationVelocity);
 		}
 
 		return true;
