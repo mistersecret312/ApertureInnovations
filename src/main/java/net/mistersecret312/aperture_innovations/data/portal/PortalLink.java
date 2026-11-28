@@ -422,10 +422,12 @@ public class PortalLink
 
 	public boolean isInterdimensionalLink()
 	{
+		if(primaryPortal.isMoonshot() || secondaryPortal.isMoonshot())
+			return true;
+
 		if(isOpen())
-		{
 			return !primaryPortal.getDimension().equals(secondaryPortal.getDimension());
-		}
+
 		return false;
 	}
 
